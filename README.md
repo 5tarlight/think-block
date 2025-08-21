@@ -1,69 +1,59 @@
-# React + TypeScript + Vite
+# Think Block
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A visual node-based AI model builder inspired by Unreal Engine's Blueprint system. Create and configure AI models using an intuitive drag-and-drop interface.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Visual Node Editor**: Drag and drop nodes to build AI model architectures
+- **AI-Specific Nodes**: Pre-built components for common AI model layers:
+  - Input Layer (📥): Define data input shape
+  - Dense Layer (🧠): Fully connected neural network layers
+  - Activation Functions (⚡): Apply activation functions like ReLU, Sigmoid, etc.
+  - Output Layer (📤): Define model outputs
+- **Interactive Canvas**: Zoom, pan, and connect nodes with visual feedback
+- **Real-time Updates**: See your model structure as you build it
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+```bash
+# Install dependencies
+npm install
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+# Start development server
+npm run dev
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+# Build for production
+npm run build
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Run linting
+npm run lint
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Usage
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1. **Add Nodes**: Drag existing nodes around the canvas or add new ones
+2. **Connect Nodes**: Click and drag from output handles (right side) to input handles (left side)
+3. **Configure Parameters**: Each node shows its current parameters (units, activation, etc.)
+4. **Navigate**: Use the mini-map and controls to navigate large model architectures
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Technology Stack
+
+- **React 19**: Modern React with latest features
+- **TypeScript**: Type-safe development
+- **Vite**: Fast build tool and development server
+- **@xyflow/react**: Professional node-based editor library
+- **ESLint**: Code quality and consistency
+
+## Architecture
+
+- `src/components/NodeCanvas.tsx`: Main canvas component using ReactFlow
+- `src/components/nodes/AINode.tsx`: Reusable AI node component
+- `src/data/initialData.ts`: Sample node configuration and connections
+
+## Contributing
+
+This project uses ESLint for code quality. Make sure to run `npm run lint` before submitting changes.
+
+## License
+
+MIT
