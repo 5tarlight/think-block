@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import Canvas from "./components/canvas/canvas";
-import Sidebar from "./components/sidebar";
+import Sidebar from "./components/sidebar/sidebar";
 
 function App() {
   const canvas = useRef<HTMLCanvasElement>(null);

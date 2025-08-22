@@ -1,6 +1,7 @@
-import { useSidebarStore } from "../store/sidebarStore";
-import HorizontalIcon from "./icon/HoriontalIcon";
+import { useSidebarStore } from "../../store/sidebarStore";
+import HorizontalIcon from "../icon/HoriontalIcon";
 import cn from "@yeahx4/cn";
+import GPUSelector from "./gpu-selector";
 
 export default function Sidebar() {
   const { isOpen, toggle, close } = useSidebarStore();
@@ -31,7 +32,9 @@ export default function Sidebar() {
               <HorizontalIcon />
             </button>
           </div>
-          <div className="flex-1 p-4 overflow-y-auto">Open Sidebar Content</div>
+          <div className="flex-1 p-4 overflow-y-auto">
+            <GPUSelector />
+          </div>
         </div>
       ) : (
         // Collapsed sidebar
