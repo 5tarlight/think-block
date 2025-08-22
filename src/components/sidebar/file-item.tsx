@@ -38,7 +38,6 @@ export default function FileItem({
         <div className="shrink-0">{icon}</div>
         <div className="truncate max-w-[160px]">{name}</div>
       </div>
-      <div className="text-sm shrink-0">{size} KB</div>
     </div>
   );
 }
