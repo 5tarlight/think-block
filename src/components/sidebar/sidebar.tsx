@@ -5,7 +5,7 @@ import cn from "@yeahx4/cn";
 import GPUSelector from "./gpu-selector";
 
 const MIN_W = 200;
-const MAX_W = 520;
+const MAX_W = 960;
 const DEFAULT_W = 256;
 
 export default function Sidebar() {
