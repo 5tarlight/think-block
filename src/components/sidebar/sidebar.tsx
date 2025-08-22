@@ -3,6 +3,7 @@ import { useSidebarStore } from "../../store/sidebarStore";
 import HorizontalIcon from "../icon/HoriontalIcon";
 import cn from "@yeahx4/cn";
 import GPUSelector from "./gpu-selector";
+import FileUploader from "./file-uploader";
 
 const MIN_W = 200;
 const MAX_W = 960;
@@ -113,6 +114,7 @@ export default function Sidebar() {
 
           <div className="flex-1 p-4 overflow-y-auto">
             <GPUSelector />
+            <FileUploader />
           </div>
 
           {/* 드래그 핸들 */}
