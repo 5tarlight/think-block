@@ -2,13 +2,7 @@ import cn from "@yeahx4/cn";
 import type { ReactNode } from "react";
 import { TbCsv, TbFile, TbJpg, TbJson, TbPng, TbTxt } from "react-icons/tb";
 
-export default function FileItem({
-  name,
-  size,
-}: {
-  name: string;
-  size: number;
-}) {
+export default function FileItem({ name }: { name: string; size: number }) {
   const ext = name.split(".").pop()?.toLowerCase() || "";
   let icon: ReactNode;
 
