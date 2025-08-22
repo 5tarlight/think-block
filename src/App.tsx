@@ -8,7 +8,7 @@ function App() {
   return (
     <div className="w-screen h-screen flex overflow-hidden">
       <Sidebar />
-      <div className="w-full h-full">
+      <div className="w-full h-full overflow-hidden">
         <Canvas ref={canvas} />
         <div
           className="absolute w-full h-full z-0 bg-neutral-800"
