@@ -276,13 +276,14 @@ function App() {
         w: 256,
         h: Math.max(80, 56 + 28 * rows + 4 * (rows - 1)),
       };
+
       let anchor: Vec2;
       if (idxIn >= 0) {
-        anchor = { x: node.pos.x, y: node.pos.y + 32 + 14 + idxIn * 28 };
+        anchor = { x: node.pos.x + 10, y: node.pos.y + 48 + 32 * idxIn + 15 };
       } else if (idxOut >= 0) {
         anchor = {
-          x: node.pos.x + nodeSize.w,
-          y: node.pos.y + 32 + 14 + idxOut * 28,
+          x: node.pos.x + nodeSize.w - 10,
+          y: node.pos.y + 48 + 32 * idxOut + 15,
         };
       } else {
         anchor = {
@@ -409,7 +410,7 @@ function App() {
         >
           {/* SVG edges (under nodes) */}
           <svg
-            className="absolute inset-0 pointer-events-none w-full h-full"
+            className="absolute inset-0 pointer-events-none w-full h-full z-20"
             style={{ filter: "drop-shadow(0 0 1px rgba(0,0,0,0.6))" }}
           >
             <g style={transformStyle as React.CSSProperties}>
