@@ -271,12 +271,10 @@ function App() {
       // Port layout: inputs on left, outputs on right; 28px row height
       const idxIn = node.inputs.findIndex((p) => p.id === portId);
       const idxOut = node.outputs.findIndex((p) => p.id === portId);
+      const rows = Math.max(node.inputs.length, node.outputs.length);
       const nodeSize = {
-        w: 200,
-        h: Math.max(
-          80,
-          32 + 28 * Math.max(node.inputs.length, node.outputs.length)
-        ),
+        w: 256,
+        h: Math.max(80, 56 + 28 * rows + 4 * (rows - 1)),
       };
       let anchor: Vec2;
       if (idxIn >= 0) {
@@ -411,7 +409,7 @@ function App() {
         >
           {/* SVG edges (under nodes) */}
           <svg
-            className="absolute inset-0 pointer-events-none"
+            className="absolute inset-0 pointer-events-none w-full h-full"
             style={{ filter: "drop-shadow(0 0 1px rgba(0,0,0,0.6))" }}
           >
             <g style={transformStyle as React.CSSProperties}>

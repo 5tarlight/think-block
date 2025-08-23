@@ -16,15 +16,22 @@ export default function NodeView({
   ) => void;
   onPortUp: (to: { nodeId: string; portId: string }) => void;
 }) {
+  const inCount = node.inputs.length;
+  const outCount = node.outputs.length;
+  const rows = Math.max(inCount, outCount);
+  const size = { w: 256, h: Math.max(80, 56 + 28 * rows + 4 * (rows - 1)) };
+
   return (
     <div
       className={cn(
         "absolute rounded-sm border border-neutral-700",
-        "bg-neutral-900 text-neutral-200 shadow-lg min-w-64"
+        "bg-neutral-900 text-neutral-200 shadow-lg"
       )}
       style={{
         left: node.pos.x,
         top: node.pos.y,
+        width: size.w,
+        height: size.h,
       }}
       onMouseDown={(e) => {
         // 포트 클릭이 아닌 경우에만 노드 드래그 시작
