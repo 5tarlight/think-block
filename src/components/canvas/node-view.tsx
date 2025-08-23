@@ -26,7 +26,12 @@ export default function NodeView({
         left: node.pos.x,
         top: node.pos.y,
       }}
-      onMouseDown={(e) => onDragStart(e, node.id)}
+      onMouseDown={(e) => {
+        // 포트 클릭이 아닌 경우에만 노드 드래그 시작
+        if (!(e.target as HTMLElement).closest(".port-handle")) {
+          onDragStart(e, node.id);
+        }
+      }}
     >
       <div className="h-10 px-3 flex items-center justify-between rounded-t-sm bg-neutral-800 border-b border-neutral-700">
         <div className="font-sm">{node.title}</div>

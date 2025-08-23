@@ -22,10 +22,16 @@ export default function PortView({
       <span
         className={cn(
           "relative inline-block w-2 h-2 rounded-full",
-          "bg-blue-400 cursor-crosshair"
+          "bg-blue-400 cursor-crosshair port-handle"
         )}
-        onMouseDown={onMouseDown}
-        onMouseUp={onMouseUp}
+        onMouseDown={(e) => {
+          e.stopPropagation(); // 이벤트 버블링 방지
+          onMouseDown?.(e);
+        }}
+        onMouseUp={(e) => {
+          e.stopPropagation(); // 이벤트 버블링 방지
+          onMouseUp?.();
+        }}
         title={label}
       />
       <span className={cn("px-2 py-1")}>{label}</span>

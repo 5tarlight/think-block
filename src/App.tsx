@@ -207,8 +207,24 @@ function App() {
   );
 
   const onMouseUp = useCallback(() => {
+    const ds = dragState.current;
+    if (ds) {
+      if (ds.kind === "node") {
+        const node = nodes.find((n) => n.id === ds.nodeId);
+        console.log("Node drag ended:", {
+          nodeId: ds.nodeId,
+          nodeTitle: node?.title,
+          finalPosition: node?.pos,
+        });
+      } else if (ds.kind === "wire" && ds.from) {
+        console.log("Wire drag cancelled:", {
+          fromNode: ds.from.node,
+          fromPort: ds.from.port,
+        });
+      }
+    }
     dragState.current = null;
-  }, []);
+  }, [nodes]);
 
   // Prevent default context menu
   useEffect(() => {
@@ -238,6 +254,13 @@ function App() {
         start: pt,
         node0: { ...node.pos },
       };
+
+      console.log("Node drag started:", {
+        nodeId: nodeId,
+        nodeTitle: node.title,
+        position: node.pos,
+        mousePosition: pt,
+      });
     },
     [nodes]
   );
@@ -284,6 +307,11 @@ function App() {
         from: { node: from.nodeId, port: from.portId },
         cur: screenToWorld(pt, camera),
       };
+      console.log("Wire drag started:", {
+        fromNode: from.nodeId,
+        fromPort: from.portId,
+        position: pt,
+      });
     },
     [camera]
   );
@@ -294,6 +322,19 @@ function App() {
       if (!ds || ds.kind !== "wire") return;
       if (ds.from.node === to.nodeId && ds.from.port === to.portId) return;
       const id = uid("edge");
+
+      console.log("Wire connection completed:", {
+        id: id,
+        from: {
+          node: ds.from.node,
+          port: ds.from.port,
+        },
+        to: {
+          node: to.nodeId,
+          port: to.portId,
+        },
+      });
+
       setEdges((prev) => [
         ...prev,
         { id, from: ds.from, to: { node: to.nodeId, port: to.portId } },
