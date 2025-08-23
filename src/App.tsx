@@ -347,7 +347,7 @@ function App() {
   return (
     <div className="w-screen h-screen flex overflow-hidden">
       <Sidebar />
-      <div className="w-full h-full overflow-hidden">
+      <div className="flex-1 h-full relative overflow-hidden">
         <Canvas ref={gridRef} />
       </div>
     </div>
