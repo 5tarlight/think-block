@@ -127,7 +127,7 @@ function App() {
 
   const onWheel = useCallback(
     (e: React.WheelEvent) => {
-      e.preventDefault();
+      // e.preventDefault();
       if (e.ctrlKey || e.metaKey) {
         // Zoom to cursor
         const factor = e.deltaY < 0 ? 1.1 : 0.9;
@@ -225,9 +225,6 @@ function App() {
   const startNodeDrag = useCallback(
     (e: React.MouseEvent, nodeId: string) => {
       e.stopPropagation();
-      const rect = (e.currentTarget as HTMLDivElement).closest(
-        "[data-world]"
-      ) as HTMLDivElement;
       const containerRect = containerRef.current!.getBoundingClientRect();
       const pt: Vec2 = {
         x: e.clientX - containerRect.left,
@@ -278,27 +275,33 @@ function App() {
   );
 
   const startWireFrom = useCallback(
-    (e: React.MouseEvent, from: { node: string; port: string }) => {
+    (e: React.MouseEvent, from: { nodeId: string; portId: string }) => {
       e.stopPropagation();
       const rect = containerRef.current!.getBoundingClientRect();
       const pt: Vec2 = { x: e.clientX - rect.left, y: e.clientY - rect.top };
       dragState.current = {
         kind: "wire",
-        from,
+        from: { node: from.nodeId, port: from.portId },
         cur: screenToWorld(pt, camera),
       };
     },
     [camera]
   );
 
-  const tryCompleteWire = useCallback((to: { node: string; port: string }) => {
-    const ds = dragState.current;
-    if (!ds || ds.kind !== "wire") return;
-    if (ds.from.node === to.node && ds.from.port === to.port) return;
-    const id = uid("edge");
-    setEdges((prev) => [...prev, { id, from: ds.from, to }]);
-    dragState.current = null;
-  }, []);
+  const tryCompleteWire = useCallback(
+    (to: { nodeId: string; portId: string }) => {
+      const ds = dragState.current;
+      if (!ds || ds.kind !== "wire") return;
+      if (ds.from.node === to.nodeId && ds.from.port === to.portId) return;
+      const id = uid("edge");
+      setEdges((prev) => [
+        ...prev,
+        { id, from: ds.from, to: { node: to.nodeId, port: to.portId } },
+      ]);
+      dragState.current = null;
+    },
+    []
+  );
 
   // --- Add Node via context menu ----------------------------------------
   const addNode = useCallback(

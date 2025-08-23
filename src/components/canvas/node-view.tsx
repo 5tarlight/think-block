@@ -38,7 +38,7 @@ export default function NodeView({
 
       <div className="grid grid-cols-2 gap-x-2 px-2 py-2 text-sm">
         <div className="flex flex-col gap-1">
-          {node.inputs.map((p, i) => (
+          {node.inputs.map((p) => (
             <PortView
               key={p.id}
               label={p.name}
@@ -48,7 +48,7 @@ export default function NodeView({
           ))}
         </div>
         <div className="flex flex-col gap-1 items-end">
-          {node.outputs.map((p, i) => (
+          {node.outputs.map((p) => (
             <PortView
               key={p.id}
               label={p.name}
