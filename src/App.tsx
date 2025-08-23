@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Canvas from "./components/canvas/canvas";
 import Sidebar from "./components/sidebar/sidebar";
 import {
+  cubicPath,
   screenToWorld,
   uid,
   useCameraState,
@@ -12,6 +13,9 @@ import {
   type Node,
   type Vec2,
 } from "./store/graphics";
+import cn from "@yeahx4/cn";
+import MenuItem from "./components/canvas/menu-item";
+import NodeView from "./components/canvas/node-view";
 
 function App() {
   const gridRef = useRef<HTMLCanvasElement>(null);
@@ -349,6 +353,100 @@ function App() {
       <Sidebar />
       <div className="flex-1 h-full relative overflow-hidden">
         <Canvas ref={gridRef} />
+        <div
+          ref={containerRef}
+          onWheel={onWheel}
+          onMouseMove={onMouseMove}
+          onMouseUp={onMouseUp}
+          onMouseLeave={onMouseUp}
+          onMouseDown={onBackgroundDown}
+          className={cn(
+            "relative w-full h-full select-none overflow-hidden",
+            "rounded-2xl border border-neutral-800 shadow-inner"
+          )}
+        >
+          {/* SVG edges (under nodes) */}
+          <svg
+            className="absolute inset-0 pointer-events-none"
+            style={{ filter: "drop-shadow(0 0 1px rgba(0,0,0,0.6))" }}
+          >
+            <g style={transformStyle as React.CSSProperties}>
+              {edges.map((e) => {
+                const a = portScreenPos(e.from.node, e.from.port);
+                const b = portScreenPos(e.to.node, e.to.port);
+                // convert back to world (we rendered in screen above)
+                const aw = screenToWorld(a, camera);
+                const bw = screenToWorld(b, camera);
+                return (
+                  <path
+                    key={e.id}
+                    d={cubicPath(aw, bw)}
+                    fill="none"
+                    stroke="#60a5fa"
+                    strokeWidth={2}
+                  />
+                );
+              })}
+              {/* Ghost wire while dragging */}
+              {dragState.current &&
+                dragState.current.kind === "wire" &&
+                (() => {
+                  const ds = dragState.current;
+                  const a = screenToWorld(
+                    portScreenPos(ds.from.node, ds.from.port),
+                    camera
+                  );
+                  const b = ds.cur;
+                  return (
+                    <path
+                      d={cubicPath(a, b)}
+                      fill="none"
+                      stroke="#93c5fd"
+                      strokeWidth={2}
+                      strokeDasharray="6 6"
+                    />
+                  );
+                })()}
+            </g>
+          </svg>
+
+          {/* Nodes layer */}
+          <div
+            data-world
+            className="absolute inset-0"
+            style={transformStyle as React.CSSProperties}
+          >
+            {nodes.map((n) => (
+              <NodeView
+                key={n.id}
+                node={n}
+                onDragStart={startNodeDrag}
+                onPortDown={startWireFrom}
+                onPortUp={tryCompleteWire}
+              />
+            ))}
+          </div>
+
+          {/* Context menu */}
+          {menu?.open && (
+            <div
+              className="absolute z-50 min-w-40 rounded-xl border border-neutral-700 bg-neutral-900/95 backdrop-blur p-1 text-sm shadow-lg"
+              style={{ left: menu.screen.x, top: menu.screen.y }}
+              onMouseDown={(e) => e.stopPropagation()}
+              onContextMenu={(e) => e.preventDefault()}
+            >
+              <MenuItem label="Add Number" onClick={() => addNode("Number")} />
+              <MenuItem label="Add Add" onClick={() => addNode("Add")} />
+              <MenuItem
+                label="Add Multiply"
+                onClick={() => addNode("Multiply")}
+              />
+              <MenuItem label="Add Output" onClick={() => addNode("Output")} />
+              <hr className="my-1 border-neutral-700" />
+              <MenuItem label="Close" onClick={() => setMenu(null)} />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
