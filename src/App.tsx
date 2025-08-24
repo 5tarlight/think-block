@@ -14,7 +14,6 @@ import {
   type Vec2,
 } from "./store/graphics";
 import cn from "@yeahx4/cn";
-import MenuItem from "./components/canvas/menu-item";
 import NodeView from "./components/canvas/node-view";
 import type { NodeType } from "./lib/node";
 import type { ContextMenuState } from "./components/canvas/context-menu";
