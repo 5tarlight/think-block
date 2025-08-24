@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-interface GPUState {
+export interface GPUState {
   isAvailable: boolean;
   current: string;
   setCurrent: (gpu: string) => void;
