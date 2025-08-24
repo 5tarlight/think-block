@@ -16,6 +16,9 @@ import {
 import cn from "@yeahx4/cn";
 import MenuItem from "./components/canvas/menu-item";
 import NodeView from "./components/canvas/node-view";
+import type { NodeType } from "./lib/node";
+import type { ContextMenuState } from "./components/canvas/context-menu";
+import ContextMenu from "./components/canvas/context-menu";
 
 function App() {
   const gridRef = useRef<HTMLCanvasElement>(null);
@@ -25,11 +28,7 @@ function App() {
   const { nodes, setNodes } = useNodeState();
   const { edges, setEdges } = useEdgeState();
 
-  const [menu, setMenu] = useState<{
-    open: boolean;
-    screen: Vec2;
-    world: Vec2;
-  } | null>(null);
+  const [menu, setMenu] = useState<ContextMenuState | null>(null);
   const dragState = useRef<
     | { kind: "pan"; start: Vec2; camera0: Camera }
     | { kind: "node"; nodeId: string; start: Vec2; node0: Vec2 }
@@ -345,7 +344,7 @@ function App() {
 
   // --- Add Node via context menu ----------------------------------------
   const addNode = useCallback(
-    (kind: "Number" | "Add" | "Multiply" | "Output") => {
+    (kind: NodeType) => {
       if (!menu) return;
       const id = uid("node");
       const common = { id, pos: menu.world, title: kind } as const;
@@ -472,22 +471,7 @@ function App() {
 
           {/* Context menu */}
           {menu?.open && (
-            <div
-              className="absolute z-50 min-w-40 rounded-xl border border-neutral-700 bg-neutral-900/95 backdrop-blur p-1 text-sm shadow-lg"
-              style={{ left: menu.screen.x, top: menu.screen.y }}
-              onMouseDown={(e) => e.stopPropagation()}
-              onContextMenu={(e) => e.preventDefault()}
-            >
-              <MenuItem label="Add Number" onClick={() => addNode("Number")} />
-              <MenuItem label="Add Add" onClick={() => addNode("Add")} />
-              <MenuItem
-                label="Add Multiply"
-                onClick={() => addNode("Multiply")}
-              />
-              <MenuItem label="Add Output" onClick={() => addNode("Output")} />
-              <hr className="my-1 border-neutral-700" />
-              <MenuItem label="Close" onClick={() => setMenu(null)} />
-            </div>
+            <ContextMenu menu={menu} addNode={addNode} setMenu={setMenu} />
           )}
         </div>
       </div>
