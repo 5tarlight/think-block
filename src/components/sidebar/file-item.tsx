@@ -51,7 +51,7 @@ export default function FileItem({
     if (isPopupOpen) {
       removeWindow(popupId!);
     } else {
-      const id = addWindow({ title: name });
+      const id = addWindow({ title: name }, <div>Hello {name}!</div>);
       setPopupId(id);
     }
 
@@ -62,7 +62,7 @@ export default function FileItem({
     <div
       className={cn(
         "group relative flex justify-between items-center text-sm cursor-pointer",
-        "hover:bg-white/10 px-1 py-1 rounded-sm transition-all"
+        "hover:bg-white/10 px-1 py-1 rounded-sm transition-all select-none"
       )}
       title={name}
       onClick={handleOpenPopup}

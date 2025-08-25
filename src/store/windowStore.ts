@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { uid } from "./graphics";
+import type { ReactNode } from "react";
 
 export interface Win {
   id: string;
@@ -15,7 +16,8 @@ const BASE_Z = 10;
 
 export interface WinState {
   windows: Win[];
-  addWindow: (win: { title: string }) => string;
+  contents: Record<string, ReactNode>;
+  addWindow: (win: { title: string }, content?: ReactNode) => string;
   removeWindow: (id: string) => void;
   bringToFront: (id: string) => void;
 }
@@ -28,7 +30,8 @@ function nextTopZ(windows: Win[]) {
 
 export const useWinStore = create<WinState>((set) => ({
   windows: [],
-  addWindow: (win) => {
+  contents: {},
+  addWindow: (win, content) => {
     const id = uid("win");
     set((state) => {
       const z = nextTopZ(state.windows);
@@ -46,6 +49,10 @@ export const useWinStore = create<WinState>((set) => ({
             z,
           },
         ],
+        contents: {
+          ...state.contents,
+          [id]: content,
+        },
       };
     });
 
@@ -54,6 +61,9 @@ export const useWinStore = create<WinState>((set) => ({
   removeWindow: (id) =>
     set((state) => ({
       windows: state.windows.filter((win) => win.id !== id),
+      contents: Object.fromEntries(
+        Object.entries(state.contents).filter(([key]) => key !== id)
+      ),
     })),
   bringToFront: (id) =>
     set((state) => {

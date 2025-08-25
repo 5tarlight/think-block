@@ -1,7 +1,14 @@
 import cn from "@yeahx4/cn";
 import { useWinStore, type Win } from "../../store/windowStore";
+import type { ReactNode } from "react";
 
-export default function WindowView({ window }: { window: Win }) {
+export default function WindowView({
+  window,
+  children,
+}: {
+  window: Win;
+  children?: ReactNode;
+}) {
   const { removeWindow } = useWinStore();
 
   return (
@@ -38,7 +45,7 @@ export default function WindowView({ window }: { window: Win }) {
         <div className="font-bold">{window.title}</div>
         <div className="text-sm text-neutral-400">{window.id}</div>
       </div>
-      <div className={cn("flex-1 p-2")}>TODO : Window Content Here!</div>
+      <div className={cn("flex-1 p-2")}>{children}</div>
     </div>
   );
 }
