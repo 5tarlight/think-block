@@ -1,6 +1,8 @@
 import cn from "@yeahx4/cn";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { TbCsv, TbFile, TbJpg, TbJson, TbPng, TbTxt } from "react-icons/tb";
+import type { UIFile } from "./file-uploader";
+import { useWinStore } from "../../store/windowStore";
 
 export type FileStatus = "pending" | "reading" | "done" | "error";
 
@@ -17,13 +19,13 @@ export default function FileItem({
   size,
   progress = 0,
   status = "pending",
-  onOpen,
+  file,
 }: {
   name: string;
   size: number;
   progress?: number;
   status?: FileStatus;
-  onOpen?: () => void;
+  file: UIFile;
 }) {
   const ext = name.split(".").pop()?.toLowerCase() || "";
   let icon: ReactNode;
@@ -34,6 +36,28 @@ export default function FileItem({
   else if (ext === "txt") icon = <TbTxt />;
   else icon = <TbFile />;
 
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [popupId, setPopupId] = useState<string | null>(null);
+  const { addWindow, removeWindow, windows } = useWinStore();
+
+  useEffect(() => {
+    if (isPopupOpen && !windows.find((w) => w.id === popupId)) {
+      setIsPopupOpen(false);
+      setPopupId(null);
+    }
+  }, [windows]);
+
+  const handleOpenPopup = () => {
+    if (isPopupOpen) {
+      removeWindow(popupId!);
+    } else {
+      const id = addWindow({ title: name });
+      setPopupId(id);
+    }
+
+    setIsPopupOpen(!isPopupOpen);
+  };
+
   return (
     <div
       className={cn(
@@ -41,7 +65,7 @@ export default function FileItem({
         "hover:bg-white/10 px-1 py-1 rounded-sm transition-all"
       )}
       title={name}
-      onClick={onOpen}
+      onClick={handleOpenPopup}
       role="button"
     >
       <div className="flex gap-2 items-center min-w-0">

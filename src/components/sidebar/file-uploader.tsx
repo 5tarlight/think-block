@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import cn from "@yeahx4/cn";
 import FileItem, { type FileStatus } from "./file-item";
 
-type UIFile = {
+export type UIFile = {
   key: string;
   name: string;
   size: number;
@@ -136,10 +136,6 @@ export default function FileUploader() {
     if (e.dataTransfer?.files?.length) addFiles(e.dataTransfer.files);
   };
 
-  const handleOpen = (f: UIFile) => {
-    console.log(f);
-  };
-
   return (
     <div className="flex flex-col mt-16 gap-2">
       <div className="flex justify-between items-center">
@@ -158,7 +154,6 @@ export default function FileUploader() {
           multiple
           className="hidden"
           onChange={handlePick}
-          // 필요 시 확장자 제한:
           // accept=".csv,.json,.png,.jpg,.jpeg,.txt"
         />
       </div>
@@ -191,7 +186,7 @@ export default function FileUploader() {
               size={f.size}
               progress={f.progress}
               status={f.status}
-              onOpen={() => handleOpen(f)}
+              file={f}
             />
           ))
         ) : (
