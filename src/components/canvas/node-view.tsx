@@ -25,7 +25,8 @@ export default function NodeView({
     <div
       className={cn(
         "absolute rounded-sm border border-neutral-700",
-        "bg-neutral-900 text-neutral-200 shadow-lg"
+        "bg-neutral-900 text-neutral-200 shadow-lg",
+        "hover:border-blue-500"
       )}
       style={{
         left: node.pos.x,

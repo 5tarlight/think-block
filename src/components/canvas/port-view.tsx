@@ -22,7 +22,8 @@ export default function PortView({
       <span
         className={cn(
           "relative inline-block w-2 h-2 rounded-full",
-          "bg-blue-400 cursor-crosshair port-handle"
+          "bg-blue-400 cursor-crosshair port-handle",
+          "hover:scale-125 transition-transform"
         )}
         onMouseDown={(e) => {
           e.stopPropagation(); // 이벤트 버블링 방지
