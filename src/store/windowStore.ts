@@ -17,7 +17,12 @@ const BASE_Z = 10;
 export interface WinState {
   windows: Win[];
   contents: Record<string, ReactNode>;
-  addWindow: (win: { title: string }, content?: ReactNode) => string;
+  addWindow: (
+    win: { title: string },
+    content?: ReactNode,
+    width?: number,
+    height?: number
+  ) => string;
   removeWindow: (id: string) => void;
   bringToFront: (id: string) => void;
 }
@@ -31,7 +36,7 @@ function nextTopZ(windows: Win[]) {
 export const useWinStore = create<WinState>((set) => ({
   windows: [],
   contents: {},
-  addWindow: (win, content) => {
+  addWindow: (win, content, width, height) => {
     const id = uid("win");
     set((state) => {
       const z = nextTopZ(state.windows);
@@ -44,8 +49,8 @@ export const useWinStore = create<WinState>((set) => ({
             id,
             x: 0,
             y: 0,
-            width: 500,
-            height: 400,
+            width: width || 500,
+            height: height || 400,
             z,
           },
         ],

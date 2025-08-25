@@ -52,7 +52,12 @@ export default function FileItem({
     if (isPopupOpen) {
       removeWindow(popupId!);
     } else {
-      const id = addWindow({ title: name }, <FileWindowContent file={file} />);
+      const id = addWindow(
+        { title: name },
+        <FileWindowContent file={file} />,
+        500,
+        300
+      );
       setPopupId(id);
     }
 
