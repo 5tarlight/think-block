@@ -408,7 +408,7 @@ function App() {
         >
           {/* SVG edges (under nodes) */}
           <svg
-            className="absolute inset-0 pointer-events-none w-full h-full z-20"
+            className="absolute inset-0 pointer-events-none w-full h-full z-1"
             style={{ filter: "drop-shadow(0 0 1px rgba(0,0,0,0.6))" }}
           >
             <g style={transformStyle as React.CSSProperties}>
