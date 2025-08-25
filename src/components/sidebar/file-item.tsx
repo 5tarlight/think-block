@@ -3,10 +3,11 @@ import { useEffect, useState, type ReactNode } from "react";
 import { TbCsv, TbFile, TbJpg, TbJson, TbPng, TbTxt } from "react-icons/tb";
 import type { UIFile } from "./file-uploader";
 import { useWinStore } from "../../store/windowStore";
+import FileWindowContent from "../window/file-window-content";
 
 export type FileStatus = "pending" | "reading" | "done" | "error";
 
-function formatBytes(bytes: number): string {
+export function formatBytes(bytes: number): string {
   if (bytes === 0) return "0 B";
   const units = ["B", "KB", "MB", "GB", "TB"];
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
@@ -51,7 +52,7 @@ export default function FileItem({
     if (isPopupOpen) {
       removeWindow(popupId!);
     } else {
-      const id = addWindow({ title: name }, <div>Hello {name}!</div>);
+      const id = addWindow({ title: name }, <FileWindowContent file={file} />);
       setPopupId(id);
     }
 
