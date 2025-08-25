@@ -18,6 +18,7 @@ import NodeView from "./components/canvas/node-view";
 import type { NodeType } from "./lib/node";
 import type { ContextMenuState } from "./components/canvas/context-menu";
 import ContextMenu from "./components/canvas/context-menu";
+import WindowContainer from "./components/window/window-container";
 
 function App() {
   const gridRef = useRef<HTMLCanvasElement>(null);
@@ -473,6 +474,8 @@ function App() {
             <ContextMenu menu={menu} addNode={addNode} setMenu={setMenu} />
           )}
         </div>
+
+        <WindowContainer />
       </div>
     </div>
   );
