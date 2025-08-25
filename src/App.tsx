@@ -78,7 +78,6 @@ function App() {
     // Grid spacing scales with zoom, clamp to reasonable pixel size
     const base = 24; // world units
     const step = base * camera.scale;
-    const bigEvery = 5;
 
     const origin = worldToScreen({ x: 0, y: 0 }, camera);
 
@@ -91,36 +90,8 @@ function App() {
       ctx.moveTo(0, y + 0.5);
       ctx.lineTo(width, y + 0.5);
     }
-    ctx.strokeStyle = "#1f2937"; // neutral-800-ish
+    ctx.strokeStyle = "#151c2d";
     ctx.lineWidth = 1;
-    ctx.stroke();
-
-    // Bold lines
-    ctx.beginPath();
-    for (
-      let i = Math.floor((origin.x % (step * bigEvery)) / step);
-      i * step < width + step * bigEvery;
-      i++
-    ) {
-      const x = (origin.x % (step * bigEvery)) + i * step;
-      if (Math.round(((x - origin.x) / step) % bigEvery) === 0) {
-        ctx.moveTo(x + 0.5, 0);
-        ctx.lineTo(x + 0.5, height);
-      }
-    }
-    for (
-      let j = Math.floor((origin.y % (step * bigEvery)) / step);
-      j * step < height + step * bigEvery;
-      j++
-    ) {
-      const y = (origin.y % (step * bigEvery)) + j * step;
-      if (Math.round(((y - origin.y) / step) % bigEvery) === 0) {
-        ctx.moveTo(0, y + 0.5);
-        ctx.lineTo(width, y + 0.5);
-      }
-    }
-    ctx.strokeStyle = "#111827"; // neutral-900-ish
-    ctx.lineWidth = 1.5;
     ctx.stroke();
   }, [camera]);
 
