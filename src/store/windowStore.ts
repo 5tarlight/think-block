@@ -14,6 +14,11 @@ export interface Win {
 
 const BASE_Z = 10;
 
+const BASE_OFFSET_X = 48;
+const BASE_OFFSET_Y = 48;
+const STEP = 28;
+const WRAP = 10;
+
 export interface WinState {
   windows: Win[];
   contents: Record<string, ReactNode>;
@@ -34,13 +39,25 @@ function nextTopZ(windows: Win[]) {
   return Math.max(maxZ + 1, BASE_Z);
 }
 
+function cascadeOffset(index: number) {
+  // index: 현재까지 열린 창 개수
+  const k = index % WRAP; // 래핑
+  const dx = BASE_OFFSET_X + STEP * k;
+  const dy = BASE_OFFSET_Y + STEP * k;
+  return { dx, dy };
+}
+
 export const useWinStore = create<WinState>((set) => ({
   windows: [],
   contents: {},
   addWindow: (win, content, width, height) => {
     const id = uid("win");
+    const w = width || 500;
+    const h = height || 400;
+
     set((state) => {
       const z = nextTopZ(state.windows);
+      const { dx, dy } = cascadeOffset(state.windows.length);
 
       return {
         windows: [
@@ -48,10 +65,10 @@ export const useWinStore = create<WinState>((set) => ({
           {
             ...win,
             id,
-            x: 0,
-            y: 0,
-            width: width || 500,
-            height: height || 400,
+            x: dx,
+            y: dy,
+            width: w,
+            height: h,
             z,
           },
         ],
