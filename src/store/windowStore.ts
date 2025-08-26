@@ -41,7 +41,7 @@ function nextTopZ(windows: Win[]) {
 
 function cascadeOffset(index: number) {
   // index: number of windows opened so far
-  const k = index % WRAP; // 래핑
+  const k = index % WRAP; // wrapping
   const dx = BASE_OFFSET_X + STEP * k;
   const dy = BASE_OFFSET_Y + STEP * k;
   return { dx, dy };
