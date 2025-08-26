@@ -1,10 +1,13 @@
 import cn from "@yeahx4/cn";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { TbCsv, TbFile, TbJpg, TbJson, TbPng, TbTxt } from "react-icons/tb";
+import type { UIFile } from "./file-uploader";
+import { useWinStore } from "../../store/windowStore";
+import FileWindowContent from "../window/file-window-content";
 
 export type FileStatus = "pending" | "reading" | "done" | "error";
 
-function formatBytes(bytes: number): string {
+export function formatBytes(bytes: number): string {
   if (bytes === 0) return "0 B";
   const units = ["B", "KB", "MB", "GB", "TB"];
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
@@ -17,13 +20,13 @@ export default function FileItem({
   size,
   progress = 0,
   status = "pending",
-  onOpen,
+  file,
 }: {
   name: string;
   size: number;
   progress?: number;
   status?: FileStatus;
-  onOpen?: () => void;
+  file: UIFile;
 }) {
   const ext = name.split(".").pop()?.toLowerCase() || "";
   let icon: ReactNode;
@@ -34,14 +37,41 @@ export default function FileItem({
   else if (ext === "txt") icon = <TbTxt />;
   else icon = <TbFile />;
 
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [popupId, setPopupId] = useState<string | null>(null);
+  const { addWindow, removeWindow, windows } = useWinStore();
+
+  useEffect(() => {
+    if (isPopupOpen && popupId && !windows.find((w) => w.id === popupId)) {
+      setIsPopupOpen(false);
+      setPopupId(null);
+    }
+  }, [windows, popupId, isPopupOpen]);
+
+  const handleOpenPopup = () => {
+    if (isPopupOpen) {
+      if (popupId) removeWindow(popupId);
+    } else {
+      const id = addWindow(
+        { title: name },
+        <FileWindowContent file={file} />,
+        500,
+        300
+      );
+      setPopupId(id);
+    }
+
+    setIsPopupOpen(!isPopupOpen);
+  };
+
   return (
     <div
       className={cn(
         "group relative flex justify-between items-center text-sm cursor-pointer",
-        "hover:bg-white/10 px-1 py-1 rounded-sm transition-all"
+        "hover:bg-white/10 px-1 py-1 rounded-sm transition-all select-none"
       )}
       title={name}
-      onClick={onOpen}
+      onClick={handleOpenPopup}
       role="button"
     >
       <div className="flex gap-2 items-center min-w-0">

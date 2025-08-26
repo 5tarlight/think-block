@@ -14,8 +14,11 @@ import {
   type Vec2,
 } from "./store/graphics";
 import cn from "@yeahx4/cn";
-import MenuItem from "./components/canvas/menu-item";
 import NodeView from "./components/canvas/node-view";
+import type { NodeType } from "./lib/node";
+import type { ContextMenuState } from "./components/canvas/context-menu";
+import ContextMenu from "./components/canvas/context-menu";
+import WindowContainer from "./components/window/window-container";
 
 function App() {
   const gridRef = useRef<HTMLCanvasElement>(null);
@@ -25,11 +28,7 @@ function App() {
   const { nodes, setNodes } = useNodeState();
   const { edges, setEdges } = useEdgeState();
 
-  const [menu, setMenu] = useState<{
-    open: boolean;
-    screen: Vec2;
-    world: Vec2;
-  } | null>(null);
+  const [menu, setMenu] = useState<ContextMenuState | null>(null);
   const dragState = useRef<
     | { kind: "pan"; start: Vec2; camera0: Camera }
     | { kind: "node"; nodeId: string; start: Vec2; node0: Vec2 }
@@ -79,7 +78,6 @@ function App() {
     // Grid spacing scales with zoom, clamp to reasonable pixel size
     const base = 24; // world units
     const step = base * camera.scale;
-    const bigEvery = 5;
 
     const origin = worldToScreen({ x: 0, y: 0 }, camera);
 
@@ -92,36 +90,8 @@ function App() {
       ctx.moveTo(0, y + 0.5);
       ctx.lineTo(width, y + 0.5);
     }
-    ctx.strokeStyle = "#1f2937"; // neutral-800-ish
+    ctx.strokeStyle = "#151c2d";
     ctx.lineWidth = 1;
-    ctx.stroke();
-
-    // Bold lines
-    ctx.beginPath();
-    for (
-      let i = Math.floor((origin.x % (step * bigEvery)) / step);
-      i * step < width + step * bigEvery;
-      i++
-    ) {
-      const x = (origin.x % (step * bigEvery)) + i * step;
-      if (Math.round(((x - origin.x) / step) % bigEvery) === 0) {
-        ctx.moveTo(x + 0.5, 0);
-        ctx.lineTo(x + 0.5, height);
-      }
-    }
-    for (
-      let j = Math.floor((origin.y % (step * bigEvery)) / step);
-      j * step < height + step * bigEvery;
-      j++
-    ) {
-      const y = (origin.y % (step * bigEvery)) + j * step;
-      if (Math.round(((y - origin.y) / step) % bigEvery) === 0) {
-        ctx.moveTo(0, y + 0.5);
-        ctx.lineTo(width, y + 0.5);
-      }
-    }
-    ctx.strokeStyle = "#111827"; // neutral-900-ish
-    ctx.lineWidth = 1.5;
     ctx.stroke();
   }, [camera]);
 
@@ -345,7 +315,7 @@ function App() {
 
   // --- Add Node via context menu ----------------------------------------
   const addNode = useCallback(
-    (kind: "Number" | "Add" | "Multiply" | "Output") => {
+    (kind: NodeType) => {
       if (!menu) return;
       const id = uid("node");
       const common = { id, pos: menu.world, title: kind } as const;
@@ -410,7 +380,7 @@ function App() {
         >
           {/* SVG edges (under nodes) */}
           <svg
-            className="absolute inset-0 pointer-events-none w-full h-full z-20"
+            className="absolute inset-0 pointer-events-none w-full h-full z-1"
             style={{ filter: "drop-shadow(0 0 1px rgba(0,0,0,0.6))" }}
           >
             <g style={transformStyle as React.CSSProperties}>
@@ -472,24 +442,11 @@ function App() {
 
           {/* Context menu */}
           {menu?.open && (
-            <div
-              className="absolute z-50 min-w-40 rounded-xl border border-neutral-700 bg-neutral-900/95 backdrop-blur p-1 text-sm shadow-lg"
-              style={{ left: menu.screen.x, top: menu.screen.y }}
-              onMouseDown={(e) => e.stopPropagation()}
-              onContextMenu={(e) => e.preventDefault()}
-            >
-              <MenuItem label="Add Number" onClick={() => addNode("Number")} />
-              <MenuItem label="Add Add" onClick={() => addNode("Add")} />
-              <MenuItem
-                label="Add Multiply"
-                onClick={() => addNode("Multiply")}
-              />
-              <MenuItem label="Add Output" onClick={() => addNode("Output")} />
-              <hr className="my-1 border-neutral-700" />
-              <MenuItem label="Close" onClick={() => setMenu(null)} />
-            </div>
+            <ContextMenu menu={menu} addNode={addNode} setMenu={setMenu} />
           )}
         </div>
+
+        <WindowContainer />
       </div>
     </div>
   );
