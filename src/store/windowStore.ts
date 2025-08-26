@@ -25,6 +25,7 @@ export interface WinState {
   ) => string;
   removeWindow: (id: string) => void;
   bringToFront: (id: string) => void;
+  moveWindow: (id: string, x: number, y: number) => void;
 }
 
 function nextTopZ(windows: Win[]) {
@@ -77,4 +78,8 @@ export const useWinStore = create<WinState>((set) => ({
         windows: state.windows.map((w) => (w.id === id ? { ...w, z } : w)),
       };
     }),
+  moveWindow: (id, x, y) =>
+    set((state) => ({
+      windows: state.windows.map((w) => (w.id === id ? { ...w, x, y } : w)),
+    })),
 }));
