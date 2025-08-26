@@ -42,7 +42,7 @@ export default function FileItem({
   const { addWindow, removeWindow, windows } = useWinStore();
 
   useEffect(() => {
-    if (isPopupOpen && !windows.find((w) => w.id === popupId)) {
+    if (isPopupOpen && popupId && !windows.find((w) => w.id === popupId)) {
       setIsPopupOpen(false);
       setPopupId(null);
     }
