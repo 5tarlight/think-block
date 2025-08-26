@@ -1,3 +1,4 @@
+import cn from "@yeahx4/cn";
 import { formatBytes } from "../sidebar/file-item";
 import type { UIFile } from "../sidebar/file-uploader";
 
@@ -12,11 +13,13 @@ export default function FileWindowContent({ file }: { file: UIFile }) {
         <div className="truncate font-medium">{file.name}</div>
         <button
           type="button"
-          className="rounded-md px-3 py-1.5 text-xs font-medium bg-red-600/20 text-red-300 border border-red-500/30 hover:bg-red-600/30 cursor-not-allowed"
-          aria-disabled="true"
-          title="삭제 기능은 나중에 연결됩니다"
+          className={cn(
+            "rounded-md px-3 py-1.5 text-xs font-medium bg-red-600/20",
+            "text-red-300 border border-red-500/30 hover:bg-red-600/30",
+            "cursor-pointer"
+          )}
         >
-          삭제
+          Delete
         </button>
       </div>
 
