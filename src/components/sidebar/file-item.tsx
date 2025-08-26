@@ -50,7 +50,7 @@ export default function FileItem({
 
   const handleOpenPopup = () => {
     if (isPopupOpen) {
-      removeWindow(popupId!);
+      if (popupId) removeWindow(popupId);
     } else {
       const id = addWindow(
         { title: name },
