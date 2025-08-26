@@ -46,7 +46,7 @@ export default function FileItem({
       setIsPopupOpen(false);
       setPopupId(null);
     }
-  }, [windows]);
+  }, [windows, popupId, isPopupOpen]);
 
   const handleOpenPopup = () => {
     if (isPopupOpen) {
