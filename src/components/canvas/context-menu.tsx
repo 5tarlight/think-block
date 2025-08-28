@@ -1,6 +1,6 @@
 import cn from "@yeahx4/cn";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { NodeType } from "../../lib/node";
+import { contextMenuItems, type NodeType } from "../../lib/node";
 import type { Vec2 } from "../../store/graphics";
 import MenuList from "./menu-list";
 
@@ -17,31 +17,6 @@ export interface ContextMenuItem {
   isSubMenu?: boolean;
   sub?: ContextMenuItem[];
 }
-
-const items: ContextMenuItem[] = [
-  {
-    label: "Data",
-    isSubMenu: true,
-    sub: [
-      {
-        label: "Add Number",
-        type: "Number",
-        keywords: ["num", "value", "숫자", "number", "integer", "float"],
-      },
-    ],
-  },
-  { label: "Add Add", type: "Add", keywords: ["plus", "sum", "더하기"] },
-  {
-    label: "Add Multiply",
-    type: "Multiply",
-    keywords: ["mul", "product", "곱"],
-  },
-  {
-    label: "Add Output",
-    type: "Output",
-    keywords: ["print", "result", "출력"],
-  },
-];
 
 export default function ContextMenu({
   menu,
@@ -64,8 +39,8 @@ export default function ContextMenu({
 
   const list = useMemo(() => {
     const s = q.trim().toLowerCase();
-    if (!s) return items;
-    return items.filter(({ label, keywords }) => {
+    if (!s) return contextMenuItems;
+    return contextMenuItems.filter(({ label, keywords }) => {
       const base = label.toLowerCase();
       const keys = (keywords || []).join(" ").toLowerCase();
       return base.includes(s) || keys.includes(s);

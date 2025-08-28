@@ -15,7 +15,7 @@ import {
 } from "./store/graphics";
 import cn from "@yeahx4/cn";
 import NodeView from "./components/canvas/node-view";
-import type { NodeType } from "./lib/node";
+import { getNodeData, type NodeType } from "./lib/node";
 import type { ContextMenuState } from "./components/canvas/context-menu";
 import ContextMenu from "./components/canvas/context-menu";
 import WindowContainer from "./components/window/window-container";
@@ -322,35 +322,14 @@ function App() {
   const addNode = useCallback(
     (kind: NodeType) => {
       if (!menu) return;
-      const id = uid("node");
-      const common = { id, pos: menu.world, title: kind } as const;
-      const node: Node =
-        kind === "Number"
-          ? {
-              ...common,
-              inputs: [],
-              outputs: [{ id: uid("p"), name: "value", kind: "out" }],
-            }
-          : kind === "Output"
-          ? {
-              ...common,
-              inputs: [{ id: uid("p"), name: "in", kind: "in" }],
-              outputs: [],
-            }
-          : {
-              ...common,
-              inputs: [
-                { id: uid("p"), name: "a", kind: "in" },
-                { id: uid("p"), name: "b", kind: "in" },
-              ],
-              outputs: [
-                {
-                  id: uid("p"),
-                  name: kind === "Add" ? "sum" : "prod",
-                  kind: "out",
-                },
-              ],
-            };
+
+      const node: Node = {
+        id: uid("node"),
+        pos: menu.world,
+        title: kind,
+        ...getNodeData(kind),
+      };
+
       setNodes((prev) => [...prev, node]);
       setMenu(null);
     },
