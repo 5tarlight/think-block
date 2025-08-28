@@ -40,11 +40,18 @@ export default function ContextMenu({
   const list = useMemo(() => {
     const s = q.trim().toLowerCase();
     if (!s) return contextMenuItems;
-    return contextMenuItems.filter(({ label, keywords }) => {
-      const base = label.toLowerCase();
-      const keys = (keywords || []).join(" ").toLowerCase();
+
+    const has = (item: ContextMenuItem): boolean => {
+      if (item.isSubMenu && item.sub) {
+        return item.sub.some(has);
+      }
+
+      const base = item.label.toLowerCase();
+      const keys = (item.keywords || []).join(" ").toLowerCase();
       return base.includes(s) || keys.includes(s);
-    });
+    };
+
+    return contextMenuItems.filter(has);
   }, [q]);
 
   useEffect(() => {
