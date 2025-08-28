@@ -1,11 +1,12 @@
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { NodeType } from "../../lib/node";
 import type { ContextMenuItem } from "./context-menu";
 import MenuItem from "./menu-item";
-import cn from "@yeahx4/cn";
+import SubTrigger from "./sub-trigger";
+import SubMenuPortal from "./sub-menu-portal";
 
-type SubInfo = {
+export type SubInfo = {
   label: string;
   items: ContextMenuItem[];
   anchorRect: DOMRect;
@@ -74,87 +75,6 @@ export default function MenuList({
           />,
           document.body
         )}
-    </div>
-  );
-}
-
-function SubTrigger({
-  label,
-  onEnter,
-  onLeave,
-}: {
-  label: string;
-  onEnter: (el: HTMLElement) => void;
-  onLeave: () => void;
-}) {
-  const ref = useRef<HTMLDivElement | null>(null);
-
-  return (
-    <div
-      ref={ref}
-      className={cn(
-        "flex items-center justify-between px-2 py-1 cursor-pointer",
-        "hover:bg-neutral-700 select-none"
-      )}
-      onMouseEnter={() => ref.current && onEnter(ref.current)}
-      onMouseLeave={onLeave}
-    >
-      <span>{label}</span>
-      <span>▶</span>
-    </div>
-  );
-}
-
-function SubMenuPortal({
-  info,
-  addNode,
-  onMouseEnter,
-  onMouseLeave,
-}: {
-  info: SubInfo;
-  addNode: (type: NodeType) => void;
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
-}) {
-  const panelRef = useRef<HTMLDivElement | null>(null);
-  const [style, setStyle] = useState<{ top: number; left: number }>({
-    top: 0,
-    left: 0,
-  });
-
-  // Position calculation: default to right, flip to left if not enough space
-  useLayoutEffect(() => {
-    const { anchorRect } = info;
-    const vw = window.innerWidth;
-    const margin = 6;
-    const estimatedWidth = 256; // w-64
-    let left = anchorRect.right + margin;
-    let top = anchorRect.top;
-
-    if (left + estimatedWidth > vw) {
-      left = anchorRect.left - margin - estimatedWidth;
-    }
-
-    // Vertical clamp (prevent going off-screen)
-    const maxTop = Math.max(8, Math.min(top, window.innerHeight - 8));
-    setStyle({ top: maxTop, left: Math.max(8, left) });
-  }, [info]);
-
-  const items = useMemo(() => info.items, [info.items]);
-
-  return (
-    <div
-      ref={panelRef}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      className={cn(
-        "fixed z-1000001 w-64 max-h-[70vh] overflow-auto",
-        "bg-neutral-800 border border-neutral-600 rounded shadow-xl",
-        "text-white"
-      )}
-      style={style}
-    >
-      <MenuList menu={items} addNode={addNode} />
     </div>
   );
 }
