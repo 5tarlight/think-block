@@ -136,11 +136,16 @@ function App() {
         setMenu({ open: true, screen: pt, world: screenToWorld(pt, camera) });
         return;
       }
+
+      if (menu?.open) {
+        setMenu({ ...menu, open: false });
+      }
+
       if (e.button === 0) {
         dragState.current = { kind: "pan", start: pt, camera0: { ...camera } };
       }
     },
-    [camera]
+    [camera, menu]
   );
 
   const onMouseMove = useCallback(
