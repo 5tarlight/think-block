@@ -66,25 +66,7 @@ export interface NodeState {
 }
 
 export const useNodeState = create<NodeState>((set, get) => ({
-  nodes: [
-    {
-      id: uid("node"),
-      pos: { x: 120, y: 100 },
-      title: "Input",
-      inputs: [],
-      outputs: [{ id: uid("p"), name: "out", kind: "out" }],
-    },
-    {
-      id: uid("node"),
-      pos: { x: 420, y: 240 },
-      title: "Add",
-      inputs: [
-        { id: uid("p"), name: "a", kind: "in" },
-        { id: uid("p"), name: "b", kind: "in" },
-      ],
-      outputs: [{ id: uid("p"), name: "sum", kind: "out" }],
-    },
-  ],
+  nodes: [],
   setNodes: (f) => set({ nodes: f(get().nodes) }),
 }));
 

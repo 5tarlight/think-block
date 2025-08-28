@@ -1,11 +1,21 @@
-import type { NodeType } from "../../lib/node";
+import cn from "@yeahx4/cn";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { contextMenuItems, type NodeType } from "../../lib/node";
 import type { Vec2 } from "../../store/graphics";
-import MenuItem from "./menu-item";
+import MenuList from "./menu-list";
 
 export interface ContextMenuState {
   open: boolean;
   screen: Vec2;
   world: Vec2;
+}
+
+export interface ContextMenuItem {
+  label: string;
+  type?: NodeType;
+  keywords?: string[];
+  isSubMenu?: boolean;
+  sub?: ContextMenuItem[];
 }
 
 export default function ContextMenu({
@@ -17,19 +27,80 @@ export default function ContextMenu({
   addNode: (type: NodeType) => void;
   setMenu: (menu: ContextMenuState | null) => void;
 }) {
+  const [q, setQ] = useState("");
+  const [active, setActive] = useState(0);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (menu.open) {
+      inputRef.current?.focus();
+    }
+  }, [menu.open]);
+
+  const list = useMemo(() => {
+    const s = q.trim().toLowerCase();
+    if (!s) return contextMenuItems;
+
+    const has = (item: ContextMenuItem): boolean => {
+      if (item.isSubMenu && item.sub) {
+        return item.sub.some(has);
+      }
+
+      const base = item.label.toLowerCase();
+      const keys = (item.keywords || []).join(" ").toLowerCase();
+      return base.includes(s) || keys.includes(s);
+    };
+
+    return contextMenuItems.filter(has);
+  }, [q]);
+
+  useEffect(() => {
+    if (active >= list.length) setActive(Math.max(0, list.length - 1));
+  }, [list.length, active]);
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      setMenu(null);
+    }
+    e.stopPropagation();
+  };
+
   return (
     <div
-      className="absolute z-50 min-w-40 rounded-xl border border-neutral-700 bg-neutral-900/95 backdrop-blur p-1 text-sm shadow-lg"
+      className={cn(
+        "absolute z-1000000 w-72 rounded-sm border border-neutral-700",
+        "bg-neutral-900/95 backdrop-blur text-sm shadow-lg p-2"
+      )}
       style={{ left: menu.screen.x, top: menu.screen.y }}
       onMouseDown={(e) => e.stopPropagation()}
       onContextMenu={(e) => e.preventDefault()}
+      role="menu"
+      aria-label="Context menu"
     >
-      <MenuItem label="Add Number" onClick={() => addNode("Number")} />
-      <MenuItem label="Add Add" onClick={() => addNode("Add")} />
-      <MenuItem label="Add Multiply" onClick={() => addNode("Multiply")} />
-      <MenuItem label="Add Output" onClick={() => addNode("Output")} />
-      <hr className="my-1 border-neutral-700" />
-      <MenuItem label="Close" onClick={() => setMenu(null)} />
+      <div className="mb-2">
+        <input
+          ref={inputRef}
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          onKeyDown={onKeyDown}
+          onClick={(e) => e.stopPropagation()}
+          placeholder="Search"
+          className={cn(
+            "w-full px-2 py-1 rounded border border-neutral-700",
+            "bg-neutral-800 text-white placeholder:text-neutral-400",
+            "focus:outline-none focus:ring-1 focus:ring-neutral-500"
+          )}
+        />
+      </div>
+
+      <div className="flex flex-col gap-1 max-h-64 overflow-auto pr-1">
+        {list.length === 0 ? (
+          <div className="px-2 py-1 text-neutral-400">No matches</div>
+        ) : (
+          <MenuList menu={list} addNode={addNode} />
+        )}
+      </div>
     </div>
   );
 }

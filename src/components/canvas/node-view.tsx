@@ -35,7 +35,7 @@ export default function NodeView({
         height: size.h,
       }}
       onMouseDown={(e) => {
-        // 포트 클릭이 아닌 경우에만 노드 드래그 시작
+        // Start dragging
         if (!(e.target as HTMLElement).closest(".port-handle")) {
           onDragStart(e, node.id);
         }
