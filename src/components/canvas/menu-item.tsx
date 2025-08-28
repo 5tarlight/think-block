@@ -11,7 +11,7 @@ export default function MenuItem({
     <button
       className={cn(
         "w-full text-left rounded-sm p-1 hover:bg-neutral-800",
-        "active:bg-neutral-700"
+        "active:bg-neutral-700 cursor-pointer"
       )}
       onClick={onClick}
     >
