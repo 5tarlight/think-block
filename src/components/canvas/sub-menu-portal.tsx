@@ -44,12 +44,16 @@ export default function SubMenuPortal({
   return (
     <div
       ref={panelRef}
-      onMouseEnter={onMouseEnter}
+      onMouseEnter={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onMouseEnter();
+      }}
       onMouseLeave={onMouseLeave}
       className={cn(
         "fixed z-1000000 w-64 max-h-[70vh] overflow-auto",
-        "bg-neutral-800 border border-neutral-600 rounded shadow-xl",
-        "text-white"
+        "bg-neutral-900 border border-neutral-600 rounded shadow-xl",
+        "text-white p-1"
       )}
       style={style}
     >
