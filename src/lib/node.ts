@@ -5,13 +5,13 @@ export type NodeType = "number" | "add" | "multiply" | "output" | "input";
 
 export const contextMenuItems: ContextMenuItem[] = [
   {
-    label: "Data",
+    label: "data",
     isSubMenu: true,
     sub: [
       {
         label: "number",
         type: "number",
-        keywords: ["num", "value", "숫자", "number", "integer", "float"],
+        keywords: ["num", "value", "숫자", "integer", "float"],
       },
       {
         label: "input",
@@ -20,14 +20,20 @@ export const contextMenuItems: ContextMenuItem[] = [
       },
     ],
   },
-  { label: "Add Add", type: "add", keywords: ["plus", "sum", "더하기"] },
   {
-    label: "Add Multiply",
-    type: "multiply",
-    keywords: ["mul", "product", "곱"],
+    label: "arithmetic",
+    isSubMenu: true,
+    sub: [
+      { label: "Add Add", type: "add", keywords: ["plus", "sum", "더하기"] },
+      {
+        label: "multiply",
+        type: "multiply",
+        keywords: ["mul", "product", "곱"],
+      },
+    ],
   },
   {
-    label: "Add Output",
+    label: "output",
     type: "output",
     keywords: ["print", "result", "출력"],
   },

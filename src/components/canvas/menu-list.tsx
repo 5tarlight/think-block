@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { NodeType } from "../../lib/node";
 import type { ContextMenuItem } from "./context-menu";
@@ -20,25 +20,40 @@ export default function MenuList({
   addNode: (type: NodeType) => void;
 }) {
   const [subInfo, setSubInfo] = useState<SubInfo | null>(null);
-  const [hoveringSub, setHoveringSub] = useState(false);
+
+  const overTriggerRef = useRef(false);
+  const overPortalRef = useRef(false);
+
   const closeTimer = useRef<number | null>(null);
+
+  const clearCloseTimer = () => {
+    if (closeTimer.current) {
+      window.clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+  };
+
+  const scheduleClose = () => {
+    clearCloseTimer();
+    // Close when not hovering over trigger or portal
+    closeTimer.current = window.setTimeout(() => {
+      if (!overTriggerRef.current && !overPortalRef.current) {
+        setSubInfo(null);
+      }
+    }, 120);
+  };
 
   const openSub = (
     label: string,
     items: ContextMenuItem[],
     el: HTMLElement
   ) => {
+    clearCloseTimer();
     const rect = el.getBoundingClientRect();
     setSubInfo({ label, items, anchorRect: rect });
   };
 
-  const scheduleClose = () => {
-    if (closeTimer.current) window.clearTimeout(closeTimer.current);
-    // Delay to allow mouse to enter portal submenu
-    closeTimer.current = window.setTimeout(() => {
-      if (!hoveringSub) setSubInfo(null);
-    }, 80);
-  };
+  useEffect(() => clearCloseTimer, []);
 
   return (
     <div className="flex flex-col relative text-white">
@@ -47,8 +62,14 @@ export default function MenuList({
           <SubTrigger
             key={item.label}
             label={item.label}
-            onEnter={(el) => item.sub && openSub(item.label, item.sub, el)}
-            onLeave={scheduleClose}
+            onEnter={(el) => {
+              overTriggerRef.current = true;
+              if (item.sub) openSub(item.label, item.sub, el);
+            }}
+            onLeave={() => {
+              overTriggerRef.current = false;
+              scheduleClose();
+            }}
           />
         ) : (
           <MenuItem
@@ -65,12 +86,12 @@ export default function MenuList({
             info={subInfo}
             addNode={addNode}
             onMouseEnter={() => {
-              if (closeTimer.current) window.clearTimeout(closeTimer.current);
-              setHoveringSub(true);
+              clearCloseTimer();
+              overPortalRef.current = true;
             }}
             onMouseLeave={() => {
-              setHoveringSub(false);
-              setSubInfo(null);
+              overPortalRef.current = false;
+              scheduleClose();
             }}
           />,
           document.body
