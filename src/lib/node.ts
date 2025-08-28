@@ -24,7 +24,7 @@ export const contextMenuItems: ContextMenuItem[] = [
     label: "arithmetic",
     isSubMenu: true,
     sub: [
-      { label: "Add Add", type: "add", keywords: ["plus", "sum", "더하기"] },
+      { label: "add", type: "add", keywords: ["plus", "sum", "더하기"] },
       {
         label: "multiply",
         type: "multiply",
