@@ -191,14 +191,18 @@ function App() {
           nodeTitle: node?.title,
           finalPosition: node?.pos,
         });
+        dragState.current = null;
       } else if (ds.kind === "wire" && ds.from) {
         console.log("Wire drag cancelled:", {
           fromNode: ds.from.node,
           fromPort: ds.from.port,
         });
+
+        // Delete wire and force re-render
+        dragState.current = null;
+        setEdges((eds) => [...eds]);
       }
     }
-    dragState.current = null;
   }, [nodes]);
 
   // Prevent default context menu
