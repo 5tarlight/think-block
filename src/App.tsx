@@ -196,6 +196,10 @@ function App() {
           fromNode: ds.from.node,
           fromPort: ds.from.port,
         });
+
+        // Delete wire and force re-render
+        dragState.current = null;
+        setEdges((eds) => [...eds]);
       }
     }
     dragState.current = null;
