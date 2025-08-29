@@ -256,7 +256,7 @@ function App() {
       const rows = Math.max(node.inputs.length, node.outputs.length);
       const nodeSize = {
         w: 256,
-        h: Math.max(80, 56 + 28 * rows + 4 * (rows - 1)),
+        h: -1,
       };
 
       if (node.size === "full") {
