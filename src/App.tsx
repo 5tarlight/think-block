@@ -259,14 +259,30 @@ function App() {
         h: Math.max(80, 56 + 28 * rows + 4 * (rows - 1)),
       };
 
+      if (node.size === "full") {
+        nodeSize.h = Math.max(80, 56 + 28 * rows + 4 * (rows - 1));
+      } else if (node.size === "small") {
+        nodeSize.h = 16 + 28 * rows + 4 * (rows - 1);
+        nodeSize.w = 164;
+      } else if (node.size === "input") {
+        nodeSize.h = 44;
+        nodeSize.w = 124;
+      }
+
       let anchor: Vec2;
       if (idxIn >= 0) {
         anchor = { x: node.pos.x + 10, y: node.pos.y + 48 + 32 * idxIn + 15 };
+        if (node.size === "input" || node.size === "small") {
+          anchor.y -= 40;
+        }
       } else if (idxOut >= 0) {
         anchor = {
           x: node.pos.x + nodeSize.w - 10,
           y: node.pos.y + 48 + 32 * idxOut + 15,
         };
+        if (node.size === "input" || node.size === "small") {
+          anchor.y -= 40;
+        }
       } else {
         anchor = {
           x: node.pos.x + nodeSize.w / 2,

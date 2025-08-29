@@ -42,21 +42,25 @@ export const contextMenuItems: ContextMenuItem[] = [
 export function getNodeData(type: NodeType): {
   inputs: { id: string; name: string; kind: "in" }[];
   outputs: { id: string; name: string; kind: "out" }[];
+  size: "full" | "small" | "input";
 } {
   if (type === "number") {
     return {
       inputs: [],
       outputs: [{ id: uid(), name: "value", kind: "out" }],
+      size: "input",
     };
   } else if (type === "input") {
     return {
       inputs: [],
       outputs: [{ id: uid(), name: "out", kind: "out" }],
+      size: "full",
     };
   } else if (type === "output") {
     return {
       inputs: [{ id: uid(), name: "in", kind: "in" }],
       outputs: [],
+      size: "full",
     };
   } else if (type === "add") {
     return {
@@ -64,7 +68,8 @@ export function getNodeData(type: NodeType): {
         { id: uid(), name: "a", kind: "in" },
         { id: uid(), name: "b", kind: "in" },
       ],
-      outputs: [{ id: uid(), name: "sum", kind: "out" }],
+      outputs: [{ id: uid(), name: "a + b", kind: "out" }],
+      size: "small",
     };
   } else if (type === "multiply") {
     return {
@@ -72,12 +77,14 @@ export function getNodeData(type: NodeType): {
         { id: uid(), name: "a", kind: "in" },
         { id: uid(), name: "b", kind: "in" },
       ],
-      outputs: [{ id: uid(), name: "prod", kind: "out" }],
+      outputs: [{ id: uid(), name: "a * b", kind: "out" }],
+      size: "small",
     };
   }
 
   return {
     inputs: [],
     outputs: [],
+    size: "full",
   };
 }

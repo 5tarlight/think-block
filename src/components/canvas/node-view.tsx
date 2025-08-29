@@ -1,6 +1,7 @@
 import cn from "@yeahx4/cn";
 import type { Node } from "../../store/graphics";
 import PortView from "./port-view";
+import { useState } from "react";
 
 export default function NodeView({
   node,
@@ -19,7 +20,19 @@ export default function NodeView({
   const inCount = node.inputs.length;
   const outCount = node.outputs.length;
   const rows = Math.max(inCount, outCount);
-  const size = { w: 256, h: Math.max(80, 56 + 28 * rows + 4 * (rows - 1)) };
+  const size = { w: 256, h: -1 };
+
+  if (node.size === "full") {
+    size.h = Math.max(80, 56 + 28 * rows + 4 * (rows - 1));
+  } else if (node.size === "small") {
+    size.h = 16 + 28 * rows + 4 * (rows - 1);
+    size.w = 164;
+  } else if (node.size === "input") {
+    size.h = 44;
+    size.w = 124;
+  }
+
+  const [inputValue, setInputValue] = useState("");
 
   return (
     <div
@@ -41,10 +54,17 @@ export default function NodeView({
         }
       }}
     >
-      <div className="h-10 px-3 flex items-center justify-between rounded-t-sm bg-neutral-800 border-b border-neutral-700">
-        <div className="font-sm">{node.title}</div>
-        <div className="text-[10px] opacity-60">{node.id}</div>
-      </div>
+      {node.size === "full" && (
+        <div
+          className={cn(
+            "h-10 px-3 flex items-center justify-between rounded-t-sm",
+            "bg-neutral-800 border-b border-neutral-700"
+          )}
+        >
+          <div className="font-sm">{node.title}</div>
+          <div className="text-[10px] opacity-60">{node.id}</div>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-x-2 px-2 py-2 text-sm">
         <div className="flex flex-col gap-1">
@@ -66,6 +86,9 @@ export default function NodeView({
               onMouseDown={(e) =>
                 onPortDown(e, { nodeId: node.id, portId: p.id })
               }
+              isInput={node.size === "input"}
+              inputValue={inputValue}
+              setInputValue={setInputValue}
             />
           ))}
         </div>
