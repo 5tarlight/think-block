@@ -198,9 +198,12 @@ function App() {
           fromPort: ds.from.port,
         });
 
-        // Delete wire and force re-render
+        // Clean wire drag state and force re-render
         dragState.current = null;
         setEdges((eds) => [...eds]);
+      } else {
+        // Screen drag
+        dragState.current = null;
       }
     }
   }, [nodes]);
