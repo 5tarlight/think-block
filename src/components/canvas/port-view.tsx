@@ -5,11 +5,17 @@ export default function PortView({
   side,
   onMouseDown,
   onMouseUp,
+  isInput,
+  inputValue,
+  setInputValue,
 }: {
   label: string;
   side: "left" | "right";
   onMouseDown?: (e: React.MouseEvent) => void;
   onMouseUp?: () => void;
+  isInput?: boolean;
+  inputValue?: string;
+  setInputValue?: (value: string) => void;
 }) {
   return (
     <div
@@ -26,16 +32,28 @@ export default function PortView({
           "hover:scale-125 transition-transform"
         )}
         onMouseDown={(e) => {
-          e.stopPropagation(); // 이벤트 버블링 방지
+          e.stopPropagation();
           onMouseDown?.(e);
         }}
         onMouseUp={(e) => {
-          e.stopPropagation(); // 이벤트 버블링 방지
+          e.stopPropagation();
           onMouseUp?.();
         }}
         title={label}
       />
-      <span className={cn("px-2 py-1")}>{label}</span>
+      {isInput ? (
+        <input
+          type="number"
+          className={cn(
+            "px-2 py-1 bg-neutral-800 border border-neutral-700 rounded-sm",
+            "h-7 w-24 outline-none"
+          )}
+          value={inputValue}
+          onChange={(e) => setInputValue?.(e.target.value)}
+        />
+      ) : (
+        <span className={cn("px-2 py-1")}>{label}</span>
+      )}
     </div>
   );
 }

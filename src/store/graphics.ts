@@ -14,6 +14,7 @@ export type Node = {
   title: string;
   inputs: Port[];
   outputs: Port[];
+  size: "full" | "small" | "input";
 };
 
 export type Edge = {
