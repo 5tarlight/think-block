@@ -197,7 +197,7 @@ function App() {
           fromPort: ds.from.port,
         });
 
-        // Delete wire and force re-render
+        // Clean up drag state and force re-render
         dragState.current = null;
         setEdges((eds) => [...eds]);
       }
