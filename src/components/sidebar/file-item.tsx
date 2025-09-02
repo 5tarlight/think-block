@@ -1,5 +1,5 @@
 import cn from "@yeahx4/cn";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { TbCsv, TbFile, TbJpg, TbJson, TbPng, TbTxt } from "react-icons/tb";
 import type { UIFile } from "./file-uploader";
 import { useWinStore } from "../../store/windowStore";
@@ -43,6 +43,12 @@ export default function FileItem({
   const [popupId, setPopupId] = useState<string | null>(null);
   const { addWindow, removeWindow, windows } = useWinStore();
 
+  const popupIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    popupIdRef.current = popupId;
+  }, [popupId]);
+
   useEffect(() => {
     if (isPopupOpen && popupId && !windows.find((w) => w.id === popupId)) {
       setIsPopupOpen(false);
@@ -51,7 +57,7 @@ export default function FileItem({
   }, [windows, popupId, isPopupOpen]);
 
   const closeWindow = () => {
-    if (popupId) removeWindow(popupId);
+    if (popupIdRef.current) removeWindow(popupIdRef.current);
     setIsPopupOpen(false);
     setPopupId(null);
   };
