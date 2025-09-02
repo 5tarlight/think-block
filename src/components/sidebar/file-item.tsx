@@ -21,12 +21,14 @@ export default function FileItem({
   progress = 0,
   status = "pending",
   file,
+  removeFile,
 }: {
   name: string;
   size: number;
   progress?: number;
   status?: FileStatus;
   file: UIFile;
+  removeFile: (key: string) => void;
 }) {
   const ext = name.split(".").pop()?.toLowerCase() || "";
   let icon: ReactNode;
@@ -48,13 +50,25 @@ export default function FileItem({
     }
   }, [windows, popupId, isPopupOpen]);
 
+  const closeWindow = () => {
+    if (popupId) removeWindow(popupId);
+    setIsPopupOpen(false);
+    setPopupId(null);
+  };
+
   const handleOpenPopup = () => {
     if (isPopupOpen) {
       if (popupId) removeWindow(popupId);
     } else {
       const id = addWindow(
         { title: name },
-        <FileWindowContent file={file} />,
+        <FileWindowContent
+          file={file}
+          removeFile={(key) => {
+            closeWindow();
+            removeFile(key);
+          }}
+        />,
         500,
         300
       );

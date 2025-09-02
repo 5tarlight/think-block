@@ -2,7 +2,13 @@ import cn from "@yeahx4/cn";
 import { formatBytes } from "../sidebar/file-item";
 import type { UIFile } from "../sidebar/file-uploader";
 
-export default function FileWindowContent({ file }: { file: UIFile }) {
+export default function FileWindowContent({
+  file,
+  removeFile,
+}: {
+  file: UIFile;
+  removeFile: (key: string) => void;
+}) {
   const ext = file.name.includes(".")
     ? file.name.split(".").pop()!.toLowerCase()
     : "";
@@ -18,6 +24,7 @@ export default function FileWindowContent({ file }: { file: UIFile }) {
             "text-red-300 border border-red-500/30 hover:bg-red-600/30",
             "cursor-pointer"
           )}
+          onClick={() => removeFile(file.key)}
         >
           Delete
         </button>

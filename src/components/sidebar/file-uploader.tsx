@@ -28,7 +28,9 @@ export default function FileUploader() {
       return copy;
     });
 
-  /** 파일 읽기 + 진행률 반영 */
+  const removeFile = (key: string) =>
+    setFiles((prev) => prev.filter((f) => f.key !== key));
+
   const readFileWithProgress = (f: UIFile) => {
     const reader = new FileReader();
 
@@ -186,6 +188,7 @@ export default function FileUploader() {
               size={f.size}
               progress={f.progress}
               status={f.status}
+              removeFile={removeFile}
               file={f}
             />
           ))
