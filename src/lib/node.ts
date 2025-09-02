@@ -1,5 +1,6 @@
 import type { ContextMenuItem } from "../components/canvas/context-menu";
 import { uid } from "../store/graphics";
+import type { Port } from "./node-impl/NodeImpl";
 
 export type NodeType = "number" | "add" | "multiply" | "output" | "csv";
 
@@ -40,8 +41,8 @@ export const contextMenuItems: ContextMenuItem[] = [
 ];
 
 export function getNodeData(type: NodeType): {
-  inputs: { id: string; name: string; kind: "in" }[];
-  outputs: { id: string; name: string; kind: "out" }[];
+  inputs: Port[];
+  outputs: Port[];
   size: "full" | "small" | "input";
 } {
   if (type === "number") {

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import type { NodeType } from "./node";
-import { uid } from "../store/graphics";
+import type { NodeType } from "../node";
+import { uid } from "../../store/graphics";
 
 export type Port = {
   id: string;
