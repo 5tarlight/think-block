@@ -1,5 +1,5 @@
 import cn from "@yeahx4/cn";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { TbCsv, TbFile, TbJpg, TbJson, TbPng, TbTxt } from "react-icons/tb";
 import type { UIFile } from "./file-uploader";
 import { useWinStore } from "../../store/windowStore";
@@ -21,12 +21,14 @@ export default function FileItem({
   progress = 0,
   status = "pending",
   file,
+  removeFile,
 }: {
   name: string;
   size: number;
   progress?: number;
   status?: FileStatus;
   file: UIFile;
+  removeFile: (key: string) => void;
 }) {
   const ext = name.split(".").pop()?.toLowerCase() || "";
   let icon: ReactNode;
@@ -41,6 +43,12 @@ export default function FileItem({
   const [popupId, setPopupId] = useState<string | null>(null);
   const { addWindow, removeWindow, windows } = useWinStore();
 
+  const popupIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    popupIdRef.current = popupId;
+  }, [popupId]);
+
   useEffect(() => {
     if (isPopupOpen && popupId && !windows.find((w) => w.id === popupId)) {
       setIsPopupOpen(false);
@@ -48,13 +56,25 @@ export default function FileItem({
     }
   }, [windows, popupId, isPopupOpen]);
 
+  const closeWindow = () => {
+    if (popupIdRef.current) removeWindow(popupIdRef.current);
+    setIsPopupOpen(false);
+    setPopupId(null);
+  };
+
   const handleOpenPopup = () => {
     if (isPopupOpen) {
       if (popupId) removeWindow(popupId);
     } else {
       const id = addWindow(
         { title: name },
-        <FileWindowContent file={file} />,
+        <FileWindowContent
+          file={file}
+          removeFile={(key) => {
+            closeWindow();
+            removeFile(key);
+          }}
+        />,
         500,
         300
       );
