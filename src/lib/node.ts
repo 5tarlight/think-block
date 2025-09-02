@@ -1,7 +1,7 @@
 import type { ContextMenuItem } from "../components/canvas/context-menu";
 import { uid } from "../store/graphics";
 
-export type NodeType = "number" | "add" | "multiply" | "output" | "input";
+export type NodeType = "number" | "add" | "multiply" | "output" | "csv";
 
 export const contextMenuItems: ContextMenuItem[] = [
   {
@@ -14,9 +14,9 @@ export const contextMenuItems: ContextMenuItem[] = [
         keywords: ["num", "value", "숫자", "integer", "float"],
       },
       {
-        label: "input",
-        type: "input",
-        keywords: ["num", "value", "숫자", "number", "integer", "float"],
+        label: "CSV",
+        type: "csv",
+        keywords: ["data", "입력", "csv"],
       },
     ],
   },
@@ -50,7 +50,7 @@ export function getNodeData(type: NodeType): {
       outputs: [{ id: uid(), name: "value", kind: "out" }],
       size: "input",
     };
-  } else if (type === "input") {
+  } else if (type === "csv") {
     return {
       inputs: [],
       outputs: [{ id: uid(), name: "out", kind: "out" }],
