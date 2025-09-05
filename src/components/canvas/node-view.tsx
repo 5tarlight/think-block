@@ -1,7 +1,7 @@
 import cn from "@yeahx4/cn";
 import type { Node } from "../../store/graphics";
 import PortView from "./port-view";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type NodeImpl from "../../lib/node-impl/NodeImpl";
 import { useWinStore } from "../../store/windowStore";
 
@@ -38,7 +38,7 @@ export default function NodeView({
 
   const [inputValue, setInputValue] = useState("");
   const [popupId, setPopupId] = useState<string | null>(null);
-  const { addWindow } = useWinStore();
+  const { addWindow, windows } = useWinStore();
 
   const openWindow = () => {
     if (!impl) return;
@@ -52,6 +52,12 @@ export default function NodeView({
     );
     setPopupId(id);
   };
+
+  useEffect(() => {
+    if (popupId && !windows.find((w) => w.id === popupId)) {
+      setPopupId(null);
+    }
+  }, [windows, popupId]);
 
   return (
     <div

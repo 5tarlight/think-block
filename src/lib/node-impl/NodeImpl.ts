@@ -9,10 +9,10 @@ export type Port = {
 };
 
 export default abstract class NodeImpl {
-  private nodeId: string;
-  private nodeType: NodeType;
-  private inputs: Port[];
-  private outputs: Port[];
+  public nodeId: string;
+  public nodeType: NodeType;
+  public inputs: Port[];
+  public outputs: Port[];
 
   constructor(
     nodeId: string,
