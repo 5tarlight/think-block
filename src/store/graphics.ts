@@ -1,4 +1,6 @@
 import { create } from "zustand";
+import type { NodeType } from "../lib/node";
+import type NodeImpl from "../lib/node-impl/NodeImpl";
 
 export type Vec2 = { x: number; y: number };
 
@@ -15,6 +17,8 @@ export type Node = {
   inputs: Port[];
   outputs: Port[];
   size: "full" | "small" | "input";
+  type: NodeType;
+  impl: NodeImpl | null;
 };
 
 export type Edge = {

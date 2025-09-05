@@ -1,6 +1,12 @@
 import type { ContextMenuItem } from "../components/canvas/context-menu";
 import { uid } from "../store/graphics";
+import AddictionNode from "./node-impl/AddictionNode";
+import CsvNode from "./node-impl/CsvNode";
+import MultiplicationNode from "./node-impl/MultiplicationNode";
+import type NodeImpl from "./node-impl/NodeImpl";
 import type { Port } from "./node-impl/NodeImpl";
+import NumberNode from "./node-impl/NumberNode";
+import OutputNode from "./node-impl/OutputNode";
 
 export type NodeType = "number" | "add" | "multiply" | "output" | "csv";
 
@@ -88,4 +94,20 @@ export function getNodeData(type: NodeType): {
     outputs: [],
     size: "full",
   };
+}
+
+export function getNodeImpl(nodeId: string, type: NodeType): NodeImpl | null {
+  if (type === "number") {
+    return new NumberNode(nodeId);
+  } else if (type === "add") {
+    return new AddictionNode(nodeId);
+  } else if (type === "multiply") {
+    return new MultiplicationNode(nodeId);
+  } else if (type === "output") {
+    return new OutputNode(nodeId);
+  } else if (type === "csv") {
+    return new CsvNode(nodeId);
+  }
+
+  return null;
 }

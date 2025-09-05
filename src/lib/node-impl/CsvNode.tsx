@@ -7,6 +7,6 @@ export default class CsvNode extends NodeImpl {
   }
 
   render(): ReactNode {
-    throw new Error("Method not implemented.");
+    return <div>CSV!</div>;
   }
 }

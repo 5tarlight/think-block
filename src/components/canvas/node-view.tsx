@@ -2,12 +2,15 @@ import cn from "@yeahx4/cn";
 import type { Node } from "../../store/graphics";
 import PortView from "./port-view";
 import { useState } from "react";
+import type NodeImpl from "../../lib/node-impl/NodeImpl";
+import { useWinStore } from "../../store/windowStore";
 
 export default function NodeView({
   node,
   onDragStart,
   onPortDown,
   onPortUp,
+  impl,
 }: {
   node: Node;
   onDragStart: (e: React.MouseEvent, nodeId: string) => void;
@@ -16,6 +19,7 @@ export default function NodeView({
     from: { nodeId: string; portId: string }
   ) => void;
   onPortUp: (to: { nodeId: string; portId: string }) => void;
+  impl: NodeImpl | null;
 }) {
   const inCount = node.inputs.length;
   const outCount = node.outputs.length;
@@ -33,6 +37,21 @@ export default function NodeView({
   }
 
   const [inputValue, setInputValue] = useState("");
+  const [popupId, setPopupId] = useState<string | null>(null);
+  const { addWindow } = useWinStore();
+
+  const openWindow = () => {
+    if (!impl) return;
+    if (popupId) return;
+
+    const id = addWindow(
+      { title: `${node.title} (${node.id})` },
+      impl.render(),
+      500,
+      300
+    );
+    setPopupId(id);
+  };
 
   return (
     <div
@@ -53,6 +72,7 @@ export default function NodeView({
           onDragStart(e, node.id);
         }
       }}
+      onDoubleClick={openWindow}
     >
       {node.size === "full" && (
         <div
