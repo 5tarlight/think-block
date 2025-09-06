@@ -15,7 +15,7 @@ import {
 } from "./store/graphics";
 import cn from "@yeahx4/cn";
 import NodeView from "./components/canvas/node-view";
-import { getNodeData, type NodeType } from "./lib/node";
+import { getNodeData, getNodeImpl, type NodeType } from "./lib/node";
 import type { ContextMenuState } from "./components/canvas/context-menu";
 import ContextMenu from "./components/canvas/context-menu";
 import WindowContainer from "./components/window/window-container";
@@ -346,11 +346,15 @@ function App() {
     (kind: NodeType) => {
       if (!menu) return;
 
+      const nodeId = uid("node");
+
       const node: Node = {
-        id: uid("node"),
+        id: nodeId,
         pos: menu.world,
         title: kind,
+        type: kind,
         ...getNodeData(kind),
+        impl: getNodeImpl(nodeId, kind),
       };
 
       setNodes((prev) => [...prev, node]);
@@ -443,6 +447,7 @@ function App() {
                 onDragStart={startNodeDrag}
                 onPortDown={startWireFrom}
                 onPortUp={tryCompleteWire}
+                impl={n.impl}
               />
             ))}
           </div>

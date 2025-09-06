@@ -1,7 +1,14 @@
 import type { ContextMenuItem } from "../components/canvas/context-menu";
 import { uid } from "../store/graphics";
+import AddictionNode from "./node-impl/AddictionNode";
+import CsvNode from "./node-impl/CsvNode";
+import MultiplicationNode from "./node-impl/MultiplicationNode";
+import type NodeImpl from "./node-impl/NodeImpl";
+import type { Port } from "./node-impl/NodeImpl";
+import NumberNode from "./node-impl/NumberNode";
+import OutputNode from "./node-impl/OutputNode";
 
-export type NodeType = "number" | "add" | "multiply" | "output" | "input";
+export type NodeType = "number" | "add" | "multiply" | "output" | "csv";
 
 export const contextMenuItems: ContextMenuItem[] = [
   {
@@ -14,9 +21,9 @@ export const contextMenuItems: ContextMenuItem[] = [
         keywords: ["num", "value", "숫자", "integer", "float"],
       },
       {
-        label: "input",
-        type: "input",
-        keywords: ["num", "value", "숫자", "number", "integer", "float"],
+        label: "CSV",
+        type: "csv",
+        keywords: ["data", "입력", "csv"],
       },
     ],
   },
@@ -40,8 +47,8 @@ export const contextMenuItems: ContextMenuItem[] = [
 ];
 
 export function getNodeData(type: NodeType): {
-  inputs: { id: string; name: string; kind: "in" }[];
-  outputs: { id: string; name: string; kind: "out" }[];
+  inputs: Port[];
+  outputs: Port[];
   size: "full" | "small" | "input";
 } {
   if (type === "number") {
@@ -50,7 +57,7 @@ export function getNodeData(type: NodeType): {
       outputs: [{ id: uid(), name: "value", kind: "out" }],
       size: "input",
     };
-  } else if (type === "input") {
+  } else if (type === "csv") {
     return {
       inputs: [],
       outputs: [{ id: uid(), name: "out", kind: "out" }],
@@ -87,4 +94,20 @@ export function getNodeData(type: NodeType): {
     outputs: [],
     size: "full",
   };
+}
+
+export function getNodeImpl(nodeId: string, type: NodeType): NodeImpl | null {
+  if (type === "number") {
+    return new NumberNode(nodeId);
+  } else if (type === "add") {
+    return new AddictionNode(nodeId);
+  } else if (type === "multiply") {
+    return new MultiplicationNode(nodeId);
+  } else if (type === "output") {
+    return new OutputNode(nodeId);
+  } else if (type === "csv") {
+    return new CsvNode(nodeId);
+  }
+
+  return null;
 }
