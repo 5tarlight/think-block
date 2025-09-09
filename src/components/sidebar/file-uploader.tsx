@@ -1,37 +1,16 @@
 import { useRef, useState } from "react";
 import cn from "@yeahx4/cn";
-import FileItem, { type FileStatus } from "./file-item";
-
-export type UIFile = {
-  key: string;
-  name: string;
-  size: number;
-  raw: File;
-  status: FileStatus;
-  progress: number;
-  contentText?: string;
-  previewURL?: string;
-};
+import FileItem from "./file-item";
+import { useFileStore, type FileDesc } from "../../store/fileStore";
 
 export default function FileUploader() {
-  const [files, setFiles] = useState<UIFile[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const dragCounter = useRef(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const upsertFile = (next: UIFile) =>
-    setFiles((prev) => {
-      const idx = prev.findIndex((f) => f.key === next.key);
-      if (idx === -1) return [...prev, next];
-      const copy = prev.slice();
-      copy[idx] = next;
-      return copy;
-    });
+  const { files, upsertFile, removeFile, insertFiles } = useFileStore();
 
-  const removeFile = (key: string) =>
-    setFiles((prev) => prev.filter((f) => f.key !== key));
-
-  const readFileWithProgress = (f: UIFile) => {
+  const readFileWithProgress = (f: FileDesc) => {
     const reader = new FileReader();
 
     reader.onprogress = (e) => {
@@ -79,27 +58,7 @@ export default function FileUploader() {
   };
 
   const addFiles = (picked: FileList | File[]) => {
-    const arr = Array.from(picked);
-    if (arr.length === 0) return;
-
-    const items: UIFile[] = arr.map((file) => {
-      const ui: UIFile = {
-        key: `${file.name}-${file.lastModified}-${file.size}`,
-        name: file.name,
-        size: file.size,
-        raw: file,
-        status: "pending",
-        progress: 0,
-      };
-      return ui;
-    });
-
-    setFiles((prev) => {
-      const uniq = new Map(prev.map((f) => [f.key, f]));
-      for (const it of items) uniq.set(it.key, it);
-      return Array.from(uniq.values());
-    });
-
+    const items = insertFiles(picked);
     items.forEach(readFileWithProgress);
   };
 
@@ -181,17 +140,20 @@ export default function FileUploader() {
         )}
 
         {files.length > 0 ? (
-          files.map((f) => (
-            <FileItem
-              key={f.key}
-              name={f.name}
-              size={f.size}
-              progress={f.progress}
-              status={f.status}
-              removeFile={removeFile}
-              file={f}
-            />
-          ))
+          files
+            .filter((f) => f.isInput)
+            .map((f) => f.file)
+            .map((f) => (
+              <FileItem
+                key={f.key}
+                name={f.name}
+                size={f.size}
+                progress={f.progress}
+                status={f.status}
+                removeFile={removeFile}
+                file={f}
+              />
+            ))
         ) : (
           <div className="text-white/50 italic text-sm text-center py-6">
             Drag & drop files here or click Upload.

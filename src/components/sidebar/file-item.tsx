@@ -1,9 +1,9 @@
 import cn from "@yeahx4/cn";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { TbCsv, TbFile, TbJpg, TbJson, TbPng, TbTxt } from "react-icons/tb";
-import type { UIFile } from "./file-uploader";
 import { useWinStore } from "../../store/windowStore";
 import FileWindowContent from "../window/file-window-content";
+import type { FileDesc } from "../../store/fileStore";
 
 export type FileStatus = "pending" | "reading" | "done" | "error";
 
@@ -27,7 +27,7 @@ export default function FileItem({
   size: number;
   progress?: number;
   status?: FileStatus;
-  file: UIFile;
+  file: FileDesc;
   removeFile: (key: string) => void;
 }) {
   const ext = name.split(".").pop()?.toLowerCase() || "";

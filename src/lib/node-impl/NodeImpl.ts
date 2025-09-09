@@ -34,5 +34,6 @@ export default abstract class NodeImpl {
     }));
   }
 
+  abstract process(inputs: any[]): any;
   abstract render(): ReactNode;
 }
