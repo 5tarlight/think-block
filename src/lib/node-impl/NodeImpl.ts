@@ -13,6 +13,10 @@ export default abstract class NodeImpl {
   public nodeType: NodeType;
   public inputs: Port[];
   public outputs: Port[];
+  public isNewborn: boolean = true;
+  public isUpdated: boolean = false;
+  public winWidth: number = 300;
+  public winHeight: number = 200;
 
   constructor(
     nodeId: string,
@@ -34,5 +38,6 @@ export default abstract class NodeImpl {
     }));
   }
 
+  abstract process(inputs: Record<string, any>): Record<string, any>;
   abstract render(): ReactNode;
 }

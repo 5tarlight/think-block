@@ -6,7 +6,15 @@ export default class AddictionNode extends NodeImpl {
     super(nodeId, "add", [{ name: "a" }, { name: "b" }], [{ name: "sum" }]);
   }
 
+  process(inputs: Record<string, any>): Record<string, any> {
+    if (typeof inputs.a !== "number" || typeof inputs.b !== "number") {
+      throw new Error("Invalid inputs: 'a' and 'b' must be numbers.");
+    }
+
+    return { sum: inputs.a + inputs.b };
+  }
+
   render(): ReactNode {
-    throw new Error("Method not implemented.");
+    return null;
   }
 }
