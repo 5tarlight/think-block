@@ -82,7 +82,6 @@ export default function CsvWindow({ id }: { id: string }) {
   const processCsvContent = (csvContent: string) => {
     try {
       // TODO : Implement a robust CSV parser
-      // Simple CSV parsing (can be replaced with a more robust parser if needed)
       const lines = csvContent.split(/\r\n|\n/).filter((line) => line.trim());
 
       if (lines.length === 0) {
@@ -90,7 +89,7 @@ export default function CsvWindow({ id }: { id: string }) {
         return;
       }
 
-      // Parse headers (first line)
+      // TODO : USe a robust CSV parser
       const headers = lines[0].split(",").map((header) => header.trim());
 
       // Parse a preview of data rows (up to 5)
