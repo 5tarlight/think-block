@@ -1,12 +1,12 @@
 import cn from "@yeahx4/cn";
 import { formatBytes } from "../sidebar/file-item";
-import type { UIFile } from "../sidebar/file-uploader";
+import type { FileDesc } from "../../store/fileStore";
 
 export default function FileWindowContent({
   file,
   removeFile,
 }: {
-  file: UIFile;
+  file: FileDesc;
   removeFile: (key: string) => void;
 }) {
   const ext = file.name.includes(".")
