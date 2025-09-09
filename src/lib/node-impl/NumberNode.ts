@@ -6,7 +6,11 @@ export default class NumberNode extends NodeImpl {
     super(nodeId, "number", [], [{ name: "value" }]);
   }
 
+  process(): Record<string, any> {
+    return { value: 1 };
+  }
+
   render(): ReactNode {
-    throw new Error("Method not implemented.");
+    return null;
   }
 }

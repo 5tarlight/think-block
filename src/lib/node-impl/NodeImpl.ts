@@ -38,6 +38,6 @@ export default abstract class NodeImpl {
     }));
   }
 
-  abstract process(inputs: any[]): Record<string, any>;
+  abstract process(inputs: Record<string, any>): Record<string, any>;
   abstract render(): ReactNode;
 }

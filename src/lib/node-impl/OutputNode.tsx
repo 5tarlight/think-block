@@ -6,7 +6,12 @@ export default class OutputNode extends NodeImpl {
     super(nodeId, "output", [{ name: "data" }], []);
   }
 
+  process(): Record<string, any> {
+    return {};
+  }
+
   render(): ReactNode {
-    throw new Error("Method not implemented.");
+    // TODO : Implement UI
+    return null;
   }
 }

@@ -11,7 +11,15 @@ export default class MultiplicationNode extends NodeImpl {
     );
   }
 
+  process(inputs: Record<string, any>): Record<string, any> {
+    if (typeof inputs.a !== "number" || typeof inputs.b !== "number") {
+      throw new Error("Invalid inputs: 'a' and 'b' must be numbers.");
+    }
+
+    return { prod: inputs.a * inputs.b };
+  }
+
   render(): ReactNode {
-    throw new Error("Method not implemented.");
+    return null;
   }
 }
