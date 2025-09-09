@@ -18,7 +18,7 @@ interface FileState {
   upsertFile: (file: FileDesc, isInput?: boolean) => void;
   removeFile: (key: string) => void;
   getFile: (key: string) => FileDesc | undefined;
-  insertFiles: (picked: FileList | File[]) => FileDesc[];
+  insertFiles: (picked: FileList | File[], isInput?: boolean) => FileDesc[];
 }
 
 export const useFileStore = create<FileState>((set, get) => ({
