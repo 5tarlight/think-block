@@ -19,6 +19,7 @@ import { getNodeData, getNodeImpl, type NodeType } from "./lib/node";
 import type { ContextMenuState } from "./components/canvas/context-menu";
 import ContextMenu from "./components/canvas/context-menu";
 import WindowContainer from "./components/window/window-container";
+import Vertex from "./components/canvas/vertex";
 
 function App() {
   const gridRef = useRef<HTMLCanvasElement>(null);
@@ -26,7 +27,7 @@ function App() {
 
   const { camera, setCamera } = useCameraState();
   const { nodes, setNodes } = useNodeState();
-  const { edges, setEdges } = useEdgeState();
+  const { edges, setEdges, removeEdge } = useEdgeState();
 
   const [menu, setMenu] = useState<ContextMenuState | null>(null);
   const dragState = useRef<
@@ -372,6 +373,19 @@ function App() {
     [camera]
   );
 
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      // Chrome requires returnValue to be set
+      e.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+
   return (
     <div className="w-screen h-screen flex overflow-hidden">
       <Sidebar />
@@ -389,28 +403,22 @@ function App() {
             "rounded-2xl border border-neutral-800 shadow-inner"
           )}
         >
-          {/* SVG edges (under nodes) */}
+          {/* SVG edges */}
           <svg
             className="absolute inset-0 pointer-events-none w-full h-full z-1"
             style={{ filter: "drop-shadow(0 0 1px rgba(0,0,0,0.6))" }}
           >
             <g style={transformStyle as React.CSSProperties}>
-              {edges.map((e) => {
-                const a = portScreenPos(e.from.node, e.from.port);
-                const b = portScreenPos(e.to.node, e.to.port);
-                // convert back to world (we rendered in screen above)
-                const aw = screenToWorld(a, camera);
-                const bw = screenToWorld(b, camera);
-                return (
-                  <path
-                    key={e.id}
-                    d={cubicPath(aw, bw)}
-                    fill="none"
-                    stroke="#60a5fa"
-                    strokeWidth={2}
-                  />
-                );
-              })}
+              {edges.map((e) => (
+                <Vertex
+                  edge={e}
+                  camera={camera}
+                  portScreenPos={portScreenPos}
+                  screenToWorld={screenToWorld}
+                  onRemove={() => removeEdge(e.id)}
+                  key={e.id}
+                />
+              ))}
               {/* Ghost wire while dragging */}
               {dragState.current &&
                 dragState.current.kind === "wire" &&
