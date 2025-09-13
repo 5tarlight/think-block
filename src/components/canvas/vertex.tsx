@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { cubicPath, type Edge } from "../../store/graphics";
+import {
+  cubicPath,
+  type Camera,
+  type Edge,
+  type Vec2,
+} from "../../store/graphics";
 
 export default function Vertex({
   edge,
@@ -10,14 +15,8 @@ export default function Vertex({
 }: {
   edge: Edge;
   portScreenPos: (nodeId: string, portId: string) => { x: number; y: number };
-  screenToWorld: (
-    p: { x: number; y: number },
-    camera: { scale: number; tx: number; ty: number }
-  ) => {
-    x: number;
-    y: number;
-  };
-  camera: { scale: number; tx: number; ty: number };
+  screenToWorld: (p: Vec2, camera: Camera) => Vec2;
+  camera: Camera;
   onRemove(): void;
 }) {
   const a = portScreenPos(edge.from.node, edge.from.port);
