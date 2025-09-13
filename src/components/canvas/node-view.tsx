@@ -45,9 +45,12 @@ export default function NodeView({
     if (!impl) return;
     if (popupId) return;
 
+    const component = impl.render();
+    if (!component) return;
+
     const id = addWindow(
       { title: `${node.title} (${node.id})` },
-      impl.render(),
+      component,
       impl.winWidth,
       impl.winHeight
     );
