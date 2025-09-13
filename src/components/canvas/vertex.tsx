@@ -6,6 +6,7 @@ export default function Vertex({
   portScreenPos,
   screenToWorld,
   camera,
+  onRemove,
 }: {
   edge: Edge;
   portScreenPos: (nodeId: string, portId: string) => { x: number; y: number };
@@ -17,6 +18,7 @@ export default function Vertex({
     y: number;
   };
   camera: { scale: number; tx: number; ty: number };
+  onRemove(): void;
 }) {
   const a = portScreenPos(edge.from.node, edge.from.port);
   const b = portScreenPos(edge.to.node, edge.to.port);
@@ -35,7 +37,7 @@ export default function Vertex({
         fill="none"
         onMouseEnter={() => setIsHover(true)}
         onMouseLeave={() => setIsHover(false)}
-        onClick={() => console.log("edge clicked")}
+        onClick={() => onRemove()}
         className="pointer-events-auto"
         style={{ cursor: "pointer" }}
       />
@@ -44,7 +46,6 @@ export default function Vertex({
         stroke={isHover ? "#3b82f6" : "#60a5fa"}
         fill="none"
         strokeWidth={isHover ? 4 : 2}
-        className="transition-all"
       />
     </>
   );

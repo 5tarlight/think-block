@@ -78,9 +78,19 @@ export const useNodeState = create<NodeState>((set, get) => ({
 export interface EdgeState {
   edges: Edge[];
   setEdges: (f: (edges: Edge[]) => Edge[]) => void;
+  removeEdge: (id: string) => void;
+  removeEdgesConnectedToNode: (nodeId: string) => void;
 }
 
 export const useEdgeState = create<EdgeState>((set, get) => ({
   edges: [],
   setEdges: (f) => set({ edges: f(get().edges) }),
+  removeEdge: (id: string) =>
+    set((state) => ({ edges: state.edges.filter((e) => e.id !== id) })),
+  removeEdgesConnectedToNode: (nodeId: string) =>
+    set((state) => ({
+      edges: state.edges.filter(
+        (e) => e.from.node !== nodeId && e.to.node !== nodeId
+      ),
+    })),
 }));

@@ -27,7 +27,7 @@ function App() {
 
   const { camera, setCamera } = useCameraState();
   const { nodes, setNodes } = useNodeState();
-  const { edges, setEdges } = useEdgeState();
+  const { edges, setEdges, removeEdge } = useEdgeState();
 
   const [menu, setMenu] = useState<ContextMenuState | null>(null);
   const dragState = useRef<
@@ -402,6 +402,7 @@ function App() {
                   camera={camera}
                   portScreenPos={portScreenPos}
                   screenToWorld={screenToWorld}
+                  onRemove={() => removeEdge(e.id)}
                   key={e.id}
                 />
               ))}
