@@ -1,12 +1,6 @@
 import type { ReactNode } from "react";
 import type { NodeType } from "../node";
-import { uid } from "../../store/graphics";
-
-export type Port = {
-  id: string;
-  name: string;
-  kind: "in" | "out";
-};
+import { uid, type Port } from "../../store/graphics";
 
 export default abstract class NodeImpl {
   public nodeId: string;
