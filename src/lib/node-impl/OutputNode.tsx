@@ -6,7 +6,7 @@ export default class OutputNode extends NodeImpl {
     super(nodeId, "output", [{ name: "data" }], []);
   }
 
-  process(): Record<string, any> {
+  async process(): Promise<Record<string, any>> {
     return {};
   }
 

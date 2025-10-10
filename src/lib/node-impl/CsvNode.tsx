@@ -9,7 +9,7 @@ export default class CsvNode extends NodeImpl {
     this.winHeight = 500;
   }
 
-  public override process(): Record<string, any> {
+  async process(): Promise<Record<string, any>> {
     this.isNewborn = false;
 
     return {};
