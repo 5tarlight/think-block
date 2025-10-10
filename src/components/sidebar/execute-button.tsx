@@ -1,6 +1,10 @@
 import cn from "@yeahx4/cn";
+import { useEdgeState, useNodeState } from "../../store/graphics";
 
 export default function ExecuteButton() {
+  const { nodes } = useNodeState();
+  const { edges } = useEdgeState();
+
   const onExecute = () => {
     console.log("Execute clicked");
   };

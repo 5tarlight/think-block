@@ -135,8 +135,40 @@ export default function Sidebar() {
               )}
             />
           </div>
-          <div className="p-4">
+          <div className="p-4 flex flex-col gap-8">
             <ExecuteButton />
+            <footer
+              className={cn(
+                "text-sm text-center border-t border-neutral-600",
+                "pt-4 text-neutral-400 flex flex-col items-center gap-1"
+              )}
+            >
+              <span>
+                &copy;
+                {new Date().getFullYear() === 2025
+                  ? " 2025"
+                  : " 2025-" + new Date().getFullYear()}{" "}
+                YEAHx4
+              </span>
+              <div className="flex justify-center gap-2">
+                <a
+                  href="https://github.com/5tarlight/think-block"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline hover:text-white"
+                >
+                  GitHub
+                </a>
+                <a
+                  href="https://post.yeahx4.me"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline hover:text-white"
+                >
+                  Blog
+                </a>
+              </div>
+            </footer>
           </div>
         </div>
       ) : (
