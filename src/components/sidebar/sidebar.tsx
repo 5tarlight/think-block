@@ -4,6 +4,7 @@ import HorizontalIcon from "../icon/HoriontalIcon";
 import cn from "@yeahx4/cn";
 import GPUSelector from "./gpu-selector";
 import FileUploader from "./file-uploader";
+import ExecuteButton from "./execute-button";
 
 const MIN_W = 200;
 const MAX_W = 960;
@@ -135,14 +136,7 @@ export default function Sidebar() {
             />
           </div>
           <div className="p-4">
-            <button
-              className={cn(
-                "w-full p-2 bg-blue-500 rounded-sm transition-colors",
-                "hover:bg-blue-400 cursor-pointer"
-              )}
-            >
-              Execute
-            </button>
+            <ExecuteButton />
           </div>
         </div>
       ) : (
