@@ -1,12 +1,14 @@
 import cn from "@yeahx4/cn";
 import { useEdgeState, useNodeState } from "../../store/graphics";
+import { buildLayers } from "../../lib/execution/execution";
 
 export default function ExecuteButton() {
   const { nodes } = useNodeState();
   const { edges } = useEdgeState();
 
   const onExecute = () => {
-    console.log("Execute clicked");
+    const layer = buildLayers(nodes, edges);
+    console.log("Execution layers:", layer);
   };
 
   return (
