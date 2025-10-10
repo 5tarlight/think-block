@@ -4,6 +4,7 @@ import HorizontalIcon from "../icon/HoriontalIcon";
 import cn from "@yeahx4/cn";
 import GPUSelector from "./gpu-selector";
 import FileUploader from "./file-uploader";
+import ExecuteButton from "./execute-button";
 
 const MIN_W = 200;
 const MAX_W = 960;
@@ -91,47 +92,84 @@ export default function Sidebar() {
         <div
           className={cn(
             "h-full bg-neutral-900 border-r border-neutral-700 flex relative",
-            "flex-col ease-in-out shrink-0 text-white",
+            "flex-col ease-in-out shrink-0 text-white justify-between",
             dragging ? "" : "transition-[width] duration-150"
           )}
           style={{ width }}
         >
-          <div
-            className={cn(
-              "p-4 flex justify-between items-center border-b",
-              "border-neutral-600"
-            )}
-          >
-            <h2 className="font-semibold text-lg">ThinkBlock</h2>
-            <button
-              onClick={close}
-              className="p-1 rounded-full hover:bg-neutral-600"
-              aria-label="Close sidebar"
+          <div className="flex flex-col">
+            <div
+              className={cn(
+                "p-4 flex justify-between items-center border-b",
+                "border-neutral-600"
+              )}
             >
-              <HorizontalIcon />
-            </button>
-          </div>
+              <h2 className="font-semibold text-lg">ThinkBlock</h2>
+              <button
+                onClick={close}
+                className="p-1 rounded-full hover:bg-neutral-600"
+                aria-label="Close sidebar"
+              >
+                <HorizontalIcon />
+              </button>
+            </div>
 
-          <div className="flex-1 p-4 overflow-y-auto">
-            <GPUSelector />
-            <FileUploader />
-          </div>
+            <div className="flex-1 p-4 overflow-y-auto">
+              <GPUSelector />
+              <FileUploader />
+            </div>
 
-          {/* 드래그 핸들 */}
-          <div
-            role="separator"
-            aria-orientation="vertical"
-            title="드래그해서 너비 조절 (더블클릭: 기본 폭)"
-            onMouseDown={onMouseDown}
-            onDoubleClick={resetWidth}
-            onTouchStart={onTouchStart}
-            className={cn(
-              "absolute top-0 right-0 h-full w-1 cursor-col-resize select-none",
-              "bg-transparent hover:bg-neutral-700/40",
-              // Increase hit area while dragging
-              dragging ? "w-1.5" : "w-1"
-            )}
-          />
+            {/* Drag handle */}
+            <div
+              role="separator"
+              aria-orientation="vertical"
+              title="Double click to reset width"
+              onMouseDown={onMouseDown}
+              onDoubleClick={resetWidth}
+              onTouchStart={onTouchStart}
+              className={cn(
+                "absolute top-0 right-0 h-full w-1 cursor-col-resize select-none",
+                "bg-transparent hover:bg-neutral-700/40",
+                // Increase hit area while dragging
+                dragging ? "w-1.5" : "w-1"
+              )}
+            />
+          </div>
+          <div className="p-4 flex flex-col gap-8">
+            <ExecuteButton />
+            <footer
+              className={cn(
+                "text-sm text-center border-t border-neutral-600",
+                "pt-4 text-neutral-400 flex flex-col items-center gap-1"
+              )}
+            >
+              <span>
+                &copy;
+                {new Date().getFullYear() === 2025
+                  ? " 2025"
+                  : " 2025-" + new Date().getFullYear()}{" "}
+                YEAHx4
+              </span>
+              <div className="flex justify-center gap-2">
+                <a
+                  href="https://github.com/5tarlight/think-block"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline hover:text-white"
+                >
+                  GitHub
+                </a>
+                <a
+                  href="https://post.yeahx4.me"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline hover:text-white"
+                >
+                  Blog
+                </a>
+              </div>
+            </footer>
+          </div>
         </div>
       ) : (
         // Collapsed sidebar

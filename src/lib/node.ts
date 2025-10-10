@@ -1,10 +1,9 @@
 import type { ContextMenuItem } from "../components/canvas/context-menu";
-import { uid } from "../store/graphics";
+import { uid, type Port } from "../store/graphics";
 import AddictionNode from "./node-impl/AddictionNode";
 import CsvNode from "./node-impl/CsvNode";
 import MultiplicationNode from "./node-impl/MultiplicationNode";
 import type NodeImpl from "./node-impl/NodeImpl";
-import type { Port } from "./node-impl/NodeImpl";
 import NumberNode from "./node-impl/NumberNode";
 import OutputNode from "./node-impl/OutputNode";
 

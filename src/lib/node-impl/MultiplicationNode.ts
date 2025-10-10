@@ -11,7 +11,7 @@ export default class MultiplicationNode extends NodeImpl {
     );
   }
 
-  process(inputs: Record<string, any>): Record<string, any> {
+  async process(inputs: Record<string, any>): Promise<Record<string, any>> {
     if (typeof inputs.a !== "number" || typeof inputs.b !== "number") {
       throw new Error("Invalid inputs: 'a' and 'b' must be numbers.");
     }

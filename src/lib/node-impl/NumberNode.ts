@@ -6,7 +6,7 @@ export default class NumberNode extends NodeImpl {
     super(nodeId, "number", [], [{ name: "value" }]);
   }
 
-  process(): Record<string, any> {
+  async process(): Promise<Record<string, any>> {
     return { value: 1 };
   }
 
