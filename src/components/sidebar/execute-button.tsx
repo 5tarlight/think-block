@@ -7,11 +7,14 @@ import {
 } from "../../store/graphics";
 import { buildLayers } from "../../lib/execution/execution";
 import { useNodeDataStore } from "../../store/nodeDataStore";
+import { useState } from "react";
 
 export default function ExecuteButton() {
   const { nodes } = useNodeState();
   const { edges } = useEdgeState();
   const { getNodeData, setNodeData } = useNodeDataStore();
+  const [progress, setProgress] = useState(0);
+  const [isExecuting, setIsExecuting] = useState(false);
 
   const getInputs = (
     nodeMap: Map<string, Node>,
@@ -31,38 +34,25 @@ export default function ExecuteButton() {
         (p: any) => p.id === e.to.port
       );
 
-      // 포트의 '값 키'를 찾는 우선순위(커스터마이즈 가능)
       const fromKey = fromPort?.name;
       const toKey = toPort?.name;
 
       const fromData = getNodeData(e.from.node);
-      console.log(`from node ${e.from.node} data:`, fromData, {
-        fromPort,
-        fromKey,
-        toPort,
-        toKey,
-      });
 
       let value: any = undefined;
 
       if (fromData) {
-        // 1) 포트 이름으로 직접 찾기
         if (fromKey! in fromData) {
           value = fromData[fromKey!];
-        }
-        // 2) 혹시 fromData가 포트 id로 되어있다면 (fallback)
-        else if (e.from.port in fromData) {
+        } else if (e.from.port in fromData) {
           value = fromData[e.from.port];
-        }
-        // 3) fromData가 단일 값 객체인 경우 (예: { value: 123 } 혹은 { someKey: val } 하나뿐)
-        else {
+        } else {
           const keys = Object.keys(fromData);
           if (keys.length === 1) value = fromData[keys[0]];
-          else value = undefined; // 여러 키인데 매칭되는게 없다면 undefined
+          else value = undefined;
         }
       }
 
-      // toKey 자리에 value 할당 (존재하지 않더라도 명시적으로 undefined를 넣어둠)
       inputs[toKey!] = value;
     }
 
@@ -73,6 +63,11 @@ export default function ExecuteButton() {
     const layers = buildLayers(nodes, edges);
     console.log("Execution layers:", layers);
 
+    let done = 0;
+    setProgress(0);
+    setIsExecuting(true);
+    const totalNodes = nodes.length;
+
     const nodeMap = new Map(nodes.map((n) => [n.id, n]));
 
     for (const layer of layers) {
@@ -82,13 +77,16 @@ export default function ExecuteButton() {
           if (!node?.impl?.process) return;
 
           const inputs = getInputs(nodeMap, nodeId);
-          console.log(inputs);
           const outputs = await node.impl.process(inputs);
           setNodeData(nodeId, outputs);
+
+          done += 1;
+          setProgress(done / totalNodes);
         })
       );
     }
 
+    setIsExecuting(false);
     console.log("Execution complete");
   };
 
@@ -100,7 +98,16 @@ export default function ExecuteButton() {
       )}
       onClick={onExecute}
     >
-      Execute
+      {isExecuting ? (
+        <div className="w-full bg-blue-300 rounded-sm overflow-hidden">
+          <div
+            className="bg-blue-600 h-6 animate-pulse"
+            style={{ width: `${(progress * 100).toFixed(2)}%` }}
+          ></div>
+        </div>
+      ) : (
+        "Execute"
+      )}
     </button>
   );
 }
