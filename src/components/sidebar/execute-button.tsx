@@ -80,6 +80,9 @@ export default function ExecuteButton() {
           const outputs = await node.impl.process(inputs);
           setNodeData(nodeId, outputs);
 
+          // Delay 1s to visualize progress
+          await new Promise((r) => setTimeout(r, 1000));
+
           done += 1;
           setProgress(done / totalNodes);
         })
@@ -94,20 +97,14 @@ export default function ExecuteButton() {
     <button
       className={cn(
         "w-full p-2 bg-blue-500 rounded-sm transition-colors",
-        "hover:bg-blue-400 cursor-pointer"
+        "hover:bg-blue-400 cursor-pointer",
+        (isExecuting && "hover:cursor-progress opacity-70") || ""
       )}
-      onClick={onExecute}
+      onClick={isExecuting ? undefined : onExecute}
     >
-      {isExecuting ? (
-        <div className="w-full bg-blue-300 rounded-sm overflow-hidden">
-          <div
-            className="bg-blue-600 h-6 animate-pulse"
-            style={{ width: `${(progress * 100).toFixed(2)}%` }}
-          ></div>
-        </div>
-      ) : (
-        "Execute"
-      )}
+      {isExecuting
+        ? `Executing... (${Math.round(progress * 100)}%)`
+        : "Execute"}
     </button>
   );
 }
