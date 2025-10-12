@@ -99,9 +99,7 @@ export default function ExecuteButton() {
       )}
       onClick={isExecuting ? undefined : onExecute}
     >
-      {isExecuting
-        ? `Executing... (${Math.round(progress * 100)}%)`
-        : "Execute"}
+      {isExecuting ? `Running... (${Math.round(progress * 100)}%)` : "Run"}
     </button>
   );
 }
