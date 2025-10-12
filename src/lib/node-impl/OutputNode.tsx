@@ -8,6 +8,7 @@ export default class OutputNode extends NodeImpl {
   }
 
   async process(inputs: Record<string, any>): Promise<Record<string, any>> {
+    console.log(inputs);
     // No output component.
     // But, returned data will be stored in node data store.
     return { data: inputs["in"] };
