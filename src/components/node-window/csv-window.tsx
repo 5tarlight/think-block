@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useFileStore } from "../../store/fileStore";
 import { useNodeDataState } from "../../store/nodeDataStore";
+import CSV from "../../lib/data/csv";
 
 interface CsvSummary {
   rowCount: number;
@@ -23,20 +24,22 @@ export default function CsvWindow({ id }: { id: string }) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    const fileKey = data[id]?.fileKey || "";
-    setCurrentFileKey(fileKey);
+    (async () => {
+      const fileKey = data[id]?.fileKey || "";
+      setCurrentFileKey(fileKey);
 
-    if (fileKey) {
-      const file = files.find((f) => f.file.key === fileKey)?.file;
-      setFileName(file?.name || "");
-      loadCsvSummary(fileKey);
-    } else {
-      setFileName("");
-      setCsvSummary(null);
-    }
+      if (fileKey) {
+        const file = files.find((f) => f.file.key === fileKey)?.file;
+        setFileName(file?.name || "");
+        await loadCsvSummary(fileKey);
+      } else {
+        setFileName("");
+        setCsvSummary(null);
+      }
+    })();
   }, [data, id]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const fileKey = e.target.value;
     setCurrentFileKey(fileKey);
 
@@ -44,7 +47,7 @@ export default function CsvWindow({ id }: { id: string }) {
     setFileName(file?.name || "");
 
     setNodeData(id, { fileKey });
-    loadCsvSummary(fileKey);
+    await loadCsvSummary(fileKey);
   };
 
   const loadCsvSummary = async (fileKey: string) => {
@@ -64,13 +67,13 @@ export default function CsvWindow({ id }: { id: string }) {
 
       // If we have cached content, use it
       if (file.contentText) {
-        processCsvContent(file.contentText);
+        await processCsvContent(file.contentText);
         return;
       }
 
       // Otherwise read the file
       const text = await file.raw.text();
-      processCsvContent(text);
+      await processCsvContent(text);
     } catch (error) {
       console.error("Error loading CSV:", error);
       setCsvSummary(null);
@@ -79,34 +82,14 @@ export default function CsvWindow({ id }: { id: string }) {
     }
   };
 
-  const processCsvContent = (csvContent: string) => {
-    try {
-      // TODO : Implement a robust CSV parser
-      const lines = csvContent.split(/\r\n|\n/).filter((line) => line.trim());
-
-      if (lines.length === 0) {
-        setCsvSummary(null);
-        return;
-      }
-
-      // TODO : USe a robust CSV parser
-      const headers = lines[0].split(",").map((header) => header.trim());
-
-      // Parse a preview of data rows (up to 5)
-      const previewRows = lines
-        .slice(1, 6)
-        .map((line) => line.split(",").map((cell) => cell.trim()));
-
-      setCsvSummary({
-        rowCount: lines.length - 1, // Excluding header
-        columnCount: headers.length,
-        headers,
-        preview: previewRows,
-      });
-    } catch (error) {
-      console.error("Error parsing CSV:", error);
-      setCsvSummary(null);
-    }
+  const processCsvContent = async (csvContent: string) => {
+    const csv = await CSV.fromString(csvContent, true);
+    setCsvSummary({
+      rowCount: csv.getRows(),
+      columnCount: csv.getColumns(),
+      headers: csv.headers,
+      preview: csv.rows.slice(0, 5),
+    });
   };
 
   return (
