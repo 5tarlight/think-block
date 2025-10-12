@@ -1,5 +1,4 @@
 import type { ContextMenuItem } from "../components/canvas/context-menu";
-import { uid, type Port } from "../store/graphics";
 import AddictionNode from "./node-impl/AddictionNode";
 import CsvNode from "./node-impl/CsvNode";
 import MultiplicationNode from "./node-impl/MultiplicationNode";
@@ -8,6 +7,7 @@ import NumberNode from "./node-impl/NumberNode";
 import OutputNode from "./node-impl/OutputNode";
 
 export type NodeType = "number" | "add" | "multiply" | "output" | "csv";
+export type NodeSize = "full" | "small" | "input";
 
 export const contextMenuItems: ContextMenuItem[] = [
   {
@@ -44,56 +44,6 @@ export const contextMenuItems: ContextMenuItem[] = [
     keywords: ["print", "result", "출력"],
   },
 ];
-
-export function getNodeData(type: NodeType): {
-  inputs: Port[];
-  outputs: Port[];
-  size: "full" | "small" | "input";
-} {
-  if (type === "number") {
-    return {
-      inputs: [],
-      outputs: [{ id: uid(), name: "value", kind: "out" }],
-      size: "input",
-    };
-  } else if (type === "csv") {
-    return {
-      inputs: [],
-      outputs: [{ id: uid(), name: "out", kind: "out" }],
-      size: "full",
-    };
-  } else if (type === "output") {
-    return {
-      inputs: [{ id: uid(), name: "in", kind: "in" }],
-      outputs: [],
-      size: "full",
-    };
-  } else if (type === "add") {
-    return {
-      inputs: [
-        { id: uid(), name: "a", kind: "in" },
-        { id: uid(), name: "b", kind: "in" },
-      ],
-      outputs: [{ id: uid(), name: "a + b", kind: "out" }],
-      size: "small",
-    };
-  } else if (type === "multiply") {
-    return {
-      inputs: [
-        { id: uid(), name: "a", kind: "in" },
-        { id: uid(), name: "b", kind: "in" },
-      ],
-      outputs: [{ id: uid(), name: "a * b", kind: "out" }],
-      size: "small",
-    };
-  }
-
-  return {
-    inputs: [],
-    outputs: [],
-    size: "full",
-  };
-}
 
 export function getNodeImpl(nodeId: string, type: NodeType): NodeImpl | null {
   if (type === "number") {

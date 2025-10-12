@@ -15,7 +15,7 @@ import {
 } from "./store/graphics";
 import cn from "@yeahx4/cn";
 import NodeView from "./components/canvas/node-view";
-import { getNodeData, getNodeImpl, type NodeType } from "./lib/node";
+import { getNodeImpl, type NodeType } from "./lib/node";
 import type { ContextMenuState } from "./components/canvas/context-menu";
 import ContextMenu from "./components/canvas/context-menu";
 import WindowContainer from "./components/window/window-container";
@@ -348,14 +348,17 @@ function App() {
       if (!menu) return;
 
       const nodeId = uid("node");
+      const impl = getNodeImpl(nodeId, kind);
 
       const node: Node = {
         id: nodeId,
         pos: menu.world,
         title: kind,
         type: kind,
-        ...getNodeData(kind),
-        impl: getNodeImpl(nodeId, kind),
+        inputs: impl ? impl.inputs : [],
+        outputs: impl ? impl.outputs : [],
+        size: impl ? impl.size : "full",
+        impl,
       };
 
       setNodes((prev) => [...prev, node]);

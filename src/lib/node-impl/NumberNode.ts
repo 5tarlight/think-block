@@ -3,7 +3,7 @@ import NodeImpl from "./NodeImpl";
 
 export default class NumberNode extends NodeImpl {
   constructor(nodeId: string) {
-    super(nodeId, "number", [], [{ name: "value" }]);
+    super(nodeId, "number", [], [{ name: "value" }], "input");
   }
 
   async process(): Promise<Record<string, any>> {

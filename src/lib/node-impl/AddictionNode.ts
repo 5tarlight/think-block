@@ -3,7 +3,13 @@ import NodeImpl from "./NodeImpl";
 
 export default class AddictionNode extends NodeImpl {
   constructor(nodeId: string) {
-    super(nodeId, "add", [{ name: "a" }, { name: "b" }], [{ name: "sum" }]);
+    super(
+      nodeId,
+      "add",
+      [{ name: "a" }, { name: "b" }],
+      [{ name: "sum" }],
+      "small"
+    );
   }
 
   async process(inputs: Record<string, any>): Promise<Record<string, any>> {

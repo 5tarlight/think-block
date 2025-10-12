@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { NodeType } from "../node";
+import type { NodeSize, NodeType } from "../node";
 import { uid, type Port } from "../../store/graphics";
 
 export default abstract class NodeImpl {
@@ -7,6 +7,7 @@ export default abstract class NodeImpl {
   public nodeType: NodeType;
   public inputs: Port[];
   public outputs: Port[];
+  public size: NodeSize;
   public isNewborn: boolean = true;
   public isUpdated: boolean = false;
   public winWidth: number = 300;
@@ -16,7 +17,8 @@ export default abstract class NodeImpl {
     nodeId: string,
     nodeType: NodeType,
     inputs: { name: string }[],
-    outputs: { name: string }[]
+    outputs: { name: string }[],
+    size: NodeSize = "full"
   ) {
     this.nodeId = nodeId;
     this.nodeType = nodeType;
@@ -30,6 +32,7 @@ export default abstract class NodeImpl {
       name,
       kind: "out",
     }));
+    this.size = size;
   }
 
   abstract process(inputs: Record<string, any>): Promise<Record<string, any>>;
