@@ -7,7 +7,7 @@ export default class MultiplicationNode extends NodeImpl {
       nodeId,
       "multiply",
       [{ name: "a" }, { name: "b" }],
-      [{ name: "prod" }],
+      [{ name: "a * b" }],
       "small"
     );
   }

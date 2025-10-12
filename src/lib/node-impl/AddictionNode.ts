@@ -7,7 +7,7 @@ export default class AddictionNode extends NodeImpl {
       nodeId,
       "add",
       [{ name: "a" }, { name: "b" }],
-      [{ name: "sum" }],
+      [{ name: "a + b" }],
       "small"
     );
   }
