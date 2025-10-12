@@ -12,7 +12,8 @@ interface CsvSummary {
 
 export default function CsvWindow({ id }: { id: string }) {
   const { files, getFile } = useFileStore();
-  const { setNodeData, data } = useNodeDataState();
+  const { setNodeData, getNodeData } = useNodeDataState();
+  const data = getNodeData(id) || {};
 
   const csvInputs = files
     .filter((f) => f.isInput)
@@ -25,7 +26,7 @@ export default function CsvWindow({ id }: { id: string }) {
 
   useEffect(() => {
     (async () => {
-      const fileKey = data[id]?.fileKey || "";
+      const fileKey = data.fileKey || "";
       setCurrentFileKey(fileKey);
 
       if (fileKey) {
@@ -46,7 +47,7 @@ export default function CsvWindow({ id }: { id: string }) {
     const file = files.find((f) => f.file.key === fileKey)?.file;
     setFileName(file?.name || "");
 
-    setNodeData(id, { fileKey });
+    // setNodeData(id, { fileKey });
     await loadCsvSummary(fileKey);
   };
 
@@ -58,6 +59,17 @@ export default function CsvWindow({ id }: { id: string }) {
 
     setIsLoading(true);
 
+    if (data.fileKey === fileKey && data.csv) {
+      setCsvSummary({
+        rowCount: data.csv.getRows(),
+        columnCount: data.csv.getColumns(),
+        headers: data.csv.headers,
+        preview: data.csv.rows.slice(0, 5),
+      });
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const file = getFile(fileKey);
       if (!file || !file.raw) {
@@ -67,13 +79,13 @@ export default function CsvWindow({ id }: { id: string }) {
 
       // If we have cached content, use it
       if (file.contentText) {
-        await processCsvContent(file.contentText);
+        await processCsvContent(fileKey, file.contentText);
         return;
       }
 
       // Otherwise read the file
       const text = await file.raw.text();
-      await processCsvContent(text);
+      await processCsvContent(fileKey, text);
     } catch (error) {
       console.error("Error loading CSV:", error);
       setCsvSummary(null);
@@ -82,7 +94,7 @@ export default function CsvWindow({ id }: { id: string }) {
     }
   };
 
-  const processCsvContent = async (csvContent: string) => {
+  const processCsvContent = async (fileKey: string, csvContent: string) => {
     const csv = await CSV.fromString(csvContent, true);
     setCsvSummary({
       rowCount: csv.getRows(),
@@ -90,6 +102,8 @@ export default function CsvWindow({ id }: { id: string }) {
       headers: csv.headers,
       preview: csv.rows.slice(0, 5),
     });
+
+    setNodeData(id, { fileKey, csv });
   };
 
   return (
