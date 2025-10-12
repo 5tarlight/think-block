@@ -6,7 +6,7 @@ export interface NodeDataState {
   getNodeData: (nodeId: string) => Record<string, any> | undefined;
 }
 
-export const useNodeDataStore = create<NodeDataState>((set, get) => ({
+export const useNodeDataState = create<NodeDataState>((set, get) => ({
   data: {},
   setNodeData: (nodeId: string, data: Record<string, any>) => {
     set({

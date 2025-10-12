@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useFileStore } from "../../store/fileStore";
-import { useNodeDataStore } from "../../store/nodeDataStore";
+import { useNodeDataState } from "../../store/nodeDataStore";
 
 interface CsvSummary {
   rowCount: number;
@@ -11,7 +11,7 @@ interface CsvSummary {
 
 export default function CsvWindow({ id }: { id: string }) {
   const { files, getFile } = useFileStore();
-  const { setNodeData, data } = useNodeDataStore();
+  const { setNodeData, data } = useNodeDataState();
 
   const csvInputs = files
     .filter((f) => f.isInput)

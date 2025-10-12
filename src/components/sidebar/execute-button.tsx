@@ -6,13 +6,13 @@ import {
   type Port,
 } from "../../store/graphics";
 import { buildLayers } from "../../lib/execution/execution";
-import { useNodeDataStore } from "../../store/nodeDataStore";
+import { useNodeDataState } from "../../store/nodeDataStore";
 import { useState } from "react";
 
 export default function ExecuteButton() {
   const { nodes } = useNodeState();
   const { edges } = useEdgeState();
-  const { getNodeData, setNodeData } = useNodeDataStore();
+  const { getNodeData, setNodeData } = useNodeDataState();
   const [progress, setProgress] = useState(0);
   const [isExecuting, setIsExecuting] = useState(false);
 

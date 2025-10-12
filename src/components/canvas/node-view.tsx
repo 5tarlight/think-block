@@ -4,7 +4,7 @@ import PortView from "./port-view";
 import { useEffect, useState } from "react";
 import type NodeImpl from "../../lib/node-impl/NodeImpl";
 import { useWinStore } from "../../store/windowStore";
-import { useNodeDataStore } from "../../store/nodeDataStore";
+import { useNodeDataState } from "../../store/nodeDataStore";
 
 export default function NodeView({
   node,
@@ -39,7 +39,7 @@ export default function NodeView({
 
   const [popupId, setPopupId] = useState<string | null>(null);
   const { addWindow, windows } = useWinStore();
-  const { getNodeData, setNodeData } = useNodeDataStore();
+  const { getNodeData, setNodeData } = useNodeDataState();
 
   const openWindow = () => {
     if (!impl) return;
