@@ -116,7 +116,8 @@ export default function NodeView({
             <span className={cn("ml-2 opacity-70 italic")}>
               {(() => {
                 const data = getNodeData(node.id)?.data;
-                if (data && typeof data !== "object") return `= ${data}`;
+                if (data && typeof data !== "object")
+                  return `= ${Math.round(data * 10000) / 10000}`;
               })()}
             </span>
           </div>
