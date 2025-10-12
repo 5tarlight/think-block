@@ -48,7 +48,6 @@ export default function CsvWindow({ id }: { id: string }) {
     const file = files.find((f) => f.file.key === fileKey)?.file;
     setFileName(file?.name || "");
 
-    // setNodeData(id, { fileKey });
     await loadCsvSummary(fileKey);
   };
 
