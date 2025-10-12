@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import NodeImpl from "./NodeImpl";
 import OutputWindow from "../../components/node-window/output-window";
+import CSV from "../data/csv";
 
 export default class OutputNode extends NodeImpl {
   constructor(nodeId: string) {
@@ -10,7 +11,16 @@ export default class OutputNode extends NodeImpl {
   async process(inputs: Record<string, any>): Promise<Record<string, any>> {
     // No output component.
     // But, returned data will be stored in node data store.
-    return { data: inputs["in"] };
+    const data = inputs["in"];
+    console.log(data);
+
+    // Expand window size if data is CSV
+    if (data instanceof CSV) {
+      this.winWidth = 700;
+      this.winHeight = 500;
+    }
+
+    return { data };
   }
 
   render(): ReactNode {

@@ -13,6 +13,7 @@ export default class CsvNode extends NodeImpl {
   async process(): Promise<Record<string, any>> {
     const { getNodeData } = useNodeDataState.getState();
     return {
+      fileKey: getNodeData(this.nodeId)?.fileKey || null,
       data: getNodeData(this.nodeId)?.csv || null,
     };
   }

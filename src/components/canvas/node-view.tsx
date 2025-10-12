@@ -113,7 +113,7 @@ export default function NodeView({
                 onMouseUp={() => onPortUp({ nodeId: node.id, portId: p.id })}
               />
             ))}
-            <span className={cn("ml-2 opacity-70 italic")}>
+            <span className={cn("ml-2 opacity-70 italic whitespace-nowrap")}>
               {(() => {
                 const data = getNodeData(node.id)?.data;
                 if (data && typeof data !== "object")
@@ -134,19 +134,51 @@ export default function NodeView({
           </div>
         )}
         <div className="flex flex-col gap-1 items-end">
-          {node.outputs.map((p) => (
-            <PortView
-              key={p.id}
-              label={p.name}
-              side="right"
-              onMouseDown={(e) =>
-                onPortDown(e, { nodeId: node.id, portId: p.id })
-              }
-              isInput={node.size === "input"}
-              inputValue={inputValue}
-              setInputValue={setInputValue}
-            />
-          ))}
+          {node.type === "csv" ? (
+            <div className="flex items-center">
+              <span
+                className={cn(
+                  "mr-2 opacity-70 italic w-full shink-0",
+                  "text-right whitespace-nowrap"
+                )}
+              >
+                {(() => {
+                  const data = getNodeData(node.id)?.fileKey;
+                  if (!data) return "<no file> =";
+                  const display =
+                    data.length > 12 ? data.slice(0, 10) + "..." : data;
+                  return `${display} =`;
+                })()}
+              </span>
+              {node.outputs.map((p) => (
+                <PortView
+                  key={p.id}
+                  label={p.name}
+                  side="right"
+                  onMouseDown={(e) =>
+                    onPortDown(e, { nodeId: node.id, portId: p.id })
+                  }
+                  isInput={node.size === "input"}
+                  inputValue={inputValue}
+                  setInputValue={setInputValue}
+                />
+              ))}
+            </div>
+          ) : (
+            node.outputs.map((p) => (
+              <PortView
+                key={p.id}
+                label={p.name}
+                side="right"
+                onMouseDown={(e) =>
+                  onPortDown(e, { nodeId: node.id, portId: p.id })
+                }
+                isInput={node.size === "input"}
+                inputValue={inputValue}
+                setInputValue={setInputValue}
+              />
+            ))
+          )}
         </div>
       </div>
     </div>
