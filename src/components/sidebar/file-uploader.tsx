@@ -102,7 +102,7 @@ export default function FileUploader() {
       <div className="flex justify-between items-center">
         <span className="text-sm">Files</span>
         <button
-          className="text-sm text-blue-500 hover:underline"
+          className="text-sm text-blue-500 hover:underline cursor-pointer"
           onClick={openPicker}
           type="button"
         >

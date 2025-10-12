@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import NodeImpl from "./NodeImpl";
 import CsvWindow from "../../components/node-window/csv-window";
+import { useNodeDataState } from "../../store/nodeDataStore";
 
 export default class CsvNode extends NodeImpl {
   constructor(nodeId: string) {
@@ -10,9 +11,11 @@ export default class CsvNode extends NodeImpl {
   }
 
   async process(): Promise<Record<string, any>> {
-    this.isNewborn = false;
-
-    return {};
+    const { getNodeData } = useNodeDataState.getState();
+    return {
+      fileKey: getNodeData(this.nodeId)?.fileKey || null,
+      data: getNodeData(this.nodeId)?.csv || null,
+    };
   }
 
   render(): ReactNode {

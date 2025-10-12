@@ -62,7 +62,7 @@ export default function WindowView({
       <div
         className={cn(
           "border-b border-neutral-700 py-1 px-2 flex justify-between items-center",
-          "cursor-grab active:cursor-grabbing"
+          "cursor-grab active:cursor-grabbing select-none"
         )}
         onMouseDown={onDragStart}
       >
