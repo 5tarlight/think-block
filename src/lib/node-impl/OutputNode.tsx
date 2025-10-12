@@ -18,6 +18,9 @@ export default class OutputNode extends NodeImpl {
     if (data instanceof CSV) {
       this.winWidth = 700;
       this.winHeight = 500;
+    } else {
+      this.winWidth = 300;
+      this.winHeight = 200;
     }
 
     return { data };

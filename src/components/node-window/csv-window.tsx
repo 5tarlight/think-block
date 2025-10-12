@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useFileStore } from "../../store/fileStore";
 import { useNodeDataState } from "../../store/nodeDataStore";
 import CSV from "../../lib/data/csv";
+import CSVViewer from "../window/csv-viewer";
 
 interface CsvSummary {
   rowCount: number;
@@ -158,41 +159,7 @@ export default function CsvWindow({ id }: { id: string }) {
 
           <div className="flex-1 overflow-auto">
             <h4 className="text-sm font-semibold mb-2">Preview:</h4>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm border-collapse">
-                <thead>
-                  <tr>
-                    {csvSummary.headers.map((header, index) => (
-                      <th
-                        key={index}
-                        className="border border-gray-600 bg-gray-700 p-1 text-left"
-                      >
-                        {header}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {csvSummary.preview.map((row, rowIndex) => (
-                    <tr
-                      key={rowIndex}
-                      className={
-                        rowIndex % 2 === 0 ? "bg-gray-800" : "bg-gray-900"
-                      }
-                    >
-                      {row.map((cell, cellIndex) => (
-                        <td
-                          key={cellIndex}
-                          className="border border-gray-700 p-1 max-w-[150px] truncate"
-                        >
-                          {cell}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <CSVViewer csv={getNodeData(id)?.csv} maxColumns={20} maxRows={5} />
           </div>
         </div>
       )}
