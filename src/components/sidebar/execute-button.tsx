@@ -80,9 +80,6 @@ export default function ExecuteButton() {
           const outputs = await node.impl.process(inputs);
           setNodeData(nodeId, outputs);
 
-          // Delay 1s to visualize progress
-          await new Promise((r) => setTimeout(r, 1000));
-
           done += 1;
           setProgress(done / totalNodes);
         })

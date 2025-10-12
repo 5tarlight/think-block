@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import NodeImpl from "./NodeImpl";
+import { useNodeDataState } from "../../store/nodeDataStore";
 
 export default class NumberNode extends NodeImpl {
   constructor(nodeId: string) {
@@ -7,7 +8,8 @@ export default class NumberNode extends NodeImpl {
   }
 
   async process(): Promise<Record<string, any>> {
-    return { value: 1 };
+    const { getNodeData } = useNodeDataState.getState();
+    return { value: getNodeData(this.nodeId)?.value || 0 };
   }
 
   render(): ReactNode {
