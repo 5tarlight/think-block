@@ -103,16 +103,35 @@ export default function NodeView({
       )}
 
       <div className="grid grid-cols-2 gap-x-2 px-2 py-2 text-sm">
-        <div className="flex flex-col gap-1">
-          {node.inputs.map((p) => (
-            <PortView
-              key={p.id}
-              label={p.name}
-              side="left"
-              onMouseUp={() => onPortUp({ nodeId: node.id, portId: p.id })}
-            />
-          ))}
-        </div>
+        {node.type === "output" ? ( // Output node shows input data
+          <div className="flex items-center">
+            {node.inputs.map((p) => (
+              <PortView
+                key={p.id}
+                label={p.name}
+                side="left"
+                onMouseUp={() => onPortUp({ nodeId: node.id, portId: p.id })}
+              />
+            ))}
+            <span className={cn("ml-2 opacity-70 italic")}>
+              {(() => {
+                const data = getNodeData(node.id)?.data;
+                if (data && typeof data !== "object") return `= ${data}`;
+              })()}
+            </span>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-1">
+            {node.inputs.map((p) => (
+              <PortView
+                key={p.id}
+                label={p.name}
+                side="left"
+                onMouseUp={() => onPortUp({ nodeId: node.id, portId: p.id })}
+              />
+            ))}
+          </div>
+        )}
         <div className="flex flex-col gap-1 items-end">
           {node.outputs.map((p) => (
             <PortView
