@@ -12,7 +12,6 @@ export default class OutputNode extends NodeImpl {
     // No output component.
     // But, returned data will be stored in node data store.
     const data = inputs["in"];
-    console.log(data);
 
     // Expand window size if data is CSV
     if (data instanceof CSV) {
