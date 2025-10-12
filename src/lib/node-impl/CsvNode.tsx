@@ -12,7 +12,6 @@ export default class CsvNode extends NodeImpl {
 
   async process(): Promise<Record<string, any>> {
     const { getNodeData } = useNodeDataState.getState();
-    console.log(getNodeData(this.nodeId));
     return {
       data: getNodeData(this.nodeId)?.csv || null,
     };
