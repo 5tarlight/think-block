@@ -138,7 +138,7 @@ export default function NodeView({
             <div className="flex items-center">
               <span
                 className={cn(
-                  "mr-2 opacity-70 italic w-full shink-0",
+                  "mr-2 opacity-70 italic w-full",
                   "text-right whitespace-nowrap"
                 )}
               >
