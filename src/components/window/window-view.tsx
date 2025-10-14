@@ -17,6 +17,9 @@ export default function WindowView({
   useEffect(() => {
     function onMove(e: MouseEvent) {
       if (!draggingRef.current) return;
+      e.preventDefault();
+      e.stopPropagation();
+
       const x = e.clientX - offsetRef.current.dx;
       const y = e.clientY - offsetRef.current.dy;
       moveWindow(win.id, x, y);

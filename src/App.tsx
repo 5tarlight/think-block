@@ -250,6 +250,7 @@ function App() {
   const startNodeDrag = useCallback(
     (e: React.MouseEvent, nodeId: string) => {
       e.stopPropagation();
+      e.preventDefault();
 
       if (selectedNodes.includes(nodeId)) {
         // Drag all selected nodes
@@ -453,7 +454,11 @@ function App() {
         if (containerRef.current) {
           containerRef.current.style.cursor = "grabbing";
         }
-      } else if (e.button === 0 && !spacePressed.current) {
+      } else if (
+        e.button === 0 &&
+        !spacePressed.current &&
+        !dragState.current
+      ) {
         // Start selection box
         clearSelectedNodes();
         const rect = containerRef.current!.getBoundingClientRect();
@@ -525,6 +530,12 @@ function App() {
     const handleMouseMove = (e: MouseEvent) => {
       // Update selection box
       if (selectionBox) {
+        if (dragState.current) {
+          // Cancel selection box if other drag started
+          setSelectionBox(null);
+          return;
+        }
+
         const rect = containerRef.current!.getBoundingClientRect();
         const pt: Vec2 = { x: e.clientX - rect.left, y: e.clientY - rect.top };
         setSelectionBox({
@@ -536,16 +547,16 @@ function App() {
 
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
-    document.addEventListener("mousedown", handleMouseDown);
-    document.addEventListener("mouseup", handleMouseUp);
-    document.addEventListener("mousemove", handleMouseMove);
+    containerRef.current?.addEventListener("mousedown", handleMouseDown);
+    containerRef.current?.addEventListener("mouseup", handleMouseUp);
+    containerRef.current?.addEventListener("mousemove", handleMouseMove);
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("keyup", handleKeyUp);
-      document.removeEventListener("mousedown", handleMouseDown);
-      document.removeEventListener("mouseup", handleMouseUp);
-      document.removeEventListener("mousemove", handleMouseMove);
+      containerRef.current?.removeEventListener("mousedown", handleMouseDown);
+      containerRef.current?.removeEventListener("mouseup", handleMouseUp);
+      containerRef.current?.removeEventListener("mousemove", handleMouseMove);
     };
   }, [selectionBox]);
 
