@@ -422,7 +422,7 @@ function App() {
     };
   }, []);
 
-  // --- Space key for panning ----------------------------------------
+  // --- Global Keyboard Shortcuts & Mouse -------------------------------
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === "Space" && !spacePressed.current) {
