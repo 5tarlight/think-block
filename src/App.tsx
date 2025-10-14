@@ -120,7 +120,7 @@ function App() {
       // e.preventDefault();
       if (e.ctrlKey || e.metaKey) {
         // Zoom to cursor
-        const factor = e.deltaY < 0 ? 1.1 : 0.9;
+        const factor = e.deltaY < 0 ? 1.01 : 0.99;
         const rect = (
           e.currentTarget as HTMLDivElement
         ).getBoundingClientRect();
@@ -250,6 +250,11 @@ function App() {
   const startNodeDrag = useCallback(
     (e: React.MouseEvent, nodeId: string) => {
       e.stopPropagation();
+
+      if (selectedNodes.includes(nodeId)) {
+        // Drag all selected nodes
+      }
+
       const containerRect = containerRef.current!.getBoundingClientRect();
       const pt: Vec2 = {
         x: e.clientX - containerRect.left,
