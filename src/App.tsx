@@ -410,11 +410,6 @@ function App() {
     };
   }, []);
 
-  const getSelectionBox = useCallback(() => {
-    if (!selectionBox) return null;
-    return selectionBox;
-  }, [selectionBox]);
-
   // --- Space key for panning ----------------------------------------
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
