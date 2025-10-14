@@ -74,9 +74,9 @@ export default function NodeView({
   return (
     <div
       className={cn(
-        "absolute rounded-sm border border-neutral-700",
+        "absolute rounded-sm border ",
         "bg-neutral-900 text-neutral-200 shadow-lg",
-        selected ? "border-blue-500" : ""
+        selected ? "border-blue-500" : "border-neutral-700"
       )}
       style={{
         left: node.pos.x,

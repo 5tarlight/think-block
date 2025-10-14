@@ -452,9 +452,9 @@ function App() {
         }
       } else if (e.button === 0 && !spacePressed.current) {
         // Start selection box
+        clearSelected();
         const rect = containerRef.current!.getBoundingClientRect();
         const pt: Vec2 = { x: e.clientX - rect.left, y: e.clientY - rect.top };
-        console.log("Selection box started:", { position: pt });
         setSelectionBox({ start: pt, end: pt });
       }
     };
@@ -470,7 +470,51 @@ function App() {
             : "default";
         }
       } else if (selectionBox) {
-        console.log("Selection box ended:", { box: selectionBox });
+        // Select nodes within selection box
+        const box = {
+          x1: Math.min(selectionBox.start.x, selectionBox.end.x),
+          y1: Math.min(selectionBox.start.y, selectionBox.end.y),
+          x2: Math.max(selectionBox.start.x, selectionBox.end.x),
+          y2: Math.max(selectionBox.start.y, selectionBox.end.y),
+        };
+
+        const selectedNodes = nodes
+          .filter((n) => {
+            const nodeSize = {
+              w: 256,
+              h: -1,
+            };
+            const rows = Math.max(n.inputs.length, n.outputs.length);
+            if (n.size === "full") {
+              nodeSize.h = Math.max(80, 56 + 28 * rows + 4 * (rows - 1));
+            } else if (n.size === "small") {
+              nodeSize.h = 16 + 28 * rows + 4 * (rows - 1);
+              nodeSize.w = 164;
+            } else if (n.size === "input") {
+              nodeSize.h = 44;
+              nodeSize.w = 124;
+            }
+
+            const nodeScreenPos = worldToScreen(n.pos, camera);
+            const nodeBox = {
+              x1: nodeScreenPos.x,
+              y1: nodeScreenPos.y,
+              x2: nodeScreenPos.x + nodeSize.w,
+              y2: nodeScreenPos.y + nodeSize.h,
+            };
+
+            // AABB intersection
+            return !(
+              box.x2 < nodeBox.x1 ||
+              box.x1 > nodeBox.x2 ||
+              box.y2 < nodeBox.y1 ||
+              box.y1 > nodeBox.y2
+            );
+          })
+          .map((n) => n.id);
+
+        setSelected(() => selectedNodes);
+
         setSelectionBox(null);
       }
     };
