@@ -1,4 +1,5 @@
 import cn from "@yeahx4/cn";
+import { useNodeState } from "../../store/graphics";
 
 export default function PortView({
   label,
@@ -17,6 +18,8 @@ export default function PortView({
   inputValue?: string;
   setInputValue?: (value: string) => void;
 }) {
+  const { clearSelectedNodes } = useNodeState();
+
   return (
     <div
       className={
@@ -51,6 +54,7 @@ export default function PortView({
           onClick={(e) => {
             e.stopPropagation();
             e.preventDefault();
+            clearSelectedNodes();
             (e.target as HTMLInputElement).focus();
           }}
           onChange={(e) => setInputValue?.(e.target.value)}

@@ -33,7 +33,8 @@ function App() {
     setSelectedNodes,
     clearSelectedNodes,
   } = useNodeState();
-  const { edges, setEdges, removeEdge } = useEdgeState();
+  const { edges, setEdges, removeEdge, removeEdgesConnectedToNode } =
+    useEdgeState();
 
   const spacePressed = useRef(false);
   const isDragging = useRef(false);
@@ -422,6 +423,14 @@ function App() {
     };
   }, []);
 
+  const deleteNode = useCallback(
+    (nodeId: string) => {
+      setNodes((prev) => prev.filter((n) => n.id !== nodeId));
+      removeEdgesConnectedToNode(nodeId);
+    },
+    [setNodes, removeEdgesConnectedToNode]
+  );
+
   // --- Global Keyboard Shortcuts & Mouse -------------------------------
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -431,6 +440,11 @@ function App() {
 
         if (containerRef.current) {
           containerRef.current.style.cursor = "grab";
+        }
+      } else if (e.code === "Delete" || e.code === "Backspace") {
+        if (selectedNodes.length > 0) {
+          e.preventDefault();
+          selectedNodes.forEach((nodeId) => deleteNode(nodeId));
         }
       }
     };
