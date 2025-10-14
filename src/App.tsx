@@ -29,7 +29,6 @@ function App() {
   const { nodes, setNodes } = useNodeState();
   const { edges, setEdges, removeEdge } = useEdgeState();
 
-  const [menu, setMenu] = useState<ContextMenuState | null>(null);
   const spacePressed = useRef(false);
   const isDragging = useRef(false);
   const dragState = useRef<
@@ -39,18 +38,28 @@ function App() {
     | null
   >(null);
 
+  const [menu, setMenu] = useState<ContextMenuState | null>(null);
+  const [selectionBox, setSelectionBox] = useState<{
+    start: Vec2;
+    end: Vec2;
+  } | null>(null);
+
   const resizeGrid = useCallback(() => {
     const el = gridRef.current;
     if (!el) return;
+
     const dpr = window.devicePixelRatio || 1;
     const rect = el.parentElement?.getBoundingClientRect();
     if (!rect) return;
+
     el.width = Math.floor(rect.width * dpr);
     el.height = Math.floor(rect.height * dpr);
     el.style.width = `${rect.width}px`;
     el.style.height = `${rect.height}px`;
+
     const ctx = el.getContext("2d");
     if (!ctx) return;
+
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     drawGrid();
   }, []);
@@ -89,10 +98,12 @@ function App() {
       ctx.moveTo(x + 0.5, 0);
       ctx.lineTo(x + 0.5, height);
     }
+
     for (let y = origin.y % step; y < height; y += step) {
       ctx.moveTo(0, y + 0.5);
       ctx.lineTo(width, y + 0.5);
     }
+
     ctx.strokeStyle = "#151c2d";
     ctx.lineWidth = 1;
     ctx.stroke();
@@ -157,9 +168,11 @@ function App() {
       const pt: Vec2 = { x: e.clientX - rect.left, y: e.clientY - rect.top };
       const ds = dragState.current;
       if (!ds) return;
+
       if (ds.kind === "pan") {
         const dx = pt.x - ds.start.x;
         const dy = pt.y - ds.start.y;
+
         setCamera(() => ({
           ...ds.camera0,
           tx: ds.camera0.tx + dx,
@@ -168,6 +181,7 @@ function App() {
       } else if (ds.kind === "node") {
         const dx = (pt.x - ds.start.x) / camera.scale;
         const dy = (pt.y - ds.start.y) / camera.scale;
+
         setNodes((prev) =>
           prev.map((n) =>
             n.id === ds.nodeId
@@ -189,11 +203,13 @@ function App() {
     if (ds) {
       if (ds.kind === "node") {
         const node = nodes.find((n) => n.id === ds.nodeId);
+
         console.log("Node drag ended:", {
           nodeId: ds.nodeId,
           nodeTitle: node?.title,
           finalPosition: node?.pos,
         });
+
         dragState.current = null;
       } else if (ds.kind === "wire" && ds.from) {
         console.log("Wire drag cancelled:", {
@@ -215,9 +231,11 @@ function App() {
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
+
     const onCtx = (e: MouseEvent) => {
       e.preventDefault();
     };
+
     el.addEventListener("contextmenu", onCtx);
     return () => el.removeEventListener("contextmenu", onCtx);
   }, []);
@@ -302,6 +320,7 @@ function App() {
       e.stopPropagation();
       const rect = containerRef.current!.getBoundingClientRect();
       const pt: Vec2 = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+
       dragState.current = {
         kind: "wire",
         from: { node: from.nodeId, port: from.portId },
@@ -391,6 +410,11 @@ function App() {
     };
   }, []);
 
+  const getSelectionBox = useCallback(() => {
+    if (!selectionBox) return null;
+    return selectionBox;
+  }, [selectionBox]);
+
   // --- Space key for panning ----------------------------------------
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -423,6 +447,12 @@ function App() {
         if (containerRef.current) {
           containerRef.current.style.cursor = "grabbing";
         }
+      } else if (e.button === 0 && !spacePressed.current) {
+        // Start selection box
+        const rect = containerRef.current!.getBoundingClientRect();
+        const pt: Vec2 = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+        console.log("Selection box started:", { position: pt });
+        setSelectionBox({ start: pt, end: pt });
       }
     };
 
@@ -436,6 +466,21 @@ function App() {
             ? "grab"
             : "default";
         }
+      } else if (selectionBox) {
+        console.log("Selection box ended:", { box: selectionBox });
+        setSelectionBox(null);
+      }
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      // Update selection box
+      if (selectionBox) {
+        const rect = containerRef.current!.getBoundingClientRect();
+        const pt: Vec2 = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+        setSelectionBox({
+          start: selectionBox.start,
+          end: pt,
+        });
       }
     };
 
@@ -443,14 +488,16 @@ function App() {
     document.addEventListener("keyup", handleKeyUp);
     document.addEventListener("mousedown", handleMouseDown);
     document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("mousemove", handleMouseMove);
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("keyup", handleKeyUp);
       document.removeEventListener("mousedown", handleMouseDown);
       document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("mousemove", handleMouseMove);
     };
-  }, []);
+  }, [selectionBox]);
 
   return (
     <div className="w-screen h-screen flex overflow-hidden">
