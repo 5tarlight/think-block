@@ -30,6 +30,8 @@ function App() {
   const { edges, setEdges, removeEdge } = useEdgeState();
 
   const [menu, setMenu] = useState<ContextMenuState | null>(null);
+  const spacePressed = useRef(false);
+  const isDragging = useRef(false);
   const dragState = useRef<
     | { kind: "pan"; start: Vec2; camera0: Camera }
     | { kind: "node"; nodeId: string; start: Vec2; node0: Vec2 }
@@ -142,7 +144,7 @@ function App() {
         setMenu({ ...menu, open: false });
       }
 
-      if (e.button === 0) {
+      if (e.button == 1 || (e.button === 0 && spacePressed.current)) {
         dragState.current = { kind: "pan", start: pt, camera0: { ...camera } };
       }
     },
@@ -386,6 +388,67 @@ function App() {
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+
+  // --- Space key for panning ----------------------------------------
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === "Space" && !spacePressed.current) {
+        e.preventDefault();
+        spacePressed.current = true;
+
+        if (containerRef.current) {
+          containerRef.current.style.cursor = "grab";
+        }
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.code === "Space") {
+        e.preventDefault();
+        spacePressed.current = false;
+        isDragging.current = false;
+
+        if (containerRef.current) {
+          containerRef.current.style.cursor = "default";
+        }
+      }
+    };
+
+    const handleMouseDown = (e: MouseEvent) => {
+      if (e.button === 0 && spacePressed.current) {
+        isDragging.current = true;
+
+        if (containerRef.current) {
+          containerRef.current.style.cursor = "grabbing";
+        }
+      }
+    };
+
+    const handleMouseUp = () => {
+      if (isDragging.current) {
+        isDragging.current = false;
+
+        if (containerRef.current) {
+          // Return to grab if space is still pressed
+          containerRef.current.style.cursor = spacePressed.current
+            ? "grab"
+            : "default";
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keyup", handleKeyUp);
+    document.addEventListener("mousedown", handleMouseDown);
+    document.addEventListener("mouseup", handleMouseUp);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keyup", handleKeyUp);
+      document.removeEventListener("mousedown", handleMouseDown);
+      document.removeEventListener("mouseup", handleMouseUp);
     };
   }, []);
 
