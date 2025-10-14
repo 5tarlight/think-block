@@ -12,6 +12,7 @@ export default function NodeView({
   onPortDown,
   onPortUp,
   impl,
+  selected,
 }: {
   node: Node;
   onDragStart: (e: React.MouseEvent, nodeId: string) => void;
@@ -21,6 +22,7 @@ export default function NodeView({
   ) => void;
   onPortUp: (to: { nodeId: string; portId: string }) => void;
   impl: NodeImpl | null;
+  selected: boolean;
 }) {
   const inCount = node.inputs.length;
   const outCount = node.outputs.length;
@@ -74,7 +76,7 @@ export default function NodeView({
       className={cn(
         "absolute rounded-sm border border-neutral-700",
         "bg-neutral-900 text-neutral-200 shadow-lg",
-        "hover:border-blue-500"
+        selected ? "border-blue-500" : ""
       )}
       style={{
         left: node.pos.x,

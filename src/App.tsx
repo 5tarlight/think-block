@@ -26,7 +26,15 @@ function App() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const { camera, setCamera } = useCameraState();
-  const { nodes, setNodes } = useNodeState();
+  const {
+    nodes,
+    setNodes,
+    selected,
+    setSelected,
+    addSelected,
+    removeSelected,
+    clearSelected,
+  } = useNodeState();
   const { edges, setEdges, removeEdge } = useEdgeState();
 
   const spacePressed = useRef(false);
@@ -576,6 +584,7 @@ function App() {
                 onPortDown={startWireFrom}
                 onPortUp={tryCompleteWire}
                 impl={n.impl}
+                selected={selected.includes(n.id)}
               />
             ))}
           </div>
