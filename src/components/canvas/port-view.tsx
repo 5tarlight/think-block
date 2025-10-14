@@ -43,12 +43,16 @@ export default function PortView({
       />
       {isInput ? (
         <input
-          type="number"
           className={cn(
             "px-2 py-1 bg-neutral-800 border border-neutral-700 rounded-sm",
             "h-7 w-24 outline-none"
           )}
           value={inputValue}
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            (e.target as HTMLInputElement).focus();
+          }}
           onChange={(e) => setInputValue?.(e.target.value)}
         />
       ) : (
