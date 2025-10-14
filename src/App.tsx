@@ -548,6 +548,18 @@ function App() {
                   );
                 })()}
             </g>
+            {/* Selection box rect */}
+            {selectionBox && (
+              <rect
+                x={Math.min(selectionBox.start.x, selectionBox.end.x)}
+                y={Math.min(selectionBox.start.y, selectionBox.end.y)}
+                width={Math.abs(selectionBox.end.x - selectionBox.start.x)}
+                height={Math.abs(selectionBox.end.y - selectionBox.start.y)}
+                fill="rgba(147, 197, 253, 0.3)"
+                stroke="#93c5fd"
+                strokeWidth={1}
+              />
+            )}
           </svg>
 
           {/* Nodes layer */}
