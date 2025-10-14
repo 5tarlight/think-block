@@ -255,6 +255,7 @@ function App() {
 
       if (selectedNodes.includes(nodeId)) {
         // Drag all selected nodes
+        // TODO : implement group drag
       }
 
       const containerRect = containerRef.current!.getBoundingClientRect();
