@@ -544,6 +544,23 @@ function App() {
     };
   }, [selectionBox]);
 
+  const handleNodeClick = useCallback(
+    (e: React.MouseEvent, nodeId: string) => {
+      e.stopPropagation();
+      if (e.shiftKey) {
+        // Toggle selection
+        setSelectedNodes((prev) =>
+          prev.includes(nodeId)
+            ? prev.filter((id) => id !== nodeId)
+            : [...prev, nodeId]
+        );
+      } else {
+        setSelectedNodes(() => [nodeId]);
+      }
+    },
+    [setSelectedNodes]
+  );
+
   return (
     <div className="w-screen h-screen flex overflow-hidden">
       <Sidebar />
@@ -627,6 +644,7 @@ function App() {
                 onPortUp={tryCompleteWire}
                 impl={n.impl}
                 selected={selectedNodes.includes(n.id)}
+                onClick={handleNodeClick}
               />
             ))}
           </div>
