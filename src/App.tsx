@@ -29,11 +29,9 @@ function App() {
   const {
     nodes,
     setNodes,
-    selected,
-    setSelected,
-    addSelected,
-    removeSelected,
-    clearSelected,
+    selectedNodes,
+    setSelectedNodes,
+    clearSelectedNodes,
   } = useNodeState();
   const { edges, setEdges, removeEdge } = useEdgeState();
 
@@ -452,7 +450,7 @@ function App() {
         }
       } else if (e.button === 0 && !spacePressed.current) {
         // Start selection box
-        clearSelected();
+        clearSelectedNodes();
         const rect = containerRef.current!.getBoundingClientRect();
         const pt: Vec2 = { x: e.clientX - rect.left, y: e.clientY - rect.top };
         setSelectionBox({ start: pt, end: pt });
@@ -513,7 +511,7 @@ function App() {
           })
           .map((n) => n.id);
 
-        setSelected(() => selectedNodes);
+        setSelectedNodes(() => selectedNodes);
 
         setSelectionBox(null);
       }
@@ -628,7 +626,7 @@ function App() {
                 onPortDown={startWireFrom}
                 onPortUp={tryCompleteWire}
                 impl={n.impl}
-                selected={selected.includes(n.id)}
+                selected={selectedNodes.includes(n.id)}
               />
             ))}
           </div>
