@@ -15,6 +15,7 @@ export default function ExecuteButton() {
   const { getNodeData, setNodeData } = useNodeDataState();
   const [progress, setProgress] = useState(0);
   const [isExecuting, setIsExecuting] = useState(false);
+  const [isError, setIsError] = useState<false | string>(false);
 
   const getInputs = (
     nodeMap: Map<string, Node>,
@@ -64,6 +65,7 @@ export default function ExecuteButton() {
     console.log("Execution layers:", layers);
 
     let done = 0;
+    let hasError = false;
     setProgress(0);
     setIsExecuting(true);
     const totalNodes = nodes.length;
@@ -73,12 +75,20 @@ export default function ExecuteButton() {
     for (const layer of layers) {
       await Promise.all(
         layer.map(async (nodeId) => {
+          if (hasError) return;
           const node = nodeMap.get(nodeId);
           if (!node?.impl?.process) return;
 
           const inputs = getInputs(nodeMap, nodeId);
-          const outputs = await node.impl.process(inputs);
-          setNodeData(nodeId, outputs);
+          try {
+            const outputs = await node.impl.process(inputs);
+            setNodeData(nodeId, outputs);
+          } catch (e) {
+            hasError = true;
+            console.error(`Error processing node ${nodeId}:`, e);
+            setIsError(nodeId);
+            return;
+          }
 
           done += 1;
           setProgress(done / totalNodes);
@@ -87,7 +97,12 @@ export default function ExecuteButton() {
     }
 
     setIsExecuting(false);
-    console.log("Execution complete");
+    if (hasError)
+      console.log(`Execution stopped due to error in node ${isError}`);
+    else {
+      if (isError) setIsError(false);
+      console.log("Execution complete");
+    }
   };
 
   return (
@@ -95,11 +110,16 @@ export default function ExecuteButton() {
       className={cn(
         "w-full p-2 bg-blue-500 rounded-sm transition-colors",
         "hover:bg-blue-400 cursor-pointer",
-        (isExecuting && "hover:cursor-progress opacity-70") || ""
+        (isExecuting && "hover:cursor-progress opacity-70") || "",
+        (isError && "bg-red-600 hover:bg-red-500") || ""
       )}
       onClick={isExecuting ? undefined : onExecute}
     >
-      {isExecuting ? `Running... (${Math.round(progress * 100)}%)` : "Run"}
+      {isExecuting
+        ? `Running... (${Math.round(progress * 100)}%)`
+        : isError
+        ? `Error: ${isError}`
+        : "Run"}
     </button>
   );
 }
