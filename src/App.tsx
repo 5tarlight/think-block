@@ -446,6 +446,7 @@ function App() {
         if (selectedNodes.length > 0) {
           e.preventDefault();
           selectedNodes.forEach((nodeId) => deleteNode(nodeId));
+          clearSelectedNodes();
         }
       }
     };
