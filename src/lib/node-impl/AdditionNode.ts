@@ -3,7 +3,7 @@ import NodeImpl from "./NodeImpl";
 import CSV from "../data/csv";
 import { Tensor } from "@tensorflow/tfjs";
 
-export default class AddictionNode extends NodeImpl {
+export default class AdditionNode extends NodeImpl {
   constructor(nodeId: string) {
     super(
       nodeId,
