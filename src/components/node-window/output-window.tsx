@@ -2,6 +2,8 @@ import cn from "@yeahx4/cn";
 import CSV from "../../lib/data/csv";
 import { useNodeDataState } from "../../store/nodeDataStore";
 import CSVViewer from "../window/csv-viewer";
+import { Tensor } from "@tensorflow/tfjs";
+import { useEffect, useState } from "react";
 
 export default function OutputWindow({ nodeId }: { nodeId: string }) {
   const { getNodeData } = useNodeDataState();
@@ -24,15 +26,43 @@ export default function OutputWindow({ nodeId }: { nodeId: string }) {
     );
   }
 
-  const isCsv = data instanceof CSV;
+  const isCsv = data instanceof CSV || data instanceof Tensor;
   const isValue =
     typeof data === "number" ||
     typeof data === "string" ||
     typeof data === "boolean";
 
+  const [csvData, setCsvData] = useState<CSV | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (isCsv) {
+      if (data instanceof CSV) {
+        setCsvData(data);
+      } else {
+        const result = CSV.fromTensor(data);
+        if (result instanceof Promise) {
+          result.then((csv) => {
+            if (isMounted) setCsvData(csv);
+          });
+        } else {
+          setCsvData(result);
+        }
+      }
+    } else {
+      setCsvData(null);
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [data, isCsv]);
+
   return (
     <div>
-      {isCsv && <CSVViewer csv={data} maxRows={10} maxColumns={20} />}
+      {isCsv && csvData && (
+        <CSVViewer csv={csvData} maxRows={10} maxColumns={20} />
+      )}
+
       {isValue && <div>{String(data)}</div>}
     </div>
   );

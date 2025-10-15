@@ -1,5 +1,5 @@
 import type { ContextMenuItem } from "../components/canvas/context-menu";
-import AddictionNode from "./node-impl/AddictionNode";
+import AdditionNode from "./node-impl/AdditionNode";
 import CsvNode from "./node-impl/CsvNode";
 import MultiplicationNode from "./node-impl/MultiplicationNode";
 import type NodeImpl from "./node-impl/NodeImpl";
@@ -49,7 +49,7 @@ export function getNodeImpl(nodeId: string, type: NodeType): NodeImpl | null {
   if (type === "number") {
     return new NumberNode(nodeId);
   } else if (type === "add") {
-    return new AddictionNode(nodeId);
+    return new AdditionNode(nodeId);
   } else if (type === "multiply") {
     return new MultiplicationNode(nodeId);
   } else if (type === "output") {

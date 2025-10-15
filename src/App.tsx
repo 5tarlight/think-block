@@ -20,6 +20,7 @@ import type { ContextMenuState } from "./components/canvas/context-menu";
 import ContextMenu from "./components/canvas/context-menu";
 import WindowContainer from "./components/window/window-container";
 import Vertex from "./components/canvas/vertex";
+import "@tensorflow/tfjs-backend-webgpu";
 
 function App() {
   const gridRef = useRef<HTMLCanvasElement>(null);
@@ -32,6 +33,7 @@ function App() {
     selectedNodes,
     setSelectedNodes,
     clearSelectedNodes,
+    errorNode,
   } = useNodeState();
   const { edges, setEdges, removeEdge, removeEdgesConnectedToNode } =
     useEdgeState();
@@ -677,6 +679,7 @@ function App() {
                 impl={n.impl}
                 selected={selectedNodes.includes(n.id)}
                 onClick={handleNodeClick}
+                hasError={errorNode === n.id}
               />
             ))}
           </div>

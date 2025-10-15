@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import NodeImpl from "./NodeImpl";
 import OutputWindow from "../../components/node-window/output-window";
 import CSV from "../data/csv";
+import { Tensor } from "@tensorflow/tfjs";
 
 export default class OutputNode extends NodeImpl {
   constructor(nodeId: string) {
@@ -14,7 +15,7 @@ export default class OutputNode extends NodeImpl {
     const data = inputs["in"];
 
     // Expand window size if data is CSV
-    if (data instanceof CSV) {
+    if (data instanceof CSV || data instanceof Tensor) {
       this.winWidth = 700;
       this.winHeight = 500;
     } else {
