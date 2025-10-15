@@ -10,7 +10,7 @@ import { useNodeDataState } from "../../store/nodeDataStore";
 import { useState } from "react";
 
 export default function ExecuteButton() {
-  const { nodes } = useNodeState();
+  const { nodes, setErrorNode } = useNodeState();
   const { edges } = useEdgeState();
   const { getNodeData, setNodeData } = useNodeDataState();
   const [progress, setProgress] = useState(0);
@@ -87,6 +87,7 @@ export default function ExecuteButton() {
             hasError = true;
             console.error(`Error processing node ${nodeId}:`, e);
             setIsError(nodeId);
+            setErrorNode(nodeId);
             return;
           }
 
@@ -100,7 +101,10 @@ export default function ExecuteButton() {
     if (hasError)
       console.log(`Execution stopped due to error in node ${isError}`);
     else {
-      if (isError) setIsError(false);
+      if (isError) {
+        setIsError(false);
+        setErrorNode(null);
+      }
       console.log("Execution complete");
     }
   };

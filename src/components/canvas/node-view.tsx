@@ -14,6 +14,7 @@ export default function NodeView({
   impl,
   selected,
   onClick,
+  hasError,
 }: {
   node: Node;
   onDragStart: (e: React.MouseEvent, nodeId: string) => void;
@@ -25,6 +26,7 @@ export default function NodeView({
   impl: NodeImpl | null;
   selected: boolean;
   onClick: (e: React.MouseEvent, nodeId: string) => void;
+  hasError: boolean;
 }) {
   const inCount = node.inputs.length;
   const outCount = node.outputs.length;
@@ -78,7 +80,11 @@ export default function NodeView({
       className={cn(
         "absolute rounded-sm border ",
         "bg-neutral-900 text-neutral-200 shadow-lg",
-        selected ? "border-blue-500" : "border-neutral-700"
+        hasError
+          ? "border-red-500"
+          : selected
+          ? "border-blue-500"
+          : "border-neutral-700"
       )}
       style={{
         left: node.pos.x,

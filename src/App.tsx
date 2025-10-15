@@ -33,6 +33,7 @@ function App() {
     selectedNodes,
     setSelectedNodes,
     clearSelectedNodes,
+    errorNode,
   } = useNodeState();
   const { edges, setEdges, removeEdge, removeEdgesConnectedToNode } =
     useEdgeState();
@@ -678,6 +679,7 @@ function App() {
                 impl={n.impl}
                 selected={selectedNodes.includes(n.id)}
                 onClick={handleNodeClick}
+                hasError={errorNode === n.id}
               />
             ))}
           </div>
