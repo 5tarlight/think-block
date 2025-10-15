@@ -26,10 +26,18 @@ function App() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const { camera, setCamera } = useCameraState();
-  const { nodes, setNodes } = useNodeState();
-  const { edges, setEdges, removeEdge } = useEdgeState();
+  const {
+    nodes,
+    setNodes,
+    selectedNodes,
+    setSelectedNodes,
+    clearSelectedNodes,
+  } = useNodeState();
+  const { edges, setEdges, removeEdge, removeEdgesConnectedToNode } =
+    useEdgeState();
 
-  const [menu, setMenu] = useState<ContextMenuState | null>(null);
+  const spacePressed = useRef(false);
+  const isDragging = useRef(false);
   const dragState = useRef<
     | { kind: "pan"; start: Vec2; camera0: Camera }
     | { kind: "node"; nodeId: string; start: Vec2; node0: Vec2 }
@@ -37,18 +45,28 @@ function App() {
     | null
   >(null);
 
+  const [menu, setMenu] = useState<ContextMenuState | null>(null);
+  const [selectionBox, setSelectionBox] = useState<{
+    start: Vec2;
+    end: Vec2;
+  } | null>(null);
+
   const resizeGrid = useCallback(() => {
     const el = gridRef.current;
     if (!el) return;
+
     const dpr = window.devicePixelRatio || 1;
     const rect = el.parentElement?.getBoundingClientRect();
     if (!rect) return;
+
     el.width = Math.floor(rect.width * dpr);
     el.height = Math.floor(rect.height * dpr);
     el.style.width = `${rect.width}px`;
     el.style.height = `${rect.height}px`;
+
     const ctx = el.getContext("2d");
     if (!ctx) return;
+
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     drawGrid();
   }, []);
@@ -87,10 +105,12 @@ function App() {
       ctx.moveTo(x + 0.5, 0);
       ctx.lineTo(x + 0.5, height);
     }
+
     for (let y = origin.y % step; y < height; y += step) {
       ctx.moveTo(0, y + 0.5);
       ctx.lineTo(width, y + 0.5);
     }
+
     ctx.strokeStyle = "#151c2d";
     ctx.lineWidth = 1;
     ctx.stroke();
@@ -101,7 +121,7 @@ function App() {
       // e.preventDefault();
       if (e.ctrlKey || e.metaKey) {
         // Zoom to cursor
-        const factor = e.deltaY < 0 ? 1.1 : 0.9;
+        const factor = e.deltaY < 0 ? 1.01 : 0.99;
         const rect = (
           e.currentTarget as HTMLDivElement
         ).getBoundingClientRect();
@@ -142,7 +162,7 @@ function App() {
         setMenu({ ...menu, open: false });
       }
 
-      if (e.button === 0) {
+      if (e.button === 1 || (e.button === 0 && spacePressed.current)) {
         dragState.current = { kind: "pan", start: pt, camera0: { ...camera } };
       }
     },
@@ -155,9 +175,11 @@ function App() {
       const pt: Vec2 = { x: e.clientX - rect.left, y: e.clientY - rect.top };
       const ds = dragState.current;
       if (!ds) return;
+
       if (ds.kind === "pan") {
         const dx = pt.x - ds.start.x;
         const dy = pt.y - ds.start.y;
+
         setCamera(() => ({
           ...ds.camera0,
           tx: ds.camera0.tx + dx,
@@ -166,6 +188,7 @@ function App() {
       } else if (ds.kind === "node") {
         const dx = (pt.x - ds.start.x) / camera.scale;
         const dy = (pt.y - ds.start.y) / camera.scale;
+
         setNodes((prev) =>
           prev.map((n) =>
             n.id === ds.nodeId
@@ -187,11 +210,13 @@ function App() {
     if (ds) {
       if (ds.kind === "node") {
         const node = nodes.find((n) => n.id === ds.nodeId);
+
         console.log("Node drag ended:", {
           nodeId: ds.nodeId,
           nodeTitle: node?.title,
           finalPosition: node?.pos,
         });
+
         dragState.current = null;
       } else if (ds.kind === "wire" && ds.from) {
         console.log("Wire drag cancelled:", {
@@ -213,9 +238,11 @@ function App() {
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
+
     const onCtx = (e: MouseEvent) => {
       e.preventDefault();
     };
+
     el.addEventListener("contextmenu", onCtx);
     return () => el.removeEventListener("contextmenu", onCtx);
   }, []);
@@ -224,6 +251,13 @@ function App() {
   const startNodeDrag = useCallback(
     (e: React.MouseEvent, nodeId: string) => {
       e.stopPropagation();
+      e.preventDefault();
+
+      if (selectedNodes.includes(nodeId)) {
+        // Drag all selected nodes
+        // TODO : implement group drag
+      }
+
       const containerRect = containerRef.current!.getBoundingClientRect();
       const pt: Vec2 = {
         x: e.clientX - containerRect.left,
@@ -300,6 +334,7 @@ function App() {
       e.stopPropagation();
       const rect = containerRef.current!.getBoundingClientRect();
       const pt: Vec2 = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+
       dragState.current = {
         kind: "wire",
         from: { node: from.nodeId, port: from.portId },
@@ -389,6 +424,175 @@ function App() {
     };
   }, []);
 
+  const deleteNode = useCallback(
+    (nodeId: string) => {
+      setNodes((prev) => prev.filter((n) => n.id !== nodeId));
+      removeEdgesConnectedToNode(nodeId);
+    },
+    [setNodes, removeEdgesConnectedToNode]
+  );
+
+  // --- Global Keyboard Shortcuts & Mouse -------------------------------
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === "Space" && !spacePressed.current) {
+        e.preventDefault();
+        spacePressed.current = true;
+
+        if (containerRef.current) {
+          containerRef.current.style.cursor = "grab";
+        }
+      } else if (e.code === "Delete" || e.code === "Backspace") {
+        if (selectedNodes.length > 0) {
+          e.preventDefault();
+          selectedNodes.forEach((nodeId) => deleteNode(nodeId));
+          clearSelectedNodes();
+        }
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.code === "Space") {
+        e.preventDefault();
+        spacePressed.current = false;
+        isDragging.current = false;
+
+        if (containerRef.current) {
+          containerRef.current.style.cursor = "default";
+        }
+      }
+    };
+
+    const handleMouseDown = (e: MouseEvent) => {
+      if (e.button === 0 && spacePressed.current) {
+        isDragging.current = true;
+
+        if (containerRef.current) {
+          containerRef.current.style.cursor = "grabbing";
+        }
+      } else if (
+        e.button === 0 &&
+        !spacePressed.current &&
+        !dragState.current
+      ) {
+        // Start selection box
+        clearSelectedNodes();
+        const rect = containerRef.current!.getBoundingClientRect();
+        const pt: Vec2 = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+        setSelectionBox({ start: pt, end: pt });
+      }
+    };
+
+    const handleMouseUp = () => {
+      if (isDragging.current) {
+        isDragging.current = false;
+
+        if (containerRef.current) {
+          // Return to grab if space is still pressed
+          containerRef.current.style.cursor = spacePressed.current
+            ? "grab"
+            : "default";
+        }
+      } else if (selectionBox) {
+        // Select nodes within selection box
+        const box = {
+          x1: Math.min(selectionBox.start.x, selectionBox.end.x),
+          y1: Math.min(selectionBox.start.y, selectionBox.end.y),
+          x2: Math.max(selectionBox.start.x, selectionBox.end.x),
+          y2: Math.max(selectionBox.start.y, selectionBox.end.y),
+        };
+
+        const selectedNodes = nodes
+          .filter((n) => {
+            const nodeSize = {
+              w: 256,
+              h: -1,
+            };
+            const rows = Math.max(n.inputs.length, n.outputs.length);
+            if (n.size === "full") {
+              nodeSize.h = Math.max(80, 56 + 28 * rows + 4 * (rows - 1));
+            } else if (n.size === "small") {
+              nodeSize.h = 16 + 28 * rows + 4 * (rows - 1);
+              nodeSize.w = 164;
+            } else if (n.size === "input") {
+              nodeSize.h = 44;
+              nodeSize.w = 124;
+            }
+
+            const nodeScreenPos = worldToScreen(n.pos, camera);
+            const nodeBox = {
+              x1: nodeScreenPos.x,
+              y1: nodeScreenPos.y,
+              x2: nodeScreenPos.x + nodeSize.w,
+              y2: nodeScreenPos.y + nodeSize.h,
+            };
+
+            // AABB intersection
+            return !(
+              box.x2 < nodeBox.x1 ||
+              box.x1 > nodeBox.x2 ||
+              box.y2 < nodeBox.y1 ||
+              box.y1 > nodeBox.y2
+            );
+          })
+          .map((n) => n.id);
+
+        setSelectedNodes(() => selectedNodes);
+
+        setSelectionBox(null);
+      }
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      // Update selection box
+      if (selectionBox) {
+        if (dragState.current) {
+          // Cancel selection box if other drag started
+          setSelectionBox(null);
+          return;
+        }
+
+        const rect = containerRef.current!.getBoundingClientRect();
+        const pt: Vec2 = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+        setSelectionBox({
+          start: selectionBox.start,
+          end: pt,
+        });
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keyup", handleKeyUp);
+    containerRef.current?.addEventListener("mousedown", handleMouseDown);
+    containerRef.current?.addEventListener("mouseup", handleMouseUp);
+    containerRef.current?.addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keyup", handleKeyUp);
+      containerRef.current?.removeEventListener("mousedown", handleMouseDown);
+      containerRef.current?.removeEventListener("mouseup", handleMouseUp);
+      containerRef.current?.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, [selectionBox]);
+
+  const handleNodeClick = useCallback(
+    (e: React.MouseEvent, nodeId: string) => {
+      e.stopPropagation();
+      if (e.shiftKey) {
+        // Toggle selection
+        setSelectedNodes((prev) =>
+          prev.includes(nodeId)
+            ? prev.filter((id) => id !== nodeId)
+            : [...prev, nodeId]
+        );
+      } else {
+        setSelectedNodes(() => [nodeId]);
+      }
+    },
+    [setSelectedNodes]
+  );
+
   return (
     <div className="w-screen h-screen flex overflow-hidden">
       <Sidebar />
@@ -443,6 +647,18 @@ function App() {
                   );
                 })()}
             </g>
+            {/* Selection box rect */}
+            {selectionBox && (
+              <rect
+                x={Math.min(selectionBox.start.x, selectionBox.end.x)}
+                y={Math.min(selectionBox.start.y, selectionBox.end.y)}
+                width={Math.abs(selectionBox.end.x - selectionBox.start.x)}
+                height={Math.abs(selectionBox.end.y - selectionBox.start.y)}
+                fill="rgba(147, 197, 253, 0.3)"
+                stroke="#93c5fd"
+                strokeWidth={1}
+              />
+            )}
           </svg>
 
           {/* Nodes layer */}
@@ -459,6 +675,8 @@ function App() {
                 onPortDown={startWireFrom}
                 onPortUp={tryCompleteWire}
                 impl={n.impl}
+                selected={selectedNodes.includes(n.id)}
+                onClick={handleNodeClick}
               />
             ))}
           </div>

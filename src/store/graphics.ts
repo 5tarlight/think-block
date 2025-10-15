@@ -67,12 +67,30 @@ export const useCameraState = create<CameraState>((set, get) => ({
 
 export interface NodeState {
   nodes: Node[];
+  selectedNodes: string[];
   setNodes: (f: (nodes: Node[]) => Node[]) => void;
+  setSelectedNodes: (f: (selected: string[]) => string[]) => void;
+  addSelectedNodes: (id: string) => void;
+  removeSelectedNodes: (id: string) => void;
+  clearSelectedNodes: () => void;
 }
 
 export const useNodeState = create<NodeState>((set, get) => ({
   nodes: [],
+  selectedNodes: [],
   setNodes: (f) => set({ nodes: f(get().nodes) }),
+  setSelectedNodes: (f) => set({ selectedNodes: f(get().selectedNodes) }),
+  addSelectedNodes: (id) =>
+    set((state) =>
+      state.selectedNodes.includes(id)
+        ? state
+        : { selectedNodes: [...state.selectedNodes, id] }
+    ),
+  removeSelectedNodes: (id) =>
+    set((state) => ({
+      selectedNodes: state.selectedNodes.filter((sid) => sid !== id),
+    })),
+  clearSelectedNodes: () => set({ selectedNodes: [] }),
 }));
 
 export interface EdgeState {

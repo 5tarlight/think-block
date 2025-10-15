@@ -1,4 +1,5 @@
 import cn from "@yeahx4/cn";
+import { useNodeState } from "../../store/graphics";
 
 export default function PortView({
   label,
@@ -17,6 +18,8 @@ export default function PortView({
   inputValue?: string;
   setInputValue?: (value: string) => void;
 }) {
+  const { clearSelectedNodes } = useNodeState();
+
   return (
     <div
       className={
@@ -43,12 +46,17 @@ export default function PortView({
       />
       {isInput ? (
         <input
-          type="number"
           className={cn(
             "px-2 py-1 bg-neutral-800 border border-neutral-700 rounded-sm",
             "h-7 w-24 outline-none"
           )}
           value={inputValue}
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            clearSelectedNodes();
+            (e.target as HTMLInputElement).focus();
+          }}
           onChange={(e) => setInputValue?.(e.target.value)}
         />
       ) : (
