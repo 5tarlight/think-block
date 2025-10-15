@@ -162,7 +162,7 @@ function App() {
         setMenu({ ...menu, open: false });
       }
 
-      if (e.button == 1 || (e.button === 0 && spacePressed.current)) {
+      if (e.button === 1 || (e.button === 0 && spacePressed.current)) {
         dragState.current = { kind: "pan", start: pt, camera0: { ...camera } };
       }
     },
