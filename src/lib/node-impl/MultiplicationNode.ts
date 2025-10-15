@@ -20,16 +20,21 @@ export default class MultiplicationNode extends NodeImpl {
 
     if (typeof inputs.a === "number" && typeof inputs.b === "number") {
       return { prod: inputs.a * inputs.b };
-    } else if (inputs.a instanceof CSV && inputs.b instanceof CSV) {
-      const a = inputs.a as CSV;
-      const b = inputs.b as CSV;
-
-      return { prod: a.toTensor().mul(b.toTensor()) };
     } else if (inputs.a instanceof Tensor && inputs.b instanceof Tensor) {
       const a = inputs.a as Tensor;
       const b = inputs.b as Tensor;
 
       return { prod: a.mul(b) };
+    } else if (inputs.a instanceof Tensor && typeof inputs.b === "number") {
+      const a = inputs.a as Tensor;
+      const b = inputs.b as number;
+
+      return { prod: a.mul(b) };
+    } else if (typeof inputs.a === "number" && inputs.b instanceof Tensor) {
+      const a = inputs.a as number;
+      const b = inputs.b as Tensor;
+
+      return { prod: b.mul(a) };
     } else if (inputs.a instanceof Tensor && typeof inputs.b === "number") {
       const a = inputs.a as Tensor;
       const b = inputs.b as number;
