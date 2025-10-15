@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useGPUStore } from "../../store/gpuStore";
+import { setBackend } from "@tensorflow/tfjs";
 
 declare global {
   interface GPUAdapter {
@@ -53,14 +54,31 @@ export default function GPUSelector() {
         return;
       }
 
-      // 일부 브라우저만 info 노출
+      // Some browsers do not support adapter.info
       const info = (adapter as GPUAdapter).info ?? {};
       setVendor(info.vendor ?? "unknown");
       setArchitecture(info.architecture ?? "unknown");
 
       setAvailability(true);
+      if (current !== "cpu" && current !== "gpu") {
+        setCurrent("gpu");
+      }
     })();
   }, [setAvailability, setCurrent]);
+
+  useEffect(() => {
+    if (current === "gpu") {
+      (async () => {
+        console.log("Activating GPU backend");
+        console.log("Backend activated:", await setBackend("webgpu"));
+      })();
+    } else {
+      (async () => {
+        console.log("Activating CPU backend");
+        console.log("Backend activated:", await setBackend("cpu"));
+      })();
+    }
+  }, [current]);
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const v = e.target.value as "cpu" | "gpu";

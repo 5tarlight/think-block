@@ -20,6 +20,7 @@ import type { ContextMenuState } from "./components/canvas/context-menu";
 import ContextMenu from "./components/canvas/context-menu";
 import WindowContainer from "./components/window/window-container";
 import Vertex from "./components/canvas/vertex";
+import "@tensorflow/tfjs-backend-webgpu";
 
 function App() {
   const gridRef = useRef<HTMLCanvasElement>(null);
