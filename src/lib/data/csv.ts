@@ -1,3 +1,4 @@
+import { tensor, type Tensor } from "@tensorflow/tfjs";
 import Papa from "papaparse";
 
 export async function parseCSV(csv: string, hasHeader = true) {
@@ -37,6 +38,20 @@ export default class CSV {
     return new CSV(headers, rows);
   }
 
+  static async fromTensor(t: Tensor, headers?: string[]) {
+    const array = await t.array();
+    const rows = (array as any[][]).map((row) =>
+      row.map((value) => (typeof value === "number" ? value.toString() : ""))
+    );
+    if (!headers) {
+      headers = Array.from({ length: rows[0]?.length || 0 }, (_, i) =>
+        i.toString()
+      );
+    }
+
+    return new CSV(headers, rows);
+  }
+
   getRows() {
     return this.rows.length;
   }
@@ -45,7 +60,14 @@ export default class CSV {
     return this.headers.length;
   }
 
-  shape() {
+  shape(): [number, number] {
     return [this.getRows(), this.getColumns()];
+  }
+
+  toTensor(): Tensor {
+    return tensor(
+      this.rows.map((row) => row.map((value) => parseFloat(value) || value)),
+      this.shape()
+    );
   }
 }
