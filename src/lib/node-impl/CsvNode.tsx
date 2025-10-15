@@ -5,7 +5,7 @@ import { useNodeDataState } from "../../store/nodeDataStore";
 
 export default class CsvNode extends NodeImpl {
   constructor(nodeId: string) {
-    super(nodeId, "csv", [], [{ name: "data" }]);
+    super(nodeId, "csv", [], [{ name: "csv" }]);
     this.winWidth = 700;
     this.winHeight = 500;
   }
@@ -14,7 +14,7 @@ export default class CsvNode extends NodeImpl {
     const { getNodeData } = useNodeDataState.getState();
     return {
       fileKey: getNodeData(this.nodeId)?.fileKey || null,
-      data: getNodeData(this.nodeId)?.csv || null,
+      csv: getNodeData(this.nodeId)?.csv || null,
     };
   }
 
