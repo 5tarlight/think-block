@@ -6,7 +6,7 @@ import * as tf from "@tensorflow/tfjs";
 
 export default class StddevNode extends NodeImpl {
   constructor(nodeId: string) {
-    super(nodeId, "stddev", [{ name: "input" }], [{ name: "std. dev" }]);
+    super(nodeId, "stddev", [{ name: "input" }], [{ name: "stddev" }]);
   }
 
   private async tensorStddev(tensor: Tensor): Promise<number> {
