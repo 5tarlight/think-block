@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
-import NodeImpl from "./NodeImpl";
-import CsvWindow from "../../components/node-window/csv-window";
-import { useNodeDataState } from "../../store/nodeDataStore";
+import NodeImpl from "../NodeImpl";
+import CsvWindow from "../../../components/node-window/csv-window";
+import { useNodeDataState } from "../../../store/nodeDataStore";
 
 export default class CsvNode extends NodeImpl {
   constructor(nodeId: string) {

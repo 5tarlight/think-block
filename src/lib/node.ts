@@ -1,12 +1,13 @@
 import type { ContextMenuItem } from "../components/canvas/context-menu";
-import AdditionNode from "./node-impl/AdditionNode";
-import CsvNode from "./node-impl/CsvNode";
-import MultiplicationNode from "./node-impl/MultiplicationNode";
+import AdditionNode from "./node-impl/arithmetic/AdditionNode";
+import CsvNode from "./node-impl/data/CsvNode";
+import MultiplicationNode from "./node-impl/arithmetic/MultiplicationNode";
 import type NodeImpl from "./node-impl/NodeImpl";
-import NumberNode from "./node-impl/NumberNode";
+import NumberNode from "./node-impl/data/NumberNode";
 import OutputNode from "./node-impl/OutputNode";
+import MaximumNode from "./node-impl/statistics/MaximumNode";
 
-export type NodeType = "number" | "add" | "multiply" | "output" | "csv";
+export type NodeType = "number" | "add" | "multiply" | "output" | "csv" | "max";
 export type NodeSize = "full" | "small" | "input";
 
 export const contextMenuItems: ContextMenuItem[] = [
@@ -39,6 +40,17 @@ export const contextMenuItems: ContextMenuItem[] = [
     ],
   },
   {
+    label: "statistics",
+    isSubMenu: true,
+    sub: [
+      {
+        label: "maximum",
+        type: "max",
+        keywords: ["max", "최대값"],
+      },
+    ],
+  },
+  {
     label: "output",
     type: "output",
     keywords: ["print", "result", "출력"],
@@ -56,6 +68,8 @@ export function getNodeImpl(nodeId: string, type: NodeType): NodeImpl | null {
     return new OutputNode(nodeId);
   } else if (type === "csv") {
     return new CsvNode(nodeId);
+  } else if (type === "max") {
+    return new MaximumNode(nodeId);
   }
 
   return null;

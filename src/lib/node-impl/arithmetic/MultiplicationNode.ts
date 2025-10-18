@@ -1,15 +1,15 @@
 import type { ReactNode } from "react";
-import NodeImpl from "./NodeImpl";
-import CSV from "../data/csv";
+import NodeImpl from "../NodeImpl";
+import CSV from "../../data/csv";
 import { Tensor } from "@tensorflow/tfjs";
 
-export default class AdditionNode extends NodeImpl {
+export default class MultiplicationNode extends NodeImpl {
   constructor(nodeId: string) {
     super(
       nodeId,
-      "add",
+      "multiply",
       [{ name: "a" }, { name: "b" }],
-      [{ name: "a + b" }],
+      [{ name: "a * b" }],
       "small"
     );
   }
@@ -19,25 +19,35 @@ export default class AdditionNode extends NodeImpl {
     if (inputs.b instanceof CSV) inputs.b = inputs.b.toTensor();
 
     if (typeof inputs.a === "number" && typeof inputs.b === "number") {
-      return { sum: inputs.a + inputs.b };
+      return { prod: inputs.a * inputs.b };
     } else if (inputs.a instanceof Tensor && inputs.b instanceof Tensor) {
       const a = inputs.a as Tensor;
       const b = inputs.b as Tensor;
 
-      return { sum: a.add(b) };
+      return { prod: a.mul(b) };
     } else if (inputs.a instanceof Tensor && typeof inputs.b === "number") {
       const a = inputs.a as Tensor;
       const b = inputs.b as number;
 
-      return { sum: a.add(b) };
+      return { prod: a.mul(b) };
     } else if (typeof inputs.a === "number" && inputs.b instanceof Tensor) {
       const a = inputs.a as number;
       const b = inputs.b as Tensor;
 
-      return { sum: b.add(a) };
+      return { prod: b.mul(a) };
+    } else if (inputs.a instanceof Tensor && typeof inputs.b === "number") {
+      const a = inputs.a as Tensor;
+      const b = inputs.b as number;
+
+      return { prod: a.mul(b) };
+    } else if (typeof inputs.a === "number" && inputs.b instanceof Tensor) {
+      const a = inputs.a as number;
+      const b = inputs.b as Tensor;
+
+      return { prod: b.mul(a) };
     }
 
-    throw new Error("Invalid inputs: 'a' and 'b' must be numbers or Tensor");
+    throw new Error("Invalid inputs: 'a' and 'b' must be numbers.");
   }
 
   render(): ReactNode {

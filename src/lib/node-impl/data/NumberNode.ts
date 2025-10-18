@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import NodeImpl from "./NodeImpl";
-import { useNodeDataState } from "../../store/nodeDataStore";
+import NodeImpl from "../NodeImpl";
+import { useNodeDataState } from "../../../store/nodeDataStore";
 
 export default class NumberNode extends NodeImpl {
   constructor(nodeId: string) {
