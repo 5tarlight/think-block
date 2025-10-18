@@ -66,6 +66,7 @@ export default function ExecuteButton() {
 
     let done = 0;
     let hasError = false;
+    const startTime = performance.now();
     setProgress(0);
     setIsExecuting(true);
     const totalNodes = nodes.length;
@@ -93,10 +94,13 @@ export default function ExecuteButton() {
 
           done += 1;
           setProgress(done / totalNodes);
+
+          await new Promise((r) => setTimeout(r, 0));
         })
       );
     }
 
+    const endTime = performance.now();
     setIsExecuting(false);
     if (hasError)
       console.log(`Execution stopped due to error in node ${isError}`);
@@ -106,6 +110,9 @@ export default function ExecuteButton() {
         setErrorNode(null);
       }
       console.log("Execution complete");
+      console.log(
+        `Execution time: ${Math.round((endTime - startTime) / 100) / 10}s`
+      );
     }
   };
 
