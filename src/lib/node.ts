@@ -11,6 +11,8 @@ import ArgmaxNode from "./node-impl/statistics/ArgmaxNode";
 import ArgminNode from "./node-impl/statistics/ArgminNode";
 import AverageNode from "./node-impl/statistics/AverageNode";
 import MedianNode from "./node-impl/statistics/MedianNode";
+import VariationNode from "./node-impl/statistics/VariationNode";
+import StddevNode from "./node-impl/statistics/StddevNode";
 
 export type NodeType =
   | "number"
@@ -23,7 +25,9 @@ export type NodeType =
   | "argmax"
   | "argmin"
   | "avg"
-  | "median";
+  | "median"
+  | "variation"
+  | "stddev";
 export type NodeSize = "full" | "small" | "input";
 
 export const contextMenuItems: ContextMenuItem[] = [
@@ -89,6 +93,16 @@ export const contextMenuItems: ContextMenuItem[] = [
         type: "median",
         keywords: ["median", "중앙값"],
       },
+      {
+        label: "variation",
+        type: "variation",
+        keywords: ["variation", "변동", "분산"],
+      },
+      {
+        label: "standard deviation",
+        type: "stddev",
+        keywords: ["stddev", "표준편차"],
+      },
     ],
   },
   {
@@ -121,6 +135,10 @@ export function getNodeImpl(nodeId: string, type: NodeType): NodeImpl | null {
     return new AverageNode(nodeId);
   } else if (type === "median") {
     return new MedianNode(nodeId);
+  } else if (type === "variation") {
+    return new VariationNode(nodeId);
+  } else if (type === "stddev") {
+    return new StddevNode(nodeId);
   }
 
   return null;
