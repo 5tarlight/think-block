@@ -6,8 +6,16 @@ import type NodeImpl from "./node-impl/NodeImpl";
 import NumberNode from "./node-impl/data/NumberNode";
 import OutputNode from "./node-impl/OutputNode";
 import MaximumNode from "./node-impl/statistics/MaximumNode";
+import MinimumNode from "./node-impl/statistics/MinimumNode";
 
-export type NodeType = "number" | "add" | "multiply" | "output" | "csv" | "max";
+export type NodeType =
+  | "number"
+  | "add"
+  | "multiply"
+  | "output"
+  | "csv"
+  | "max"
+  | "min";
 export type NodeSize = "full" | "small" | "input";
 
 export const contextMenuItems: ContextMenuItem[] = [
@@ -48,6 +56,11 @@ export const contextMenuItems: ContextMenuItem[] = [
         type: "max",
         keywords: ["max", "최대값"],
       },
+      {
+        label: "minimum",
+        type: "min",
+        keywords: ["min", "최소값"],
+      },
     ],
   },
   {
@@ -70,6 +83,8 @@ export function getNodeImpl(nodeId: string, type: NodeType): NodeImpl | null {
     return new CsvNode(nodeId);
   } else if (type === "max") {
     return new MaximumNode(nodeId);
+  } else if (type === "min") {
+    return new MinimumNode(nodeId);
   }
 
   return null;
