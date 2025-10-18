@@ -9,16 +9,7 @@ export default class ArgminNode extends NodeImpl {
   }
 
   private async tensorArgmin(tensor: Tensor): Promise<number> {
-    const data = await tensor.data();
-    let min = data[0];
-    let argmin = 0;
-    for (let i = 1; i < data.length; i++) {
-      if (data[i] < min) {
-        min = data[i];
-        argmin = i;
-      }
-    }
-    return argmin;
+    return (await tensor.argMin().data())[0];
   }
 
   async process(inputs: Record<string, any>): Promise<Record<string, any>> {

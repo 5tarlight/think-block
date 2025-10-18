@@ -9,12 +9,7 @@ export default class AverageNode extends NodeImpl {
   }
 
   private async tensorAverage(tensor: Tensor): Promise<number> {
-    const data = await tensor.data();
-    let sum = 0;
-    for (let i = 0; i < data.length; i++) {
-      sum += data[i];
-    }
-    return sum / data.length;
+    return (await tensor.mean().data())[0];
   }
 
   async process(inputs: Record<string, any>): Promise<Record<string, any>> {

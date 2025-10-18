@@ -9,16 +9,7 @@ export default class ArgmaxNode extends NodeImpl {
   }
 
   private async tensorArgmax(tensor: Tensor): Promise<number> {
-    const data = await tensor.data();
-    let max = data[0];
-    let argmax = 0;
-    for (let i = 1; i < data.length; i++) {
-      if (data[i] > max) {
-        max = data[i];
-        argmax = i;
-      }
-    }
-    return argmax;
+    return (await tensor.argMax().data())[0];
   }
 
   async process(inputs: Record<string, any>): Promise<Record<string, any>> {

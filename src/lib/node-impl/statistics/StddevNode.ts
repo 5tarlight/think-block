@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import NodeImpl from "../NodeImpl";
 import CSV from "../../data/csv";
 import { Tensor } from "@tensorflow/tfjs";
+import * as tf from "@tensorflow/tfjs";
 
 export default class StddevNode extends NodeImpl {
   constructor(nodeId: string) {
@@ -9,17 +10,10 @@ export default class StddevNode extends NodeImpl {
   }
 
   private async tensorStddev(tensor: Tensor): Promise<number> {
-    const data = await tensor.data();
-    const n = data.length;
-    let sum = 0;
-    let sumSq = 0;
-    for (let i = 0; i < n; i++) {
-      sum += data[i];
-      sumSq += data[i] * data[i];
-    }
-    const mean = sum / n;
-    const variance = sumSq / n - mean * mean;
-    return Math.sqrt(variance);
+    const variance = tf.moments(tensor).variance;
+    const stddev = tf.sqrt(variance);
+
+    return (await stddev.data())[0];
   }
 
   async process(inputs: Record<string, any>): Promise<Record<string, any>> {
