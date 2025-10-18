@@ -9,7 +9,7 @@ export default function OutputWindow({ nodeId }: { nodeId: string }) {
   const { getNodeData } = useNodeDataState();
   const possibleData = getNodeData(nodeId);
   const data = possibleData ? possibleData["data"] : null;
-  const empty = !data;
+  const empty = data === null || data === undefined;
 
   if (empty) {
     return (

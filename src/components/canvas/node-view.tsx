@@ -127,7 +127,11 @@ export default function NodeView({
             <span className={cn("ml-2 opacity-70 italic whitespace-nowrap")}>
               {(() => {
                 const data = getNodeData(node.id)?.data;
-                if (data && typeof data !== "object")
+                if (
+                  data !== null &&
+                  data !== undefined &&
+                  typeof data !== "object"
+                )
                   return `= ${Math.round(data * 10000) / 10000}`;
               })()}
             </span>
