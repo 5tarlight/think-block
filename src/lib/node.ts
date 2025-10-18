@@ -7,6 +7,8 @@ import NumberNode from "./node-impl/data/NumberNode";
 import OutputNode from "./node-impl/OutputNode";
 import MaximumNode from "./node-impl/statistics/MaximumNode";
 import MinimumNode from "./node-impl/statistics/MinimumNode";
+import ArgmaxNode from "./node-impl/statistics/ArgmaxNode";
+import ArgminNode from "./node-impl/statistics/ArgminNode";
 
 export type NodeType =
   | "number"
@@ -15,7 +17,9 @@ export type NodeType =
   | "output"
   | "csv"
   | "max"
-  | "min";
+  | "min"
+  | "argmax"
+  | "argmin";
 export type NodeSize = "full" | "small" | "input";
 
 export const contextMenuItems: ContextMenuItem[] = [
@@ -61,6 +65,16 @@ export const contextMenuItems: ContextMenuItem[] = [
         type: "min",
         keywords: ["min", "최소값"],
       },
+      {
+        label: "argmax",
+        type: "argmax",
+        keywords: ["argmax", "최대값 인덱스"],
+      },
+      {
+        label: "argmin",
+        type: "argmin",
+        keywords: ["argmin", "최소값 인덱스"],
+      },
     ],
   },
   {
@@ -85,6 +99,10 @@ export function getNodeImpl(nodeId: string, type: NodeType): NodeImpl | null {
     return new MaximumNode(nodeId);
   } else if (type === "min") {
     return new MinimumNode(nodeId);
+  } else if (type === "argmax") {
+    return new ArgmaxNode(nodeId);
+  } else if (type === "argmin") {
+    return new ArgminNode(nodeId);
   }
 
   return null;

@@ -3,32 +3,34 @@ import NodeImpl from "../NodeImpl";
 import CSV from "../../data/csv";
 import { Tensor } from "@tensorflow/tfjs";
 
-export default class MinimumNode extends NodeImpl {
+export default class ArgminNode extends NodeImpl {
   constructor(nodeId: string) {
-    super(nodeId, "min", [{ name: "input" }], [{ name: "min" }]);
+    super(nodeId, "argmin", [{ name: "input" }], [{ name: "index" }]);
   }
 
-  private async tensorMin(tensor: Tensor): Promise<number> {
+  private async tensorArgmin(tensor: Tensor): Promise<number> {
     const data = await tensor.data();
     let min = data[0];
+    let argmin = 0;
     for (let i = 1; i < data.length; i++) {
       if (data[i] < min) {
         min = data[i];
+        argmin = i;
       }
     }
-    return min;
+    return argmin;
   }
 
   async process(inputs: Record<string, any>): Promise<Record<string, any>> {
     if (typeof inputs.input === "number") {
-      return { min: inputs.input };
+      return { index: 0 };
     } else if (inputs.input instanceof CSV) {
       const data = inputs.input.toTensor();
-      const min = await this.tensorMin(data);
-      return { min };
+      const index = await this.tensorArgmin(data);
+      return { index };
     } else if (inputs.input instanceof Tensor) {
-      const min = await this.tensorMin(inputs.input);
-      return { min };
+      const index = await this.tensorArgmin(inputs.input);
+      return { index };
     }
 
     throw new Error("Invalid input: 'input' must be a number, CSV, or Tensor.");
