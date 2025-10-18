@@ -9,6 +9,8 @@ import MaximumNode from "./node-impl/statistics/MaximumNode";
 import MinimumNode from "./node-impl/statistics/MinimumNode";
 import ArgmaxNode from "./node-impl/statistics/ArgmaxNode";
 import ArgminNode from "./node-impl/statistics/ArgminNode";
+import AverageNode from "./node-impl/statistics/AverageNode";
+import MedianNode from "./node-impl/statistics/MedianNode";
 
 export type NodeType =
   | "number"
@@ -19,7 +21,9 @@ export type NodeType =
   | "max"
   | "min"
   | "argmax"
-  | "argmin";
+  | "argmin"
+  | "avg"
+  | "median";
 export type NodeSize = "full" | "small" | "input";
 
 export const contextMenuItems: ContextMenuItem[] = [
@@ -75,6 +79,16 @@ export const contextMenuItems: ContextMenuItem[] = [
         type: "argmin",
         keywords: ["argmin", "최소값 인덱스"],
       },
+      {
+        label: "average",
+        type: "avg",
+        keywords: ["average", "mean", "평균"],
+      },
+      {
+        label: "median",
+        type: "median",
+        keywords: ["median", "중앙값"],
+      },
     ],
   },
   {
@@ -103,6 +117,10 @@ export function getNodeImpl(nodeId: string, type: NodeType): NodeImpl | null {
     return new ArgmaxNode(nodeId);
   } else if (type === "argmin") {
     return new ArgminNode(nodeId);
+  } else if (type === "avg") {
+    return new AverageNode(nodeId);
+  } else if (type === "median") {
+    return new MedianNode(nodeId);
   }
 
   return null;
