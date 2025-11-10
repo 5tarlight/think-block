@@ -87,7 +87,7 @@ export default function NodeView({
         color.background,
         color.border,
         hasError
-          ? "border-red-500"
+          ? "outline-2 outline-red-500"
           : selected
           ? "outline-2 outline-blue-400"
           : ""
