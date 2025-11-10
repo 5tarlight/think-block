@@ -13,6 +13,7 @@ import AverageNode from "./node-impl/statistics/AverageNode";
 import MedianNode from "./node-impl/statistics/MedianNode";
 import VariationNode from "./node-impl/statistics/VariationNode";
 import StddevNode from "./node-impl/statistics/StddevNode";
+import SumNode from "./node-impl/statistics/SumNode";
 
 export type NodeType =
   | "number"
@@ -27,7 +28,8 @@ export type NodeType =
   | "avg"
   | "median"
   | "variation"
-  | "stddev";
+  | "stddev"
+  | "sum";
 export type NodeSize = "full" | "small" | "input";
 
 export const contextMenuItems: ContextMenuItem[] = [
@@ -64,6 +66,16 @@ export const contextMenuItems: ContextMenuItem[] = [
     isSubMenu: true,
     sub: [
       {
+        label: "sum",
+        type: "sum",
+        keywords: ["sum", "합계"],
+      },
+      {
+        label: "average",
+        type: "avg",
+        keywords: ["average", "mean", "평균"],
+      },
+      {
         label: "maximum",
         type: "max",
         keywords: ["max", "최대값"],
@@ -83,11 +95,7 @@ export const contextMenuItems: ContextMenuItem[] = [
         type: "argmin",
         keywords: ["argmin", "최소값 인덱스"],
       },
-      {
-        label: "average",
-        type: "avg",
-        keywords: ["average", "mean", "평균"],
-      },
+
       {
         label: "median",
         type: "median",
@@ -139,6 +147,8 @@ export function getNodeImpl(nodeId: string, type: NodeType): NodeImpl | null {
     return new VariationNode(nodeId);
   } else if (type === "stddev") {
     return new StddevNode(nodeId);
+  } else if (type === "sum") {
+    return new SumNode(nodeId);
   }
 
   return null;
