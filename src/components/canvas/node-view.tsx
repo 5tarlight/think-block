@@ -9,37 +9,35 @@ import { getNodeCategory, type NodeCategory } from "../../lib/node";
 
 export interface NodeColor {
   background: string;
+  body: string;
 }
 
 export function getNodeColor(cat: NodeCategory): NodeColor {
   if (cat === "data") {
     return {
-      background:
-        // "bg-[linear-gradient(45deg,rgba(42,123,155,0)_0%,rgba(87,199,133,0)_80%,oklch(71.5%_0.143_215.221)_100%)]",
-        "before:from-blue-800 before:to-transparent",
+      background: "before:bg-sky-900",
+      body: "bg-blue-900",
     };
   } else if (cat === "arithmetic") {
     return {
-      background:
-        // "bg-[linear-gradient(45deg,rgba(42,123,155,0)_0%,rgba(87,199,133,0)_80%,oklch(72.3%_0.219_149.579)_100%)]",
-        "before:from-purple-800 before:to-transparent",
+      background: "before:bg-fuchsia-900",
+      body: "bg-red-950",
     };
   } else if (cat === "statistics") {
     return {
-      background:
-        // "bg-[linear-gradient(45deg,rgba(42,123,155,0)_0%,rgba(87,199,133,0)_80%,oklch(62.7%_0.265_303.9)_100%)]",
-        "before:from-amber-600 before:to-transparent",
+      background: "before:bg-orange-800",
+      body: "bg-amber-800",
     };
   } else if (cat === "output") {
     return {
-      background:
-        // "bg-[linear-gradient(45deg,rgba(42,123,155,0)_0%,rgba(87,199,133,0)_80%,oklch(79.5%_0.184_86.047)_100%)]",
-        "before:from-emerald-600 before:to-transparent",
+      background: "before:bg-cyan-900",
+      body: "bg-emerald-700",
     };
   }
 
   return {
-    background: "bg-gray-500/20",
+    background: "before:bg-neutral-800",
+    body: "bg-neutral-800",
   };
 }
 
@@ -119,7 +117,9 @@ export default function NodeView({
     <div
       className={cn(
         "absolute rounded-sm border",
-        "text-neutral-200 shadow-lg bg-neutral-900 border-neutral-600",
+        "text-neutral-200 shadow-lg border-neutral-600",
+        // node.size !== "full" ? color.body : "bg-neutral-900",
+        "bg-neutral-900",
         hasError
           ? "outline-2 outline-red-500"
           : selected
