@@ -120,6 +120,34 @@ export const contextMenuItems: ContextMenuItem[] = [
   },
 ];
 
+export type NodeCategory = "data" | "arithmetic" | "statistics" | "output";
+
+export function getNodeCategory(type: NodeType): NodeCategory {
+  if (type === "output") {
+    return "output";
+  } else if (
+    contextMenuItems
+      .filter((item) => item.isSubMenu && item.label === "data")[0]
+      .sub!.some((sub) => sub.type === type)
+  ) {
+    return "data";
+  } else if (
+    contextMenuItems
+      .filter((item) => item.isSubMenu && item.label === "arithmetic")[0]
+      .sub!.some((sub) => sub.type === type)
+  ) {
+    return "arithmetic";
+  } else if (
+    contextMenuItems
+      .filter((item) => item.isSubMenu && item.label === "statistics")[0]
+      .sub!.some((sub) => sub.type === type)
+  ) {
+    return "statistics";
+  }
+
+  throw new Error(`Unknown node type: ${type}`);
+}
+
 export function getNodeImpl(nodeId: string, type: NodeType): NodeImpl | null {
   if (type === "number") {
     return new NumberNode(nodeId);

@@ -5,6 +5,41 @@ import { useEffect, useState } from "react";
 import type NodeImpl from "../../lib/node-impl/NodeImpl";
 import { useWinStore } from "../../store/windowStore";
 import { useNodeDataState } from "../../store/nodeDataStore";
+import { getNodeCategory, type NodeCategory } from "../../lib/node";
+
+export interface NodeColor {
+  background: string;
+  body: string;
+}
+
+export function getNodeColor(cat: NodeCategory): NodeColor {
+  if (cat === "data") {
+    return {
+      background: "before:bg-sky-900",
+      body: "bg-blue-900",
+    };
+  } else if (cat === "arithmetic") {
+    return {
+      background: "before:bg-fuchsia-900",
+      body: "bg-red-950",
+    };
+  } else if (cat === "statistics") {
+    return {
+      background: "before:bg-orange-800",
+      body: "bg-amber-800",
+    };
+  } else if (cat === "output") {
+    return {
+      background: "before:bg-cyan-900",
+      body: "bg-emerald-700",
+    };
+  }
+
+  return {
+    background: "before:bg-neutral-800",
+    body: "bg-neutral-800",
+  };
+}
 
 export default function NodeView({
   node,
@@ -75,16 +110,21 @@ export default function NodeView({
     }
   }, [windows, popupId]);
 
+  const category = getNodeCategory(node.type);
+  const color = getNodeColor(category);
+
   return (
     <div
       className={cn(
-        "absolute rounded-sm border ",
-        "bg-neutral-900 text-neutral-200 shadow-lg",
+        "absolute rounded-sm border",
+        "text-neutral-200 shadow-lg border-neutral-600",
+        // node.size !== "full" ? color.body : "bg-neutral-900",
+        "bg-neutral-900",
         hasError
-          ? "border-red-500"
+          ? "outline-2 outline-red-500"
           : selected
-          ? "border-blue-500"
-          : "border-neutral-700"
+          ? "outline-2 outline-blue-400"
+          : ""
       )}
       style={{
         left: node.pos.x,
@@ -104,12 +144,15 @@ export default function NodeView({
       {node.size === "full" && (
         <div
           className={cn(
-            "h-10 px-3 flex items-center justify-between rounded-t-sm",
-            "bg-neutral-800 border-b border-neutral-700"
+            "relative h-10 px-3 flex items-center justify-between rounded-t-sm",
+            "border-b border-neutral-700 before:absolute before:inset-0",
+            "before:content-[''] before:rounded-t-sm before:pointer-events-none",
+            "before:bg-gradient-to-l",
+            color.background
           )}
         >
-          <div className="font-sm">{node.title}</div>
-          <div className="text-[10px] opacity-60">{node.id}</div>
+          <div className="relative z-10 font-sm">{node.title}</div>
+          <div className="relative z-10 text-[10px] opacity-60">{node.id}</div>
         </div>
       )}
 
