@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import type NodeImpl from "../../lib/node-impl/NodeImpl";
 import { useWinStore } from "../../store/windowStore";
 import { useNodeDataState } from "../../store/nodeDataStore";
+import { getNodeCategory, getNodeColor } from "../../lib/node";
 
 export default function NodeView({
   node,
@@ -75,16 +76,21 @@ export default function NodeView({
     }
   }, [windows, popupId]);
 
+  const category = getNodeCategory(node.type);
+  const color = getNodeColor(category);
+
   return (
     <div
       className={cn(
-        "absolute rounded-sm border ",
-        "bg-neutral-900 text-neutral-200 shadow-lg",
+        "absolute rounded-sm border",
+        "text-neutral-200 shadow-lg",
+        color.background,
+        color.border,
         hasError
           ? "border-red-500"
           : selected
-          ? "border-blue-500"
-          : "border-neutral-700"
+          ? "outline-2 outline-blue-400"
+          : ""
       )}
       style={{
         left: node.pos.x,
