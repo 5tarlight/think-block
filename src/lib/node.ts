@@ -120,7 +120,7 @@ export const contextMenuItems: ContextMenuItem[] = [
   },
 ];
 
-type NodeCategory = "data" | "arithmetic" | "statistics" | "output";
+export type NodeCategory = "data" | "arithmetic" | "statistics" | "output";
 
 export function getNodeCategory(type: NodeType): NodeCategory {
   if (type === "output") {
@@ -146,52 +146,6 @@ export function getNodeCategory(type: NodeType): NodeCategory {
   }
 
   throw new Error(`Unknown node type: ${type}`);
-}
-
-export interface NodeColor {
-  background: string;
-  border: string;
-  accent: string;
-  text: string;
-}
-
-export function getNodeColor(cat: NodeCategory): NodeColor {
-  if (cat === "data") {
-    return {
-      background: "bg-blue-500/20",
-      border: "border-blue-500",
-      accent: "text-blue-500",
-      text: "text-neutral-200",
-    };
-  } else if (cat === "arithmetic") {
-    return {
-      background: "bg-green-500/20",
-      border: "border-green-500",
-      accent: "text-green-500",
-      text: "text-neutral-200",
-    };
-  } else if (cat === "statistics") {
-    return {
-      background: "bg-purple-500/20",
-      border: "border-purple-500",
-      accent: "text-purple-500",
-      text: "text-neutral-200",
-    };
-  } else if (cat === "output") {
-    return {
-      background: "bg-yellow-500/20",
-      border: "border-yellow-500",
-      accent: "text-yellow-500",
-      text: "text-neutral-200",
-    };
-  }
-
-  return {
-    background: "bg-gray-500/20",
-    border: "border-gray-500",
-    accent: "text-gray-500",
-    text: "text-neutral-200",
-  };
 }
 
 export function getNodeImpl(nodeId: string, type: NodeType): NodeImpl | null {

@@ -5,7 +5,43 @@ import { useEffect, useState } from "react";
 import type NodeImpl from "../../lib/node-impl/NodeImpl";
 import { useWinStore } from "../../store/windowStore";
 import { useNodeDataState } from "../../store/nodeDataStore";
-import { getNodeCategory, getNodeColor } from "../../lib/node";
+import { getNodeCategory, type NodeCategory } from "../../lib/node";
+
+export interface NodeColor {
+  background: string;
+}
+
+export function getNodeColor(cat: NodeCategory): NodeColor {
+  if (cat === "data") {
+    return {
+      background:
+        // "bg-[linear-gradient(45deg,rgba(42,123,155,0)_0%,rgba(87,199,133,0)_80%,oklch(71.5%_0.143_215.221)_100%)]",
+        "before:from-blue-800 before:to-transparent",
+    };
+  } else if (cat === "arithmetic") {
+    return {
+      background:
+        // "bg-[linear-gradient(45deg,rgba(42,123,155,0)_0%,rgba(87,199,133,0)_80%,oklch(72.3%_0.219_149.579)_100%)]",
+        "before:from-purple-800 before:to-transparent",
+    };
+  } else if (cat === "statistics") {
+    return {
+      background:
+        // "bg-[linear-gradient(45deg,rgba(42,123,155,0)_0%,rgba(87,199,133,0)_80%,oklch(62.7%_0.265_303.9)_100%)]",
+        "before:from-amber-600 before:to-transparent",
+    };
+  } else if (cat === "output") {
+    return {
+      background:
+        // "bg-[linear-gradient(45deg,rgba(42,123,155,0)_0%,rgba(87,199,133,0)_80%,oklch(79.5%_0.184_86.047)_100%)]",
+        "before:from-emerald-600 before:to-transparent",
+    };
+  }
+
+  return {
+    background: "bg-gray-500/20",
+  };
+}
 
 export default function NodeView({
   node,
@@ -83,9 +119,7 @@ export default function NodeView({
     <div
       className={cn(
         "absolute rounded-sm border",
-        "text-neutral-200 shadow-lg",
-        color.background,
-        color.border,
+        "text-neutral-200 shadow-lg bg-neutral-900 border-neutral-600",
         hasError
           ? "outline-2 outline-red-500"
           : selected
@@ -110,12 +144,15 @@ export default function NodeView({
       {node.size === "full" && (
         <div
           className={cn(
-            "h-10 px-3 flex items-center justify-between rounded-t-sm",
-            "bg-neutral-800 border-b border-neutral-700"
+            "relative h-10 px-3 flex items-center justify-between rounded-t-sm",
+            "border-b border-neutral-700 before:absolute before:inset-0",
+            "before:content-[''] before:rounded-t-sm before:pointer-events-none",
+            "before:bg-gradient-to-l",
+            color.background
           )}
         >
-          <div className="font-sm">{node.title}</div>
-          <div className="text-[10px] opacity-60">{node.id}</div>
+          <div className="relative z-10 font-sm">{node.title}</div>
+          <div className="relative z-10 text-[10px] opacity-60">{node.id}</div>
         </div>
       )}
 
