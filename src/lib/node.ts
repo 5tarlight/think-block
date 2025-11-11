@@ -14,6 +14,7 @@ import MedianNode from "./node-impl/statistics/MedianNode";
 import VariationNode from "./node-impl/statistics/VariationNode";
 import StddevNode from "./node-impl/statistics/StddevNode";
 import SumNode from "./node-impl/statistics/SumNode";
+import LinearDataGeneratorNode from "./node-impl/data/LinearDataGeneratorNode";
 
 export type NodeType =
   | "number"
@@ -29,7 +30,8 @@ export type NodeType =
   | "median"
   | "variation"
   | "stddev"
-  | "sum";
+  | "sum"
+  | "linear data generator";
 export type NodeSize = "full" | "small" | "input";
 
 export const contextMenuItems: ContextMenuItem[] = [
@@ -46,6 +48,11 @@ export const contextMenuItems: ContextMenuItem[] = [
         label: "CSV",
         type: "csv",
         keywords: ["data", "입력", "csv"],
+      },
+      {
+        label: "linear data generator",
+        type: "linear data generator",
+        keywords: ["linear", "data", "generator", "선형", "데이터", "생성기"],
       },
     ],
   },
@@ -177,6 +184,8 @@ export function getNodeImpl(nodeId: string, type: NodeType): NodeImpl | null {
     return new StddevNode(nodeId);
   } else if (type === "sum") {
     return new SumNode(nodeId);
+  } else if (type === "linear data generator") {
+    return new LinearDataGeneratorNode(nodeId);
   }
 
   return null;

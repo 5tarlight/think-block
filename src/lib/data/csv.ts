@@ -39,6 +39,11 @@ export default class CSV {
   }
 
   static async fromTensor(t: Tensor, headers?: string[]) {
+    // If t is 1D, convert to 2D with one column
+    if (t.shape.length === 1) {
+      t = t.reshape([t.shape[0], 1]);
+    }
+
     const array = await t.array();
     const rows = (array as any[][]).map((row) =>
       row.map((value) => (typeof value === "number" ? value.toString() : ""))
