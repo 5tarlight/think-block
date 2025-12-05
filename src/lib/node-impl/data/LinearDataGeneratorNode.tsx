@@ -24,9 +24,10 @@ export default class LinearDataGeneratorNode extends NodeImpl {
     const x = tf.linspace(0, n - 1, n);
     const noiseTensor = tf.randomNormal([n], 0, noise);
 
-    const y = x.mul(slope).add(intercept).add(noiseTensor);
+    const y = x.mul(slope).add(intercept).add(noiseTensor).reshape([n, 1]);
+    const xy = tf.concat([x, y], 1);
 
-    return { data: y };
+    return { data: xy };
   }
 
   render(): ReactNode {

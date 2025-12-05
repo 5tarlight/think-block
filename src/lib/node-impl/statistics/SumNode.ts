@@ -5,7 +5,7 @@ import { Tensor } from "@tensorflow/tfjs";
 
 export default class SumNode extends NodeImpl {
   constructor(nodeId: string) {
-    super(nodeId, "argmin", [{ name: "input" }], [{ name: "index" }]);
+    super(nodeId, "argmin", [{ name: "input" }], [{ name: "sum" }]);
   }
 
   private async tensorSum(tensor: Tensor): Promise<number> {
