@@ -18,6 +18,7 @@ export default class LinearDataGeneratorNode extends NodeImpl {
     );
   }
 
+  // BUG !!!! 오류 발생함
   async process(inputs: Record<string, any>): Promise<Record<string, any>> {
     const { n, slope, intercept, noise } = inputs;
 
