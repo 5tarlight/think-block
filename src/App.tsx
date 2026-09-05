@@ -130,7 +130,7 @@ function App() {
   const resetExecution = useExecutionStore((state) => state.reset);
 
   const [projectName, setProjectName] = useState("나의 첫 AI 실험");
-  const [lessonOpen, setLessonOpen] = useState(() => window.innerWidth > 760);
+  const [lessonOpen, setLessonOpen] = useState(() => window.innerWidth >= 1600);
   const [hydrated, setHydrated] = useState(false);
   const [menu, setMenu] = useState<ContextMenuState | null>(null);
   const [selectionBox, setSelectionBox] = useState<{
@@ -222,7 +222,7 @@ function App() {
       const width = Math.max(1, maxX - minX);
       const height = Math.max(1, maxY - minY);
       const scale = Math.max(
-        0.5,
+        0.62,
         Math.min(1, (rect.width - 100) / width, (rect.height - 120) / height)
       );
       setCamera(() => ({

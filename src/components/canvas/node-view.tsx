@@ -3,7 +3,7 @@ import { Tensor } from "@tensorflow/tfjs";
 import { useEffect, useState } from "react";
 import { TbSettings } from "react-icons/tb";
 import CSV from "../../lib/data/csv";
-import { getNodeCategory } from "../../lib/node";
+import { getNodeDefinition } from "../../lib/node";
 import type NodeImpl from "../../lib/node-impl/NodeImpl";
 import { useExecutionStore } from "../../store/executionStore";
 import { getNodeSize, type Node } from "../../store/graphics";
@@ -21,7 +21,7 @@ function formatPreview(value: unknown) {
   if (typeof value === "string" || typeof value === "boolean") return String(value);
   if (value instanceof Tensor) return `Tensor [${value.shape.join(" × ")}]`;
   if (value instanceof CSV) return `표 ${value.getRows()} × ${value.getColumns()}`;
-  if (value && typeof value === "object" && "kind" in value) return "학습된 모델";
+  if (value && typeof value === "object" && "kind" in value) return "Model";
   return null;
 }
 
@@ -54,11 +54,21 @@ export default function NodeView({
   const executionStatus = useExecutionStore(
     (state) => state.nodeStatus[node.id]
   );
-  const category = getNodeCategory(node.type);
+  const definition = getNodeDefinition(node.type);
+  const category = definition.category;
   const data = getNodeData(node.id);
   const rawValue = data?.value;
   const inputValue = typeof rawValue === "number" ? String(rawValue) : "0";
   const outputPreview = formatPreview(data?.data);
+  const resultPreviews = node.outputs.map((port) => ({
+    name: port.name,
+    raw: data?.[port.name],
+    value: formatPreview(data?.[port.name]),
+  }));
+  const resultPreview =
+    resultPreviews.find((result) =>
+      ["number", "string", "boolean"].includes(typeof result.raw)
+    );
 
   const openWindow = () => {
     if (!impl || popupId) return;
@@ -97,12 +107,19 @@ export default function NodeView({
       }}
       onDoubleClick={openWindow}
       onClick={(event) => onClick(event, node.id)}
-      title={impl?.render() ? "더블 클릭해 설정 열기" : undefined}
+      title={
+        impl?.render()
+          ? `${definition.signature} · 더블 클릭해 설정 열기`
+          : definition.signature
+      }
     >
-      {node.size === "full" && (
+      {node.size !== "input" && (
         <div className="node-card__header">
           <span className="node-card__category" aria-hidden="true" />
-          <strong>{node.title}</strong>
+          <span className="node-card__identity">
+            <strong>{node.title}</strong>
+            {node.size === "full" && <code>{definition.signature}</code>}
+          </span>
           <span className="node-card__status" aria-label={executionStatus ?? "대기"} />
           {impl?.render() && <TbSettings className="node-card__settings" />}
         </div>
@@ -127,6 +144,12 @@ export default function NodeView({
         {node.type === "csv" && (
           <span className="node-card__preview node-card__preview--file">
             {typeof data?.fileKey === "string" ? "파일 선택됨" : "파일 없음"}
+          </span>
+        )}
+
+        {node.type !== "output" && resultPreview?.value && (
+          <span className="node-card__result">
+            {resultPreview.name}: {resultPreview.value}
           </span>
         )}
 

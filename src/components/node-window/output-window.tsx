@@ -1,6 +1,7 @@
 import { Tensor } from "@tensorflow/tfjs";
 import { useEffect, useState } from "react";
 import CSV from "../../lib/data/csv";
+import { isTrainedSequentialModel } from "../../lib/node-impl/model/module-spec";
 import { isLinearRegressionModel } from "../../lib/node-impl/tensor-utils";
 import { useNodeDataState } from "../../store/nodeDataStore";
 import CSVViewer from "../window/csv-viewer";
@@ -44,6 +45,20 @@ export default function OutputWindow({ nodeId }: { nodeId: string }) {
           <div><dt>가중치</dt><dd>{data.weights.map((value) => value.toFixed(4)).join(", ")}</dd></div>
           <div><dt>편향</dt><dd>{data.bias.toFixed(4)}</dd></div>
           <div><dt>마지막 손실</dt><dd>{data.lossHistory.at(-1)?.toFixed(4) ?? "-"}</dd></div>
+        </dl>
+      </div>
+    );
+  }
+
+  if (isTrainedSequentialModel(data)) {
+    return (
+      <div className="model-summary">
+        <span>nn.Sequential</span>
+        <dl>
+          <div><dt>Modules</dt><dd>{data.layers.map((layer) => layer.kind).join(" → ")}</dd></div>
+          <div><dt>Linear layers</dt><dd>{data.denseWeights.length}</dd></div>
+          <div><dt>Epochs</dt><dd>{data.lossHistory.length}</dd></div>
+          <div><dt>Final loss</dt><dd>{data.lossHistory.at(-1)?.toFixed(6) ?? "-"}</dd></div>
         </dl>
       </div>
     );

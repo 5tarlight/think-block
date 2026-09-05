@@ -1,4 +1,4 @@
-import { getNodeImpl, nodeCatalog, type NodeType } from "./node";
+import { getNodeDefinition, getNodeImpl, nodeCatalog, type NodeType } from "./node";
 import type { Edge, Node, Port } from "../store/graphics";
 
 export interface SerializedProject {
@@ -76,7 +76,7 @@ export function restoreProject(project: SerializedProject): {
       impl.outputs = saved.outputs;
       impl.size = saved.size;
     }
-    return { ...saved, impl };
+    return { ...saved, title: getNodeDefinition(saved.type).label, impl };
   });
 
   const nodeIds = new Set(nodes.map((node) => node.id));

@@ -31,9 +31,9 @@ export type Camera = { scale: number; tx: number; ty: number };
 
 export function getNodeSize(node: Pick<Node, "size" | "inputs" | "outputs">) {
   const rows = Math.max(1, node.inputs.length, node.outputs.length);
-  if (node.size === "input") return { w: 156, h: 48 };
-  if (node.size === "small") return { w: 190, h: 20 + rows * 34 };
-  return { w: 272, h: 62 + rows * 34 };
+  if (node.size === "input") return { w: 170, h: 54 };
+  if (node.size === "small") return { w: 210, h: 68 + rows * 36 };
+  return { w: 288, h: 68 + rows * 36 };
 }
 
 export function getPortAnchor(
@@ -44,10 +44,10 @@ export function getPortAnchor(
   const inputIndex = node.inputs.findIndex((port) => port.id === portId);
   const outputIndex = node.outputs.findIndex((port) => port.id === portId);
   const rowIndex = Math.max(inputIndex, outputIndex, 0);
-  const bodyOffset = node.size === "full" ? 52 : 10;
+  const bodyOffset = node.size === "input" ? 7 : 58;
   return {
     x: node.pos.x + (inputIndex >= 0 ? 0 : size.w),
-    y: node.pos.y + bodyOffset + rowIndex * 34 + 17,
+    y: node.pos.y + bodyOffset + rowIndex * 36 + 18,
   };
 }
 

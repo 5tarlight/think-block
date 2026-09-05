@@ -7,19 +7,19 @@ export default class TrainTestSplitNode extends NodeImpl {
     super(
       nodeId,
       "train test split",
-      [{ name: "features" }, { name: "labels" }],
+      [{ name: "x" }, { name: "y" }],
       [
-        { name: "train features" },
-        { name: "test features" },
-        { name: "train labels" },
-        { name: "test labels" },
+        { name: "train_x" },
+        { name: "test_x" },
+        { name: "train_y" },
+        { name: "test_y" },
       ]
     );
   }
 
   async process(inputs: NodeInputs): Promise<NodeOutputs> {
-    const features = toMatrix(inputs.features, "features");
-    const labels = toMatrix(inputs.labels, "labels");
+    const features = toMatrix(inputs.x ?? inputs.features, "x");
+    const labels = toMatrix(inputs.y ?? inputs.labels, "y");
 
     if (features.shape[0] !== labels.shape[0]) {
       throw new Error("features와 labels의 행 개수가 같아야 합니다.");
@@ -31,20 +31,30 @@ export default class TrainTestSplitNode extends NodeImpl {
     const trainSize = Math.max(1, Math.floor(features.shape[0] * 0.8));
     const testSize = features.shape[0] - trainSize;
 
-    return {
-      "train features": features.slice(
+    const trainX = features.slice(
         [0, 0],
         [trainSize, features.shape[1]]
-      ),
-      "test features": features.slice(
+      );
+    const testX = features.slice(
         [trainSize, 0],
         [testSize, features.shape[1]]
-      ),
-      "train labels": labels.slice([0, 0], [trainSize, labels.shape[1]]),
-      "test labels": labels.slice(
+      );
+    const trainY = labels.slice([0, 0], [trainSize, labels.shape[1]]);
+    const testY = labels.slice(
         [trainSize, 0],
         [testSize, labels.shape[1]]
-      ),
+      );
+
+    return {
+      train_x: trainX,
+      test_x: testX,
+      train_y: trainY,
+      test_y: testY,
+      // Old saved projects keep their original port names.
+      "train features": trainX,
+      "test features": testX,
+      "train labels": trainY,
+      "test labels": testY,
     };
   }
 
