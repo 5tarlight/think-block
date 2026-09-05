@@ -7,6 +7,8 @@ export type LayerSpec =
     }
   | { kind: "relu" }
   | { kind: "sigmoid" }
+  | { kind: "softmax" }
+  | { kind: "tanh" }
   | { kind: "dropout"; probability: number };
 
 export interface ModuleChain {
@@ -27,7 +29,11 @@ export interface OptimizerSpec {
 
 export interface LossSpec {
   kind: "loss-spec";
-  name: "meanSquaredError" | "binaryCrossentropy";
+  name:
+    | "meanSquaredError"
+    | "absoluteDifference"
+    | "binaryCrossentropy"
+    | "categoricalCrossentropy";
 }
 
 export interface DenseWeights {

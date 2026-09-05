@@ -41,8 +41,15 @@ export default function LessonPanel({
               node.type === "mean squared error" &&
               typeof nodeData[node.id]?.mse === "number"
           );
+        const hasAccuracy =
+          !check.needsAccuracy ||
+          nodes.some(
+            (node) =>
+              node.type === "accuracy" &&
+              typeof nodeData[node.id]?.accuracy === "number"
+          );
         const hasRun = !check.needsSuccess || executionStatus === "success";
-        return { ...check, complete: hasTypes && hasMse && hasRun };
+        return { ...check, complete: hasTypes && hasMse && hasAccuracy && hasRun };
       }),
     [activeLesson, executionStatus, nodeData, nodes]
   );

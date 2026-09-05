@@ -1,13 +1,28 @@
 import type { ReactNode } from "react";
+import * as tf from "@tensorflow/tfjs";
 import NodeImpl, { type NodeInputs, type NodeOutputs } from "../NodeImpl";
-import { toMatrix } from "../tensor-utils";
+import { finiteNumber, toMatrix } from "../tensor-utils";
+
+function shuffledIndices(length: number, seed: number) {
+  const indices = Array.from({ length }, (_, index) => index);
+  let state = seed >>> 0;
+  const next = () => {
+    state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
+    return state / 4294967296;
+  };
+  for (let index = length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(next() * (index + 1));
+    [indices[index], indices[swapIndex]] = [indices[swapIndex], indices[index]];
+  }
+  return indices;
+}
 
 export default class TrainTestSplitNode extends NodeImpl {
   constructor(nodeId: string) {
     super(
       nodeId,
       "train test split",
-      [{ name: "x" }, { name: "y" }],
+      [{ name: "x" }, { name: "y" }, { name: "test_ratio" }, { name: "seed" }],
       [
         { name: "train_x" },
         { name: "test_x" },
@@ -28,22 +43,30 @@ export default class TrainTestSplitNode extends NodeImpl {
       throw new Error("학습/테스트 분리에는 최소 4개의 데이터가 필요합니다.");
     }
 
-    const trainSize = Math.max(1, Math.floor(features.shape[0] * 0.8));
+    const testRatio = Math.min(0.5, finiteNumber(inputs.test_ratio, 0.2, 0.05));
+    const seed = Math.round(finiteNumber(inputs.seed, 42));
+    const order = tf.tensor1d(shuffledIndices(features.shape[0], seed), "int32");
+    const shuffledFeatures = tf.gather(features, order) as tf.Tensor2D;
+    const shuffledLabels = tf.gather(labels, order) as tf.Tensor2D;
+    order.dispose();
+    const trainSize = Math.max(1, Math.floor(features.shape[0] * (1 - testRatio)));
     const testSize = features.shape[0] - trainSize;
 
-    const trainX = features.slice(
+    const trainX = shuffledFeatures.slice(
         [0, 0],
         [trainSize, features.shape[1]]
       );
-    const testX = features.slice(
+    const testX = shuffledFeatures.slice(
         [trainSize, 0],
         [testSize, features.shape[1]]
       );
-    const trainY = labels.slice([0, 0], [trainSize, labels.shape[1]]);
-    const testY = labels.slice(
+    const trainY = shuffledLabels.slice([0, 0], [trainSize, labels.shape[1]]);
+    const testY = shuffledLabels.slice(
         [trainSize, 0],
         [testSize, labels.shape[1]]
       );
+    shuffledFeatures.dispose();
+    shuffledLabels.dispose();
 
     return {
       train_x: trainX,

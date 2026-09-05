@@ -1,6 +1,7 @@
 import { Tensor } from "@tensorflow/tfjs";
 import { useEffect, useState } from "react";
 import CSV from "../../lib/data/csv";
+import { isConfusionMatrixData } from "../../lib/node-impl/evaluation/classification";
 import { isTrainedSequentialModel } from "../../lib/node-impl/model/module-spec";
 import { isLinearRegressionModel } from "../../lib/node-impl/tensor-utils";
 import { useNodeDataState } from "../../store/nodeDataStore";
@@ -60,6 +61,41 @@ export default function OutputWindow({ nodeId }: { nodeId: string }) {
           <div><dt>Epochs</dt><dd>{data.lossHistory.length}</dd></div>
           <div><dt>Final loss</dt><dd>{data.lossHistory.at(-1)?.toFixed(6) ?? "-"}</dd></div>
         </dl>
+      </div>
+    );
+  }
+
+  if (isConfusionMatrixData(data)) {
+    return (
+      <div className="confusion-matrix">
+        <div className="confusion-matrix__summary">
+          <strong>Confusion matrix</strong>
+          <span>{data.correct}/{data.total} correct</span>
+        </div>
+        <div className="confusion-matrix__axis">Predicted class</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Actual</th>
+              {data.labels.map((label) => <th key={label}>{label}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {data.matrix.map((row, rowIndex) => (
+              <tr key={data.labels[rowIndex]}>
+                <th>{data.labels[rowIndex]}</th>
+                {row.map((count, columnIndex) => (
+                  <td
+                    key={`${rowIndex}-${columnIndex}`}
+                    className={rowIndex === columnIndex ? "is-correct" : ""}
+                  >
+                    {count}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     );
   }

@@ -36,6 +36,12 @@ function createModel(layers: LayerSpec[]) {
     } else if (layer.kind === "sigmoid") {
       if (previousFeatures === null) throw new Error("Sigmoid 앞에 Linear 레이어가 필요합니다.");
       model.add(tf.layers.activation({ activation: "sigmoid" }));
+    } else if (layer.kind === "softmax") {
+      if (previousFeatures === null) throw new Error("Softmax 앞에 Linear 레이어가 필요합니다.");
+      model.add(tf.layers.activation({ activation: "softmax" }));
+    } else if (layer.kind === "tanh") {
+      if (previousFeatures === null) throw new Error("Tanh 앞에 Linear 레이어가 필요합니다.");
+      model.add(tf.layers.activation({ activation: "tanh" }));
     } else if (layer.kind === "dropout") {
       if (previousFeatures === null) throw new Error("Dropout 앞에 Linear 레이어가 필요합니다.");
       model.add(tf.layers.dropout({ rate: layer.probability }));
@@ -97,6 +103,18 @@ export default class TrainNode extends NodeImpl {
     const criterion = isLossSpec(inputs.criterion)
       ? inputs.criterion
       : { kind: "loss-spec" as const, name: "meanSquaredError" as const };
+    if (
+      criterion.name === "categoricalCrossentropy" &&
+      !inputs.model.layers.some((layer) => layer.kind === "softmax")
+    ) {
+      throw new Error("CrossEntropyLoss를 사용할 때는 마지막 Linear 뒤에 Softmax를 연결하세요.");
+    }
+    if (
+      criterion.name === "binaryCrossentropy" &&
+      !inputs.model.layers.some((layer) => layer.kind === "sigmoid")
+    ) {
+      throw new Error("BCELoss를 사용할 때는 마지막 Linear 뒤에 Sigmoid를 연결하세요.");
+    }
     const epochs = Math.min(500, Math.round(finiteNumber(inputs.epochs, 80, 1)));
     const model = createModel(inputs.model.layers);
     model.compile({

@@ -7,6 +7,7 @@ export interface LessonCheck {
   nodeTypes?: NodeType[];
   needsSuccess?: boolean;
   needsMse?: boolean;
+  needsAccuracy?: boolean;
 }
 
 export interface Lesson {
@@ -37,6 +38,23 @@ export const lessons: Lesson[] = [
       { id: "run", label: "training graph 실행하기", needsSuccess: true },
     ],
     hint: "Linear의 in_features와 out_features는 기본값이 1입니다. Scalar 블록을 각 포트에 연결해 크기를 바꿀 수 있어요.",
+  },
+  {
+    id: "iris-classification",
+    title: "Classify Iris flowers",
+    duration: "약 15분",
+    level: "입문",
+    concept: "다중 분류에서는 마지막 Linear가 class별 score를 만들고, Softmax가 확률로 변환하며 Accuracy와 F1이 서로 다른 관점에서 성능을 설명합니다.",
+    templateId: "classification",
+    checks: [
+      { id: "data", label: "Iris를 standardize하고 train/test로 나누기", nodeTypes: ["iris dataset", "normalize", "train test split"] },
+      { id: "model", label: "Linear와 Softmax를 Sequential로 묶기", nodeTypes: ["linear", "softmax", "sequential"] },
+      { id: "loss", label: "CrossEntropyLoss와 Adam 선택하기", nodeTypes: ["cross entropy loss", "adam"] },
+      { id: "metric", label: "Accuracy와 F1Score 연결하기", nodeTypes: ["accuracy", "f1 score"] },
+      { id: "score", label: "test accuracy 확인하기", nodeTypes: ["accuracy"], needsAccuracy: true },
+      { id: "run", label: "classification graph 실행하기", needsSuccess: true },
+    ],
+    hint: "Accuracy가 높아도 class별 표본 수가 다르면 F1Score를 함께 확인하세요. ConfusionMatrix는 어떤 class끼리 헷갈렸는지 보여 줍니다.",
   },
   {
     id: "read-data",

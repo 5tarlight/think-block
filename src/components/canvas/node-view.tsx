@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { TbSettings } from "react-icons/tb";
 import CSV from "../../lib/data/csv";
 import { getNodeDefinition } from "../../lib/node";
+import { isConfusionMatrixData } from "../../lib/node-impl/evaluation/classification";
 import type NodeImpl from "../../lib/node-impl/NodeImpl";
 import { useExecutionStore } from "../../store/executionStore";
 import { getNodeSize, type Node } from "../../store/graphics";
@@ -21,6 +22,7 @@ function formatPreview(value: unknown) {
   if (typeof value === "string" || typeof value === "boolean") return String(value);
   if (value instanceof Tensor) return `Tensor [${value.shape.join(" × ")}]`;
   if (value instanceof CSV) return `표 ${value.getRows()} × ${value.getColumns()}`;
+  if (isConfusionMatrixData(value)) return `${value.labels.length} × ${value.labels.length} matrix`;
   if (value && typeof value === "object" && "kind" in value) return "Model";
   return null;
 }

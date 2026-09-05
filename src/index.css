@@ -349,6 +349,7 @@ button:disabled {
 }
 
 .category-mark--data { background: #4fb7e8; }
+.category-mark--datasets { background: #73c8df; }
 .category-mark--tensor { background: #55c9a5; }
 .category-mark--modules { background: #a88af3; }
 .category-mark--loss { background: #f3b34c; }
@@ -832,6 +833,7 @@ button:disabled {
 }
 
 .node-card--data { --node-color: #4fb7e8; }
+.node-card--datasets { --node-color: #73c8df; }
 .node-card--tensor { --node-color: #55c9a5; }
 .node-card--modules { --node-color: #a88af3; }
 .node-card--loss { --node-color: #f3b34c; }
@@ -1325,6 +1327,34 @@ button:disabled {
 }
 .model-summary dt { color: #78949b; }
 .model-summary dd { margin: 0; color: #d6e2df; font-family: "SFMono-Regular", Consolas, monospace; }
+
+.confusion-matrix {
+  min-height: 100%;
+  padding: 14px;
+  color: #c8d8d7;
+  background: #10212a;
+}
+
+.confusion-matrix__summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.confusion-matrix__summary strong { color: #eef5f2; font-size: 15px; }
+.confusion-matrix__summary span { color: #7da0aa; font-size: 11px; }
+.confusion-matrix__axis { margin: 0 0 7px 74px; color: #78959d; font-size: 10px; }
+.confusion-matrix table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.confusion-matrix th,
+.confusion-matrix td {
+  height: 48px;
+  border: 1px solid #304a55;
+  text-align: center;
+}
+.confusion-matrix th { color: #85a2a9; background: #162b35; font-size: 11px; }
+.confusion-matrix td { color: #d9e5e2; font-family: "SFMono-Regular", Consolas, monospace; font-size: 13px; }
+.confusion-matrix td.is-correct { color: #bcebd0; background: rgba(85, 201, 165, 0.16); }
 
 .csv-config { height: 100%; display: flex; flex-direction: column; gap: 14px; padding: 10px; }
 .csv-config__picker { display: grid; grid-template-columns: 80px 1fr; align-items: center; gap: 10px; }

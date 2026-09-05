@@ -3,6 +3,7 @@ import NodeImpl, { type NodeInputs, type NodeOutputs } from "./NodeImpl";
 import OutputWindow from "../../components/node-window/output-window";
 import CSV from "../data/csv";
 import { Tensor } from "@tensorflow/tfjs";
+import { isConfusionMatrixData } from "./evaluation/classification";
 
 export default class OutputNode extends NodeImpl {
   constructor(nodeId: string) {
@@ -18,6 +19,9 @@ export default class OutputNode extends NodeImpl {
     if (data instanceof CSV || data instanceof Tensor) {
       this.winWidth = 700;
       this.winHeight = 500;
+    } else if (isConfusionMatrixData(data)) {
+      this.winWidth = 480;
+      this.winHeight = 390;
     } else {
       this.winWidth = 300;
       this.winHeight = 200;

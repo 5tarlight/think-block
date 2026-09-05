@@ -50,6 +50,10 @@ export default class PredictNode extends NodeImpl {
         next = value.relu();
       } else if (layer.kind === "sigmoid") {
         next = value.sigmoid();
+      } else if (layer.kind === "softmax") {
+        next = value.softmax(-1);
+      } else if (layer.kind === "tanh") {
+        next = value.tanh();
       } else {
         continue;
       }

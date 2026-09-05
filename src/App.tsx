@@ -222,7 +222,7 @@ function App() {
       const width = Math.max(1, maxX - minX);
       const height = Math.max(1, maxY - minY);
       const scale = Math.max(
-        0.62,
+        0.5,
         Math.min(1, (rect.width - 100) / width, (rect.height - 120) / height)
       );
       setCamera(() => ({

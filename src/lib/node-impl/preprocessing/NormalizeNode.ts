@@ -15,22 +15,17 @@ export default class NormalizeNode extends NodeImpl {
 
   async process(inputs: NodeInputs): Promise<NodeOutputs> {
     const data = toTensor(inputs.data, "data");
-    const { mean, variance } = tf.moments(data);
+    const axis = data.rank === 2 ? 0 : undefined;
+    const { mean, variance } = tf.moments(data, axis);
     const stddev = tf.sqrt(variance).add(tf.scalar(1e-7));
     const normalized = data.sub(mean).div(stddev);
-    const [meanValue, stddevValue] = await Promise.all([
-      mean.data(),
-      stddev.data(),
-    ]);
 
-    mean.dispose();
     variance.dispose();
-    stddev.dispose();
 
     return {
       normalized,
-      mean: meanValue[0],
-      stddev: stddevValue[0],
+      mean,
+      stddev,
     };
   }
 

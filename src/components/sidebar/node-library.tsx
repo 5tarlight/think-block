@@ -8,7 +8,7 @@ import {
   type NodeType,
 } from "../../lib/node";
 
-const defaultOpenCategories: NodeCategory[] = ["data", "modules", "training"];
+const defaultOpenCategories: NodeCategory[] = ["datasets"];
 
 export default function NodeLibrary({
   onAddNode,

@@ -14,7 +14,7 @@ export interface TemplateEdge {
 }
 
 export interface GraphTemplate {
-  id: "regression" | "statistics";
+  id: "regression" | "classification" | "statistics";
   title: string;
   description: string;
   nodes: TemplateNode[];
@@ -50,6 +50,47 @@ export const graphTemplates: GraphTemplate[] = [
       { from: { node: "split", port: "test_x" }, to: { node: "predict", port: "features" } },
       { from: { node: "predict", port: "predictions" }, to: { node: "mse", port: "predictions" } },
       { from: { node: "split", port: "test_y" }, to: { node: "mse", port: "actual" } },
+    ],
+  },
+  {
+    id: "classification",
+    title: "Classify the Iris dataset",
+    description: "Iris, Softmax, CrossEntropyLoss, Accuracy로 다중 분류를 학습합니다.",
+    nodes: [
+      { key: "in-features", type: "number", pos: { x: 20, y: 20 }, value: 4 },
+      { key: "out-features", type: "number", pos: { x: 20, y: 95 }, value: 3 },
+      { key: "criterion", type: "cross entropy loss", pos: { x: 20, y: 210 } },
+      { key: "optimizer", type: "adam", pos: { x: 20, y: 340 } },
+      { key: "data", type: "iris dataset", pos: { x: 20, y: 500 } },
+      { key: "linear", type: "linear", pos: { x: 315, y: 20 } },
+      { key: "normalize", type: "normalize", pos: { x: 315, y: 460 } },
+      { key: "softmax", type: "softmax", pos: { x: 625, y: 20 } },
+      { key: "sequential", type: "sequential", pos: { x: 625, y: 160 } },
+      { key: "split", type: "train test split", pos: { x: 625, y: 400 } },
+      { key: "train", type: "train", pos: { x: 935, y: 180 } },
+      { key: "predict", type: "predict", pos: { x: 1245, y: 310 } },
+      { key: "accuracy", type: "accuracy", pos: { x: 1245, y: 500 } },
+      { key: "f1", type: "f1 score", pos: { x: 1245, y: 660 } },
+    ],
+    edges: [
+      { from: { node: "in-features", port: "value" }, to: { node: "linear", port: "in_features" } },
+      { from: { node: "out-features", port: "value" }, to: { node: "linear", port: "out_features" } },
+      { from: { node: "linear", port: "module" }, to: { node: "softmax", port: "module" } },
+      { from: { node: "softmax", port: "module" }, to: { node: "sequential", port: "modules" } },
+      { from: { node: "data", port: "features" }, to: { node: "normalize", port: "data" } },
+      { from: { node: "normalize", port: "normalized" }, to: { node: "split", port: "x" } },
+      { from: { node: "data", port: "targets" }, to: { node: "split", port: "y" } },
+      { from: { node: "sequential", port: "model" }, to: { node: "train", port: "model" } },
+      { from: { node: "split", port: "train_x" }, to: { node: "train", port: "train_x" } },
+      { from: { node: "split", port: "train_y" }, to: { node: "train", port: "train_y" } },
+      { from: { node: "criterion", port: "criterion" }, to: { node: "train", port: "criterion" } },
+      { from: { node: "optimizer", port: "optimizer" }, to: { node: "train", port: "optimizer" } },
+      { from: { node: "train", port: "trained_model" }, to: { node: "predict", port: "model" } },
+      { from: { node: "split", port: "test_x" }, to: { node: "predict", port: "features" } },
+      { from: { node: "predict", port: "predictions" }, to: { node: "accuracy", port: "predictions" } },
+      { from: { node: "split", port: "test_y" }, to: { node: "accuracy", port: "targets" } },
+      { from: { node: "predict", port: "predictions" }, to: { node: "f1", port: "predictions" } },
+      { from: { node: "split", port: "test_y" }, to: { node: "f1", port: "targets" } },
     ],
   },
   {
