@@ -2,6 +2,9 @@ import type { ReactNode } from "react";
 import type { NodeSize, NodeType } from "../node";
 import { uid, type Port } from "../../store/graphics";
 
+export type NodeInputs = Record<string, unknown>;
+export type NodeOutputs = Record<string, unknown>;
+
 export default abstract class NodeImpl {
   public nodeId: string;
   public nodeType: NodeType;
@@ -35,6 +38,6 @@ export default abstract class NodeImpl {
     this.size = size;
   }
 
-  abstract process(inputs: Record<string, any>): Promise<Record<string, any>>;
+  abstract process(inputs: NodeInputs): Promise<NodeOutputs>;
   abstract render(): ReactNode;
 }

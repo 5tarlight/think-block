@@ -1,136 +1,38 @@
 import cn from "@yeahx4/cn";
-import {
-  useEdgeState,
-  useNodeState,
-  type Node,
-  type Port,
-} from "../../store/graphics";
-import { buildLayers } from "../../lib/execution/execution";
-import { useNodeDataState } from "../../store/nodeDataStore";
-import { useState } from "react";
+import { TbAlertTriangle, TbCheck, TbPlayerPlay } from "react-icons/tb";
+import { runGraph } from "../../lib/execution/run-graph";
+import { useEdgeState, useNodeState } from "../../store/graphics";
+import { useExecutionStore } from "../../store/executionStore";
 
-export default function ExecuteButton() {
-  const { nodes, setErrorNode } = useNodeState();
+export default function ExecuteButton({ compact = false }: { compact?: boolean }) {
+  const { nodes } = useNodeState();
   const { edges } = useEdgeState();
-  const { getNodeData, setNodeData } = useNodeDataState();
-  const [progress, setProgress] = useState(0);
-  const [isExecuting, setIsExecuting] = useState(false);
-  const [isError, setIsError] = useState<false | string>(false);
-
-  const getInputs = (
-    nodeMap: Map<string, Node>,
-    nodeId: string
-  ): Record<string, any> => {
-    const inputEdges = edges.filter((e) => e.to.node === nodeId);
-    const inputs: Record<string, any> = {};
-
-    for (const e of inputEdges) {
-      const fromNode = nodeMap.get(e.from.node);
-      const toNode = nodeMap.get(e.to.node);
-
-      const fromPort: Port | undefined = fromNode?.outputs?.find(
-        (p: any) => p.id === e.from.port
-      );
-      const toPort: Port | undefined = toNode?.inputs?.find(
-        (p: any) => p.id === e.to.port
-      );
-
-      const fromKey = fromPort?.name;
-      const toKey = toPort?.name;
-
-      const fromData = getNodeData(e.from.node);
-
-      let value: any = undefined;
-
-      if (fromData) {
-        if (fromKey! in fromData) {
-          value = fromData[fromKey!];
-        } else if (e.from.port in fromData) {
-          value = fromData[e.from.port];
-        } else {
-          const keys = Object.keys(fromData);
-          if (keys.length === 1) value = fromData[keys[0]];
-          else value = undefined;
-        }
-      }
-
-      inputs[toKey!] = value;
-    }
-
-    return inputs;
-  };
-
-  const onExecute = async () => {
-    const layers = buildLayers(nodes, edges);
-    console.log("Execution layers:", layers);
-
-    let done = 0;
-    let hasError = false;
-    const startTime = performance.now();
-    setProgress(0);
-    setIsExecuting(true);
-    const totalNodes = nodes.length;
-
-    const nodeMap = new Map(nodes.map((n) => [n.id, n]));
-
-    for (const layer of layers) {
-      await Promise.all(
-        layer.map(async (nodeId) => {
-          if (hasError) return;
-          const node = nodeMap.get(nodeId);
-          if (!node?.impl?.process) return;
-
-          const inputs = getInputs(nodeMap, nodeId);
-          try {
-            const outputs = await node.impl.process(inputs);
-            setNodeData(nodeId, outputs);
-          } catch (e) {
-            hasError = true;
-            console.error(`Error processing node ${nodeId}:`, e);
-            setIsError(nodeId);
-            setErrorNode(nodeId);
-            return;
-          }
-
-          done += 1;
-          setProgress(done / totalNodes);
-
-          await new Promise((r) => setTimeout(r, 0));
-        })
-      );
-    }
-
-    const endTime = performance.now();
-    setIsExecuting(false);
-    if (hasError)
-      console.log(`Execution stopped due to error in node ${isError}`);
-    else {
-      if (isError) {
-        setIsError(false);
-        setErrorNode(null);
-      }
-      console.log("Execution complete");
-      console.log(
-        `Execution time: ${Math.round((endTime - startTime) / 100) / 10}s`
-      );
-    }
-  };
+  const { status, progress } = useExecutionStore();
+  const isRunning = status === "running";
 
   return (
     <button
-      className={cn(
-        "w-full p-2 bg-blue-500 rounded-sm transition-colors",
-        "hover:bg-blue-400 cursor-pointer",
-        (isExecuting && "hover:cursor-progress opacity-70") || "",
-        (isError && "bg-red-600 hover:bg-red-500") || ""
-      )}
-      onClick={isExecuting ? undefined : onExecute}
+      className={cn("run-button", compact ? "run-button--compact" : "")}
+      onClick={() => void runGraph(nodes, edges)}
+      disabled={isRunning}
+      type="button"
     >
-      {isExecuting
-        ? `Running... (${Math.round(progress * 100)}%)`
-        : isError
-        ? `Error: ${isError}`
-        : "Run"}
+      <span className="run-button__icon" aria-hidden="true">
+        {status === "error" ? (
+          <TbAlertTriangle />
+        ) : status === "success" ? (
+          <TbCheck />
+        ) : (
+          <TbPlayerPlay />
+        )}
+      </span>
+      <span>{isRunning ? `실행 중 ${Math.round(progress * 100)}%` : "그래프 실행"}</span>
+      {isRunning && (
+        <span
+          className="run-button__progress"
+          style={{ width: `${Math.max(4, progress * 100)}%` }}
+        />
+      )}
     </button>
   );
 }

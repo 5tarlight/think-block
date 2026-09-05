@@ -44,8 +44,8 @@ export default class CSV {
       t = t.reshape([t.shape[0], 1]);
     }
 
-    const array = await t.array();
-    const rows = (array as any[][]).map((row) =>
+    const array = (await t.array()) as Array<Array<number | string>>;
+    const rows = array.map((row) =>
       row.map((value) => (typeof value === "number" ? value.toString() : ""))
     );
     if (!headers) {
@@ -70,9 +70,18 @@ export default class CSV {
   }
 
   toTensor(): Tensor {
-    return tensor(
-      this.rows.map((row) => row.map((value) => parseFloat(value) || value)),
-      this.shape()
+    const values = this.rows.map((row, rowIndex) =>
+      row.map((value, columnIndex) => {
+        const parsed = Number(value.trim());
+        if (!Number.isFinite(parsed)) {
+          const columnName = this.headers[columnIndex] ?? `${columnIndex + 1}열`;
+          throw new Error(
+            `${rowIndex + 2}행 ‘${columnName}’ 열의 값은 숫자가 아닙니다.`
+          );
+        }
+        return parsed;
+      })
     );
+    return tensor(values, this.shape());
   }
 }

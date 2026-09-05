@@ -98,15 +98,15 @@ export default function FileUploader() {
   };
 
   return (
-    <div className="flex flex-col mt-16 gap-2">
+    <div className="file-uploader">
       <div className="flex justify-between items-center">
-        <span className="text-sm">Files</span>
+        <span className="text-sm">실습 파일</span>
         <button
           className="text-sm text-blue-500 hover:underline cursor-pointer"
           onClick={openPicker}
           type="button"
         >
-          Upload
+          업로드
         </button>
 
         <input
@@ -135,7 +135,7 @@ export default function FileUploader() {
       >
         {isDragging && (
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-sm bg-white/5">
-            <div className="text-sm font-medium">Drop files to upload</div>
+            <div className="text-sm font-medium">여기에 놓아 업로드</div>
           </div>
         )}
 
@@ -156,7 +156,7 @@ export default function FileUploader() {
             ))
         ) : (
           <div className="text-white/50 italic text-sm text-center py-6">
-            Drag & drop files here or click Upload.
+            CSV 파일을 끌어 놓거나 업로드를 누르세요.
           </div>
         )}
       </div>

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import NodeImpl from "../NodeImpl";
+import NodeImpl, { type NodeInputs, type NodeOutputs } from "../NodeImpl";
 import CSV from "../../data/csv";
 import { Tensor } from "@tensorflow/tfjs";
 
@@ -22,7 +22,7 @@ export default class VariationNode extends NodeImpl {
     return variance;
   }
 
-  async process(inputs: Record<string, any>): Promise<Record<string, any>> {
+  async process(inputs: NodeInputs): Promise<NodeOutputs> {
     if (typeof inputs.input === "number") {
       return { variation: inputs.input };
     } else if (inputs.input instanceof CSV) {

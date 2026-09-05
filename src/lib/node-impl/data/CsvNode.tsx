@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import NodeImpl from "../NodeImpl";
+import NodeImpl, { type NodeOutputs } from "../NodeImpl";
 import CsvWindow from "../../../components/node-window/csv-window";
 import { useNodeDataState } from "../../../store/nodeDataStore";
 
@@ -10,7 +10,7 @@ export default class CsvNode extends NodeImpl {
     this.winHeight = 500;
   }
 
-  async process(): Promise<Record<string, any>> {
+  async process(): Promise<NodeOutputs> {
     const { getNodeData } = useNodeDataState.getState();
     return {
       fileKey: getNodeData(this.nodeId)?.fileKey || null,

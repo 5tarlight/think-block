@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import NodeImpl from "./NodeImpl";
+import NodeImpl, { type NodeInputs, type NodeOutputs } from "./NodeImpl";
 import OutputWindow from "../../components/node-window/output-window";
 import CSV from "../data/csv";
 import { Tensor } from "@tensorflow/tfjs";
@@ -9,7 +9,7 @@ export default class OutputNode extends NodeImpl {
     super(nodeId, "output", [{ name: "in" }], []);
   }
 
-  async process(inputs: Record<string, any>): Promise<Record<string, any>> {
+  async process(inputs: NodeInputs): Promise<NodeOutputs> {
     // No output component.
     // But, returned data will be stored in node data store.
     const data = inputs["in"];

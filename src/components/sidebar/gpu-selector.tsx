@@ -21,10 +21,10 @@ declare global {
   }
 
   interface Navigator {
-    gpu?: any & {
+    gpu?: {
       wgslLanguageFeatures?: Set<string>;
       getPreferredCanvasFormat?: () => string;
-      requestAdapter?: (
+      requestAdapter: (
         opts?: GPURequestAdapterOptions
       ) => Promise<GPUAdapter | null>;
     };
@@ -64,7 +64,7 @@ export default function GPUSelector() {
         setCurrent("gpu");
       }
     })();
-  }, [setAvailability, setCurrent]);
+  }, [current, setAvailability, setCurrent]);
 
   useEffect(() => {
     if (current === "gpu") {
@@ -94,7 +94,7 @@ export default function GPUSelector() {
 
   return (
     <div className="flex flex-col gap-2">
-      <label className="text-sm text-neutral-300">Hardware</label>
+      <label className="text-sm text-neutral-300">실행 장치</label>
       <select
         className="bg-neutral-800 text-white border border-neutral-700 rounded px-2 py-1"
         value={value}
@@ -104,7 +104,7 @@ export default function GPUSelector() {
         <option value="gpu" disabled={!isAvailable}>
           {isAvailable
             ? `GPU ${vendor ?? ""}${architecture ? ` (${architecture})` : ""}`
-            : "GPU (Not available)"}
+            : "GPU (사용할 수 없음)"}
         </option>
       </select>
     </div>

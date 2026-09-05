@@ -1,165 +1,86 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import CSV from "../../lib/data/csv";
 import { useFileStore } from "../../store/fileStore";
 import { useNodeDataState } from "../../store/nodeDataStore";
-import CSV from "../../lib/data/csv";
 import CSVViewer from "../window/csv-viewer";
-
-interface CsvSummary {
-  rowCount: number;
-  columnCount: number;
-  headers: string[];
-  preview: string[][];
-}
 
 export default function CsvWindow({ id }: { id: string }) {
   const { files, getFile } = useFileStore();
   const { setNodeData, getNodeData } = useNodeDataState();
-  const data = getNodeData(id) || {};
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const data = getNodeData(id) ?? {};
+  const currentFileKey = typeof data.fileKey === "string" ? data.fileKey : "";
+  const csv = data.csv instanceof CSV ? data.csv : null;
+  const csvInputs = files.filter(
+    (entry) =>
+      entry.isInput && entry.file.name.toLowerCase().endsWith(".csv")
+  );
+  const fileName =
+    files.find((entry) => entry.file.key === currentFileKey)?.file.name ?? "";
 
-  const csvInputs = files
-    .filter((f) => f.isInput)
-    .filter((f) => f.file.name.toLowerCase().endsWith(".csv"));
-
-  const [currentFileKey, setCurrentFileKey] = useState<string>("");
-  const [fileName, setFileName] = useState<string>("");
-  const [csvSummary, setCsvSummary] = useState<CsvSummary | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  useEffect(() => {
-    (async () => {
-      const fileKey = data.fileKey || "";
-      setCurrentFileKey(fileKey);
-
-      if (fileKey) {
-        const file = files.find((f) => f.file.key === fileKey)?.file;
-        setFileName(file?.name || "");
-        await loadCsvSummary(fileKey);
-      } else {
-        setFileName("");
-        setCsvSummary(null);
-      }
-    })();
-  }, [data, id]);
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const fileKey = e.target.value;
-    setCurrentFileKey(fileKey);
-
-    const file = files.find((f) => f.file.key === fileKey)?.file;
-    setFileName(file?.name || "");
-
-    await loadCsvSummary(fileKey);
-  };
-
-  const loadCsvSummary = async (fileKey: string) => {
+  const loadCsv = async (fileKey: string) => {
+    setError(null);
     if (!fileKey) {
-      setCsvSummary(null);
+      setNodeData(id, { fileKey: "", csv: null });
       return;
     }
 
     setIsLoading(true);
-
-    if (data.fileKey === fileKey && data.csv) {
-      setCsvSummary({
-        rowCount: data.csv.getRows(),
-        columnCount: data.csv.getColumns(),
-        headers: data.csv.headers,
-        preview: data.csv.rows.slice(0, 5),
-      });
-      setIsLoading(false);
-      return;
-    }
-
+    setNodeData(id, { fileKey, csv: null });
     try {
       const file = getFile(fileKey);
-      if (!file || !file.raw) {
-        setCsvSummary(null);
-        return;
+      if (!file) throw new Error("선택한 파일을 찾을 수 없습니다.");
+      const text = file.contentText ?? (await file.raw.text());
+      const parsed = await CSV.fromString(text, true);
+      if (parsed.getRows() === 0 || parsed.getColumns() === 0) {
+        throw new Error("CSV에 읽을 수 있는 행과 열이 없습니다.");
       }
-
-      // If we have cached content, use it
-      if (file.contentText) {
-        await processCsvContent(fileKey, file.contentText);
-        return;
-      }
-
-      // Otherwise read the file
-      const text = await file.raw.text();
-      await processCsvContent(fileKey, text);
-    } catch (error) {
-      console.error("Error loading CSV:", error);
-      setCsvSummary(null);
+      setNodeData(id, { fileKey, csv: parsed });
+    } catch (reason) {
+      setError(
+        reason instanceof Error ? reason.message : "CSV를 읽지 못했습니다."
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
-  const processCsvContent = async (fileKey: string, csvContent: string) => {
-    const csv = await CSV.fromString(csvContent, true);
-    setCsvSummary({
-      rowCount: csv.getRows(),
-      columnCount: csv.getColumns(),
-      headers: csv.headers,
-      preview: csv.rows.slice(0, 5),
-    });
-
-    setNodeData(id, { fileKey, csv });
-  };
-
   return (
-    <div className="p-4 flex flex-col gap-4 h-full">
-      <div className="flex items-center gap-2">
-        <label className="text-sm font-medium">CSV File: </label>
+    <div className="csv-config">
+      <div className="csv-config__picker">
+        <label htmlFor={`csv-file-${id}`}>CSV 파일</label>
         <select
+          id={`csv-file-${id}`}
           value={currentFileKey}
-          onChange={handleFileChange}
-          className="bg-gray-700 text-white p-1 rounded border border-gray-600 flex-1 text-sm"
+          onChange={(event) => void loadCsv(event.target.value)}
         >
-          <option value="">-- Select a CSV file --</option>
-          {csvInputs.map((f) => (
-            <option key={f.file.key} value={f.file.key}>
-              {f.file.name}
+          <option value="">파일을 선택하세요</option>
+          {csvInputs.map((entry) => (
+            <option key={entry.file.key} value={entry.file.key}>
+              {entry.file.name}
             </option>
           ))}
         </select>
       </div>
 
-      {isLoading && (
-        <div className="flex items-center justify-center h-full text-gray-400">
-          Loading CSV data...
-        </div>
-      )}
-
+      {isLoading && <div className="window-message">CSV를 읽고 있어요…</div>}
       {!isLoading && !currentFileKey && (
-        <div className="flex items-center justify-center h-full text-gray-400">
-          No CSV file selected
+        <div className="window-message">
+          왼쪽 파일 탭에서 CSV를 업로드한 뒤 여기서 선택하세요.
         </div>
       )}
-
-      {!isLoading && currentFileKey && !csvSummary && (
-        <div className="flex items-center justify-center h-full text-red-400">
-          Failed to load CSV data
-        </div>
+      {!isLoading && error && (
+        <div className="window-message window-message--error">{error}</div>
       )}
-
-      {!isLoading && csvSummary && (
-        <div className="flex flex-col gap-3 overflow-hidden h-full">
-          <div className="flex gap-4 text-sm">
-            <div className="bg-gray-700 p-2 rounded flex-1">
-              <strong>File:</strong> {fileName}
-            </div>
-            <div className="bg-gray-700 p-2 rounded">
-              <strong>Rows:</strong> {csvSummary.rowCount.toLocaleString()}
-            </div>
-            <div className="bg-gray-700 p-2 rounded">
-              <strong>Columns:</strong> {csvSummary.columnCount}
-            </div>
+      {!isLoading && csv && (
+        <div className="csv-config__preview">
+          <div className="csv-config__summary">
+            <strong>{fileName}</strong>
+            <span>{csv.getRows().toLocaleString()}행</span>
+            <span>{csv.getColumns()}열</span>
           </div>
-
-          <div className="flex-1 overflow-auto">
-            <h4 className="text-sm font-semibold mb-2">Preview:</h4>
-            <CSVViewer csv={getNodeData(id)?.csv} maxColumns={20} maxRows={5} />
-          </div>
+          <CSVViewer csv={csv} maxColumns={20} maxRows={5} />
         </div>
       )}
     </div>

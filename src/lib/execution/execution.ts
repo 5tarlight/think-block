@@ -39,3 +39,12 @@ export function buildLayers(nodes: Node[], edges: Edge[]): string[][] {
 
   return layers;
 }
+
+export function createsCycle(nodes: Node[], edges: Edge[]): boolean {
+  try {
+    buildLayers(nodes, edges);
+    return false;
+  } catch {
+    return true;
+  }
+}

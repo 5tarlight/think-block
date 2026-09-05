@@ -4,16 +4,9 @@ import { TbCsv, TbFile, TbJpg, TbJson, TbPng, TbTxt } from "react-icons/tb";
 import { useWinStore } from "../../store/windowStore";
 import FileWindowContent from "../window/file-window-content";
 import type { FileDesc } from "../../store/fileStore";
+import { formatBytes } from "../../util/format";
 
 export type FileStatus = "pending" | "reading" | "done" | "error";
-
-export function formatBytes(bytes: number): string {
-  if (bytes === 0) return "0 B";
-  const units = ["B", "KB", "MB", "GB", "TB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  const value = bytes / Math.pow(1024, i);
-  return `${value.toFixed(value < 10 && i > 0 ? 1 : 0)} ${units[i]}`;
-}
 
 export default function FileItem({
   name,

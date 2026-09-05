@@ -1,73 +1,57 @@
 # Think Block
 
-Think Block is an intuitive web platform that allows you to build AI models by dragging and connecting blocks (nodes). Create complex AI workflows with a simple, visual interface.
+Think Block은 블록을 연결해 `데이터 → 전처리 → 모델 → 평가` 과정을 배우는 브라우저 기반 AI 실습실입니다. 별도 Python 환경 없이 TensorFlow.js와 WebGPU/CPU를 사용해 그래프를 바로 실행할 수 있습니다.
 
-## Features
+## 지금 할 수 있는 것
 
-- **Visual Node-Based Editor**: Drag, drop, and connect blocks to build your AI model
-- **Intuitive Interface**: User-friendly canvas for creating AI workflows
-- **WebGPU**: Boost learning with WebGPU
-- **File Management**: Upload and manage your AI assets through the sidebar
-- **Real-time Visualization**: See your model architecture as you build it
+- 검색 가능한 블록 라이브러리와 우클릭 빠른 추가
+- 선형 샘플 데이터 생성, 정규화, 학습/테스트 분리
+- 선형 회귀 모델 학습과 예측
+- 평균제곱오차(MSE), 평균, 중앙값, 표준편차 등 평가·통계
+- 실제 그래프 상태를 감지하는 단계별 학습 체크리스트
+- 선형 회귀와 기술 통계 시작 예제
+- CSV 업로드와 표 미리보기
+- 프로젝트 자동 저장, JSON 내보내기·불러오기
+- 순환 연결 차단, 단일 입력 연결, 노드별 실행/오류 상태
 
-## Getting Started
+상세한 제품 방향과 후속 로드맵은 [제품 기획](docs/PRODUCT_PLAN.md)을 참고하세요.
 
-### Prerequisites
+## 시작하기
 
-- Node.js (version 18 or higher)
-- npm or any package managers
+Node.js 18 이상과 pnpm이 필요합니다.
 
-### Installation
-
-1. Clone the repository
 ```bash
-git clone https://github.com/5tarlight/think-block.git
-cd think-block
+pnpm install
+pnpm dev
 ```
 
-2. Install dependencies
+브라우저에서 `http://localhost:3000`을 엽니다.
+
+## 사용 흐름
+
+1. 빈 화면의 **첫 선형 회귀 열기**를 누릅니다.
+2. 오른쪽 학습 가이드와 그래프의 연결을 함께 살펴봅니다.
+3. **그래프 실행**을 눌러 모델을 학습하고 MSE를 확인합니다.
+4. 왼쪽 블록을 추가하거나 연결을 바꾸며 결과를 비교합니다.
+5. **내보내기**로 프로젝트 파일을 저장합니다.
+
+블록은 클릭하면 화면 가운데 추가됩니다. 캔버스를 우클릭해 검색할 수도 있습니다. `Space + 드래그`로 이동하고 `Ctrl/⌘ + 스크롤`로 확대·축소합니다.
+
+## 품질 확인
+
 ```bash
-npm install
-# or
-yarn install
+pnpm lint
+pnpm build
 ```
 
-3. Start the development server
-```bash
-npm run dev
-# or
-yarn dev
-```
+## 기술 구성
 
-4. Open your browser and navigate to `http://localhost:5173`
+- React 19 + TypeScript
+- Vite 7
+- Zustand
+- TensorFlow.js + WebGPU
+- Tailwind CSS 4
 
-## How to Use
+## 라이선스
 
-1. **Select Nodes**: Browse through the available nodes in the sidebar
-2. **Drag and Drop**: Place nodes on the canvas
-3. **Connect Ports**: Link the output ports of one node to input ports of another
-4. **Configure Properties**: Adjust the parameters of each node as needed
-5. **Execute**: Run your model with the configured settings
-
-## Technology Stack
-
-- **Frontend**: React, TypeScript
-- **Build Tool**: Vite
-- **Styling**: Tailwind CSS
-- **State Management**: Custom stores
-
-## Contributing
-
-We welcome contributions! Please feel free to submit a Pull Request.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- Thanks to all contributors who have helped shape Think Block
-
----
-
-Developed with ❤️ by [5tarlight](https://github.com/5tarlight)
+[MIT](LICENSE)

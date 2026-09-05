@@ -28,7 +28,7 @@ export default function SubMenuPortal({
     const margin = 16;
     const estimatedWidth = 256; // w-64
     let left = anchorRect.right + margin;
-    let top = anchorRect.top;
+    const top = anchorRect.top;
 
     if (left + estimatedWidth > vw) {
       left = anchorRect.left - margin - estimatedWidth;

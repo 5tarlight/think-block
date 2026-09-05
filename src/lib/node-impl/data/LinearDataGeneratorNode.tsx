@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
-import NodeImpl from "../NodeImpl";
+import NodeImpl, { type NodeInputs, type NodeOutputs } from "../NodeImpl";
 import * as tf from "@tensorflow/tfjs";
+import { finiteNumber } from "../tensor-utils";
 
 export default class LinearDataGeneratorNode extends NodeImpl {
   constructor(nodeId: string) {
@@ -13,25 +14,26 @@ export default class LinearDataGeneratorNode extends NodeImpl {
         { name: "intercept" },
         { name: "noise" },
       ],
-      [{ name: "data" }],
+      [{ name: "features" }, { name: "labels" }],
       "full"
     );
   }
 
-  // BUG !!!! 오류 발생함
-  async process(inputs: Record<string, any>): Promise<Record<string, any>> {
-    const { n, slope, intercept, noise } = inputs;
+  async process(inputs: NodeInputs): Promise<NodeOutputs> {
+    const n = Math.min(1000, Math.round(finiteNumber(inputs.n, 48, 4)));
+    const slope = finiteNumber(inputs.slope, 1.8);
+    const intercept = finiteNumber(inputs.intercept, 2);
+    const noise = finiteNumber(inputs.noise, 1.5, 0);
 
-    const x = tf.linspace(0, n - 1, n);
-    const noiseTensor = tf.randomNormal([n], 0, noise);
+    const features = tf.linspace(0, n - 1, n).reshape([n, 1]);
+    const noiseTensor = tf.randomNormal([n, 1], 0, noise, "float32", 42);
+    const labels = features.mul(slope).add(intercept).add(noiseTensor);
+    noiseTensor.dispose();
 
-    const y = x.mul(slope).add(intercept).add(noiseTensor).reshape([n, 1]);
-    const xy = tf.concat([x, y], 1);
-
-    return { data: xy };
+    return { features, labels };
   }
 
   render(): ReactNode {
-    return <div>LNG</div>;
+    return null;
   }
 }

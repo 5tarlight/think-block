@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import NodeImpl from "../NodeImpl";
+import NodeImpl, { type NodeInputs, type NodeOutputs } from "../NodeImpl";
 import CSV from "../../data/csv";
 import { Tensor } from "@tensorflow/tfjs";
 
@@ -12,7 +12,7 @@ export default class ArgmaxNode extends NodeImpl {
     return (await tensor.argMax().data())[0];
   }
 
-  async process(inputs: Record<string, any>): Promise<Record<string, any>> {
+  async process(inputs: NodeInputs): Promise<NodeOutputs> {
     if (typeof inputs.input === "number") {
       return { index: 0 };
     } else if (inputs.input instanceof CSV) {

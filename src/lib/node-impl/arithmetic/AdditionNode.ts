@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import NodeImpl from "../NodeImpl";
+import NodeImpl, { type NodeInputs, type NodeOutputs } from "../NodeImpl";
 import CSV from "../../data/csv";
 import { Tensor } from "@tensorflow/tfjs";
 
@@ -9,12 +9,12 @@ export default class AdditionNode extends NodeImpl {
       nodeId,
       "add",
       [{ name: "a" }, { name: "b" }],
-      [{ name: "a + b" }],
+      [{ name: "sum" }],
       "small"
     );
   }
 
-  async process(inputs: Record<string, any>): Promise<Record<string, any>> {
+  async process(inputs: NodeInputs): Promise<NodeOutputs> {
     if (inputs.a instanceof CSV) inputs.a = inputs.a.toTensor();
     if (inputs.b instanceof CSV) inputs.b = inputs.b.toTensor();
 

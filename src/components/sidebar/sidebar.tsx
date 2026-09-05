@@ -1,194 +1,73 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import { TbBlocks, TbFiles, TbLayoutSidebarLeftCollapse } from "react-icons/tb";
+import type { NodeType } from "../../lib/node";
 import { useSidebarStore } from "../../store/sidebarStore";
 import HorizontalIcon from "../icon/HoriontalIcon";
-import cn from "@yeahx4/cn";
-import GPUSelector from "./gpu-selector";
 import FileUploader from "./file-uploader";
-import ExecuteButton from "./execute-button";
+import GPUSelector from "./gpu-selector";
+import NodeLibrary from "./node-library";
 
-const MIN_W = 200;
-const MAX_W = 960;
-const DEFAULT_W = 256;
-
-export default function Sidebar() {
+export default function Sidebar({
+  onAddNode,
+}: {
+  onAddNode: (type: NodeType) => void;
+}) {
   const { isOpen, toggle, close } = useSidebarStore();
+  const [tab, setTab] = useState<"blocks" | "files">("blocks");
 
-  const [width, setWidth] = useState<number>(DEFAULT_W);
-  const [dragging, setDragging] = useState(false);
-
-  const startXRef = useRef(0);
-  const startWRef = useRef(width);
-
-  const onMouseDown = (e: React.MouseEvent) => {
-    setDragging(true);
-    startXRef.current = e.clientX;
-    startWRef.current = width;
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("mouseup", onMouseUp);
-    // UX: Prevent selecting while dragging
-    document.body.style.cursor = "col-resize";
-    document.body.style.userSelect = "none";
-  };
-
-  const onMouseMove = (e: MouseEvent) => {
-    const dx = e.clientX - startXRef.current;
-    const next = Math.max(MIN_W, Math.min(MAX_W, startWRef.current + dx));
-    setWidth(next);
-  };
-
-  const onMouseUp = () => {
-    setDragging(false);
-    window.removeEventListener("mousemove", onMouseMove);
-    window.removeEventListener("mouseup", onMouseUp);
-    document.body.style.cursor = "";
-    document.body.style.userSelect = "";
-  };
-
-  // Support Touch
-  const onTouchStart: React.TouchEventHandler<HTMLDivElement> = (e) => {
-    setDragging(true);
-    startXRef.current = e.touches[0].clientX;
-    startWRef.current = width;
-    window.addEventListener("touchmove", onTouchMove);
-    window.addEventListener("touchend", onTouchEnd);
-    document.body.style.cursor = "col-resize";
-    (document.body.style as any).webkitUserSelect = "none";
-    document.body.style.userSelect = "none";
-  };
-
-  const onTouchMove = (e: TouchEvent) => {
-    const dx = e.touches[0].clientX - startXRef.current;
-    const next = Math.max(MIN_W, Math.min(MAX_W, startWRef.current + dx));
-    setWidth(next);
-  };
-
-  const onTouchEnd = () => {
-    setDragging(false);
-    window.removeEventListener("touchmove", onTouchMove);
-    window.removeEventListener("touchend", onTouchEnd);
-    document.body.style.cursor = "";
-    (document.body.style as any).webkitUserSelect = "";
-    document.body.style.userSelect = "";
-  };
-
-  useEffect(() => {
-    return () => {
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("mouseup", onMouseUp);
-      window.removeEventListener("touchmove", onTouchMove);
-      window.removeEventListener("touchend", onTouchEnd);
-      document.body.style.cursor = "";
-      document.body.style.userSelect = "";
-    };
-  }, []);
-
-  // Reset width width double click
-  const resetWidth = () => setWidth(DEFAULT_W);
+  if (!isOpen) {
+    return (
+      <aside className="sidebar sidebar--collapsed">
+        <div className="brand-mark" aria-label="Think Block">T</div>
+        <button type="button" onClick={toggle} aria-label="도구 패널 열기">
+          <HorizontalIcon left={false} />
+        </button>
+      </aside>
+    );
+  }
 
   return (
-    <>
-      {isOpen ? (
-        // Expanded sidebar
-        <div
-          className={cn(
-            "h-full bg-neutral-900 border-r border-neutral-700 flex relative",
-            "flex-col ease-in-out shrink-0 text-white justify-between",
-            dragging ? "" : "transition-[width] duration-150"
-          )}
-          style={{ width }}
-        >
-          <div className="flex flex-col">
-            <div
-              className={cn(
-                "p-4 flex justify-between items-center border-b",
-                "border-neutral-600"
-              )}
-            >
-              <h2 className="font-semibold text-lg">ThinkBlock</h2>
-              <button
-                onClick={close}
-                className="p-1 rounded-full hover:bg-neutral-600"
-                aria-label="Close sidebar"
-              >
-                <HorizontalIcon />
-              </button>
-            </div>
-
-            <div className="flex-1 p-4 overflow-y-auto">
-              <GPUSelector />
-              <FileUploader />
-            </div>
-
-            {/* Drag handle */}
-            <div
-              role="separator"
-              aria-orientation="vertical"
-              title="Double click to reset width"
-              onMouseDown={onMouseDown}
-              onDoubleClick={resetWidth}
-              onTouchStart={onTouchStart}
-              className={cn(
-                "absolute top-0 right-0 h-full w-1 cursor-col-resize select-none",
-                "bg-transparent hover:bg-neutral-700/40",
-                // Increase hit area while dragging
-                dragging ? "w-1.5" : "w-1"
-              )}
-            />
-          </div>
-          <div className="p-4 flex flex-col gap-8">
-            <ExecuteButton />
-            <footer
-              className={cn(
-                "text-sm text-center border-t border-neutral-600",
-                "pt-4 text-neutral-400 flex flex-col items-center gap-1"
-              )}
-            >
-              <span>
-                &copy;
-                {new Date().getFullYear() === 2025
-                  ? " 2025"
-                  : " 2025-" + new Date().getFullYear()}{" "}
-                YEAHx4
-              </span>
-              <div className="flex justify-center gap-2">
-                <a
-                  href="https://github.com/5tarlight/think-block"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="underline hover:text-white"
-                >
-                  GitHub
-                </a>
-                <a
-                  href="https://post.yeahx4.me"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="underline hover:text-white"
-                >
-                  Blog
-                </a>
-              </div>
-            </footer>
-          </div>
+    <aside className="sidebar">
+      <div className="sidebar__brand">
+        <div className="brand-mark" aria-hidden="true">T</div>
+        <div>
+          <strong>Think Block</strong>
+          <span>AI 실험 작업대</span>
         </div>
-      ) : (
-        // Collapsed sidebar
-        <div
-          className={cn(
-            "h-full w-8 bg-neutral-900 border-r border-neutral-700",
-            "flex flex-col items-center py-4 transition-all duration-300",
-            "ease-in-out shrink-0 text-white"
-          )}
+        <button type="button" onClick={close} aria-label="도구 패널 닫기">
+          <TbLayoutSidebarLeftCollapse />
+        </button>
+      </div>
+
+      <div className="sidebar-tabs" role="tablist" aria-label="도구 선택">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === "blocks"}
+          className={tab === "blocks" ? "is-active" : ""}
+          onClick={() => setTab("blocks")}
         >
-          <button
-            onClick={toggle}
-            className="p-1 rounded-full hover:bg-neutral-600 mb-4"
-            aria-label="Expand sidebar"
-          >
-            <HorizontalIcon left={false} />
-          </button>
-        </div>
-      )}
-    </>
+          <TbBlocks /> 블록
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === "files"}
+          className={tab === "files" ? "is-active" : ""}
+          onClick={() => setTab("files")}
+        >
+          <TbFiles /> 파일
+        </button>
+      </div>
+
+      <div className="sidebar__content">
+        {tab === "blocks" ? <NodeLibrary onAddNode={onAddNode} /> : <FileUploader />}
+      </div>
+
+      <div className="sidebar__footer">
+        <GPUSelector />
+        <p>블록을 클릭하면 화면 가운데에 추가됩니다.</p>
+      </div>
+    </aside>
   );
 }

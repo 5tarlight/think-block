@@ -49,6 +49,7 @@ export default function WindowView({
   return (
     <div
       className={cn(
+        "floating-window",
         "bg-neutral-900 border border-neutral-700 rounded",
         "flex flex-col shadow-xl"
       )}
@@ -64,6 +65,7 @@ export default function WindowView({
     >
       <div
         className={cn(
+          "floating-window__titlebar",
           "border-b border-neutral-700 py-1 px-2 flex justify-between items-center",
           "cursor-grab active:cursor-grabbing select-none"
         )}
@@ -71,18 +73,19 @@ export default function WindowView({
       >
         <div
           className={cn(
+            "floating-window__close",
             "w-3 h-3 bg-red-500 rounded-full cursor-pointer",
             "text-[8px] flex justify-center items-center text-red-800",
             "font-bold hover:font-extrabold"
           )}
           onClick={() => removeWindow(win.id)}
         >
-          X
+          ×
         </div>
         <div className="font-bold truncate px-2">{win.title}</div>
         <div className="text-sm text-neutral-400">{win.id}</div>
       </div>
-      <div className={cn("flex-1 p-2 overflow-auto")}>{children}</div>
+      <div className={cn("floating-window__content", "flex-1 p-2 overflow-auto")}>{children}</div>
     </div>
   );
 }

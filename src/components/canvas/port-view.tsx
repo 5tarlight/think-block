@@ -1,4 +1,3 @@
-import cn from "@yeahx4/cn";
 import { useNodeState } from "../../store/graphics";
 
 export default function PortView({
@@ -12,55 +11,44 @@ export default function PortView({
 }: {
   label: string;
   side: "left" | "right";
-  onMouseDown?: (e: React.MouseEvent) => void;
+  onMouseDown?: (event: React.MouseEvent) => void;
   onMouseUp?: () => void;
   isInput?: boolean;
   inputValue?: string;
   setInputValue?: (value: string) => void;
 }) {
-  const { clearSelectedNodes } = useNodeState();
+  const clearSelectedNodes = useNodeState((state) => state.clearSelectedNodes);
 
   return (
-    <div
-      className={
-        side === "left"
-          ? "flex items-center gap-1"
-          : "flex items-center gap-1 flex-row-reverse"
-      }
-    >
+    <div className={`port-row port-row--${side}`}>
       <span
-        className={cn(
-          "relative inline-block w-2 h-2 rounded-full",
-          "bg-blue-400 cursor-crosshair port-handle",
-          "hover:scale-125 transition-transform"
-        )}
-        onMouseDown={(e) => {
-          e.stopPropagation();
-          onMouseDown?.(e);
+        className="port-handle"
+        onMouseDown={(event) => {
+          event.stopPropagation();
+          onMouseDown?.(event);
         }}
-        onMouseUp={(e) => {
-          e.stopPropagation();
+        onMouseUp={(event) => {
+          event.stopPropagation();
           onMouseUp?.();
         }}
-        title={label}
+        title={`${label} 포트`}
       />
       {isInput ? (
         <input
-          className={cn(
-            "px-2 py-1 bg-neutral-800 border border-neutral-700 rounded-sm",
-            "h-7 w-24 outline-none"
-          )}
+          className="port-number-input"
+          type="number"
+          step="any"
           value={inputValue}
-          onClick={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
+          aria-label={`${label} 값`}
+          onMouseDown={(event) => event.stopPropagation()}
+          onClick={(event) => {
+            event.stopPropagation();
             clearSelectedNodes();
-            (e.target as HTMLInputElement).focus();
           }}
-          onChange={(e) => setInputValue?.(e.target.value)}
+          onChange={(event) => setInputValue?.(event.target.value)}
         />
       ) : (
-        <span className={cn("px-2 py-1")}>{label}</span>
+        <span className="port-label">{label}</span>
       )}
     </div>
   );
